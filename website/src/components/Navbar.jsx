@@ -1,6 +1,7 @@
 import React from "react";
 import "./Navbar.css";
 import logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
 const Navbar = (props) => {
   let isLoggedIn = props.isLoggedIn;
   return (
@@ -13,13 +14,13 @@ const Navbar = (props) => {
           <div className="navbar-links">
             <ul>
               <li>
-                <a href="#"> Home </a>
+                <Link to="/home"> Home </Link>
               </li>
               <li>
-                <a href="#"> Account </a>
+                <Link to="/account"> Account </Link>
               </li>
               <li>
-                <a href="#"> About Us </a>
+                <Link to="/about-us"> About Us </Link>
               </li>
             </ul>
           </div>
