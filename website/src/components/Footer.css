@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+/* .body {
+  display: flex;
+  background-color: red;
+  height: min-content;
+} */
+.body {
+  margin-top: 0px;
+  padding: 0px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0353a4;
+  color: #ffffff;
+  width: 100%;
+  height: 90px;
+}
+
+.pictures {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem;
+  display: flex;
+  width: 150px;
+  height: auto;
+}
+#android {
+  max-width: 100%;
+  height: auto;
+}
+#ios {
+  max-width: 100%;
+  height: auto;
+}
