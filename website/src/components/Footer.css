@@ -2,11 +2,6 @@
   box-sizing: border-box;
 }
 
-/* .body {
-  display: flex;
-  background-color: red;
-  height: min-content;
-} */
 .body {
   margin-top: 0px;
   padding: 0px;
@@ -22,7 +17,9 @@
   width: 100%;
   height: 90px;
 }
-
+.rights {
+  margin-left: 10px;
+}
 .pictures {
   display: flex;
   justify-content: flex-end;
