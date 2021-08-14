@@ -1,0 +1,32 @@
+.team-member {
+  background-color: red;
+  width: 33vw;
+
+  justify-self: center;
+  /* justify-content: center; */
+  color: yellow;
+}
+
+.avatar {
+  vertical-align: middle;
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+}
+@media only screen and (max-width: 1300px) {
+  .root {
+    display: block;
+  }
+  .team-member {
+    width: 40vw;
+  }
+}
+
+@media only screen and (max-width: 854px) {
+  .root {
+    display: block;
+  }
+  .team-member {
+    width: 90vw;
+  }
+}

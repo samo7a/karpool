@@ -1,8 +1,8 @@
 import React from "react";
 import "./LandingPage.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import vid from "../assets/promo.mp4";
+import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer/Footer";
+import vid from "../../assets/promo.mp4";
 export default function LandingPage() {
   let isLoggedIn = false;
   return (
