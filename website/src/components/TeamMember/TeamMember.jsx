@@ -10,10 +10,10 @@ const TeamMember = (props) => {
         width="200px"
         height="200px"
       />
-      <h1>{props.name}</h1>
-      <h1>{props.role}</h1>
+      <h2>{props.name}</h2>
+      <h4>{props.role}</h4>
       <p>
-        <quote>{props.quote}</quote>
+        <q>{props.quote}</q>
       </p>
     </div>
   );

@@ -4,6 +4,21 @@ import logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 const Navbar = (props) => {
   let isLoggedIn = props.isLoggedIn;
+  const SmartLink = ({ link, title }) => {
+    var path = window.location.pathname;
+    if (path === link) {
+      return (
+        <li className="underline">
+          <Link to={link}> {title} </Link>
+        </li>
+      );
+    } else
+      return (
+        <li>
+          <Link to={link}> {title} </Link>
+        </li>
+      );
+  };
   return (
     <div className="body">
       <nav className="navbar">
@@ -13,15 +28,9 @@ const Navbar = (props) => {
         {isLoggedIn ? (
           <div className="navbar-links">
             <ul>
-              <li>
-                <Link to="/home"> Home </Link>
-              </li>
-              <li>
-                <Link to="/account"> Account </Link>
-              </li>
-              <li>
-                <Link to="/about-us"> About Us </Link>
-              </li>
+              <SmartLink link="/home" title="Home" />
+              <SmartLink link="/account" title="Account" />
+              <SmartLink link="/about-us" title="About Us" />
             </ul>
           </div>
         ) : (

@@ -1,10 +1,8 @@
 .team-member {
-  background-color: red;
+  background-color: #001845;
   width: 33vw;
-
   justify-self: center;
-  /* justify-content: center; */
-  color: yellow;
+  color: #ffffff;
 }
 
 .avatar {
