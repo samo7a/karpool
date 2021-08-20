@@ -140,7 +140,7 @@ website/.env.local
 website/.env.development.local
 website/.env.test.local
 website/.env.production.local
-
+website/.env
 website/npm-debug.log*
 webisite/yarn-debug.log*
 website/yarn-error.log*
