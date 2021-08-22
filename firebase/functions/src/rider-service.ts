@@ -32,7 +32,8 @@ export class RiderService {
         phone: string,
         joinDate: Date
     ): Promise<void> {
-        this.databaseDAO.deleteDriver('') //Placeholder so database warning goes away. Remove later.
+
+        this.databaseDAO.deleteDriverInfo('') //Placeholder so database warning goes away. Remove later.
         throw new Error('Unimplemented.')
     }
 
