@@ -3,6 +3,9 @@ import { ReviewResult, TripResult } from "./models/review";
 
 
 
+/**
+ * TODO: Decide if we should move these methods to the user-service or keep distinct rider / driver service classes.
+ */
 export class RiderService {
 
     private databaseDAO: DatabaseDAOInterface

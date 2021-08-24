@@ -12,23 +12,115 @@ export function add(a: number, b: number): number {
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
+import { UserService } from "./user-service";
+import { AuthenticationDAO } from "./auth-dao";
+import { RiderRegistrationInfo } from "./models/register";
+import { Address } from "./models/address";
+import { HttpsError } from "firebase-functions/lib/providers/https";
+import { UserFieldsPublic } from "./models/user";
 
 admin.initializeApp()
 
+/**
+ 
+    firstName: string
+     lastName: string
+     gender: string
+     email: string
+     password: string
+     dob: Date
+     address: Address
+     phone: string
+     joinDate: Date
+
+ */
+
+export function validateAuthorization(context: functions.https.CallableContext): string {
+    const uid = context.auth?.uid
+
+    const isAuthenticated = uid != undefined
+    if (!isAuthenticated) {
+        throw new HttpsError('unauthenticated', 'Not authenticated.')
+    } else {
+        return uid as string
+    }
+}
+
+function validateRiderInfo(data: any): RiderRegistrationInfo {
+    return {
+        firstName: 'Steven',
+        lastName: 'J',
+        gender: 'Male',
+        email: 'Steven@gmail.com',
+        password: 'password',
+        dob: new Date(),
+        address: new Address('Nunya', 'Bussiness', 'FL', '32839', undefined),
+        phone: '7271920192',
+        joinDate: new Date()
+    }
+}
+
+const dbDAO = new DatabaseDAO(admin.firestore())
+const authDAO = new AuthenticationDAO(admin.auth())
+const userService = new UserService(dbDAO, authDAO)
+
+
+function validateUserInfo(data: any): string {
+    const userID = data.userID
+    if (userID === undefined) {
+        throw new HttpsError('invalid-argument', 'Must provide user id.')
+    } else {
+        return userID
+    }
+}
+
+
+/**
+ * Gets a user's publicly available information. 
+ * Use for when a user requests another user profile.
+ */
+export const getUserPublic = functions.https.onCall(async (data, context) => {
+
+    // validateAuthorization(context)
+
+    const targetUID = validateUserInfo(data)
+
+    const user = await dbDAO.getuserInfo(targetUID)
+
+    const publicInfo: UserFieldsPublic = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        gender: user.gender,
+        joinDate: user.joinDate,
+        driverRating: user.driverInfo?.rating,
+        riderRating: user.riderInfo?.rating,
+        profileURL: user.profileURL
+    }
+
+    return publicInfo
+
+})
+
+
+/**
+ * Gets a user's information that should only be available to the user who owns the account's data.
+ */
+export const getUserPrivate = functions.https.onCall(async (data, context) => {
+
+})
+
+
 export const registerRider = functions.https.onCall(async (data, context) => {
 
-    const db = admin.firestore()
+    return userService.registerRider(validateRiderInfo(data))
+        .then(() => {
+            return 'Rider successfully created.'
+        }).catch(err => {
+            return err.message
+        })
 
-    console.log(data)
 
-    await db.collection('riders').doc().set({
-        firstName: 'Steven'
-    })
-
-    await db.collection('riders').doc('WfG05yO5PlgATDlZG7VN').get().then(snaphot => {
-        const data = snaphot.data()
-        console.log('Data', data)
-    })
 })
 
 
@@ -78,5 +170,5 @@ export const setupPaymentMethod = functions.https.onCall(async (data, context) =
  * Created address class
  * Installed class-validator and class-transformer for Firestore decoder.
  * Implemented Firestore decoder/encoder for converting data correctly to/from for Firestore.
- *
+ * Redid database-dao class to incorporate new design.
  */

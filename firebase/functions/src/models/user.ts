@@ -6,11 +6,11 @@ export interface UserUpdateFields {
     phone?: string
     email?: string
     gender?: string
+    dob?: Date
     address?: Address
-    isDriver?: boolean
-    isRider?: boolean
-    licenseNum?: string
-    vehicleID?: string
+    joinDate?: Date
+    driverInfo?: DriverInfo
+    riderInfo?: RiderInfo
 }
 
 /**
@@ -33,6 +33,12 @@ export interface DriverInfo {
      */
     rating: number
 
+    /**
+     * Number of ratings the driver has received from riders. 
+     * Used to calculate the new average rating.
+     */
+    ratingCount: number
+
 }
 
 /**
@@ -49,6 +55,13 @@ export interface RiderInfo {
      * The average rating of the rider based on reviews of drivers. (0-5)
      */
     rating: number
+
+    /**
+     * Number of ratings the rider has received from drivers. 
+     * Used to calculate the new average rating.
+     */
+    ratingCount: number
+
 
 }
 
@@ -106,6 +119,11 @@ export class User {
      */
     riderInfo?: RiderInfo
 
+    /**
+     * The url pointing to the location of the image associated with the user's profile.
+     */
+    profileURL?: string
+
 
     constructor(
         firstName: string,
@@ -117,7 +135,8 @@ export class User {
         address: Address,
         joinDate: Date,
         driverInfo?: DriverInfo,
-        riderInfo?: RiderInfo
+        riderInfo?: RiderInfo,
+        profileURL?: string
     ) {
         this.firstName = firstName
         this.lastName = lastName
@@ -129,5 +148,54 @@ export class User {
         this.joinDate = joinDate
         this.driverInfo = driverInfo
         this.riderInfo = riderInfo
+        this.profileURL = profileURL
     }
+}
+
+
+/**
+ * Fields public available to all users on Karpool platform.
+ */
+export interface UserFieldsPublic {
+
+    /**
+     * The user's first name.
+     */
+    firstName: string
+
+    /**
+     * The user's last name.
+     */
+    lastName: string
+
+    /**
+     * The user's phone number.
+     */
+    phone: string
+
+    /**
+     * The user's gender.
+     */
+    gender: string
+
+    /**
+     * The date the user joined the Karpool platform.
+     */
+    joinDate: Date
+
+    /**
+     * The user's driver rating. (0-5)
+     */
+    driverRating?: number
+
+    /**
+     * The user's rider rating. (0-5)
+     */
+    riderRating?: number
+
+    /**
+     * The url pointing to the location of the image associated with the user's profile.
+     */
+    profileURL?: string
+
 }

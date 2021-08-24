@@ -1,49 +1,75 @@
+import { AuthenticationDAOInterface } from "./auth-dao";
 import { DatabaseDAOInterface } from "./database-dao";
-import { Address } from "./models/address";
-import { User } from "./models/user";
+import { DriverRegistrationInfo, RiderRegistrationInfo } from "./models/register";
+import { DriverInfo, RiderInfo, User } from "./models/user";
 
+/**
+ * A service class for performing user-related business logic.
+ */
 export class UserService {
 
     private databaseDAO: DatabaseDAOInterface
 
-    constructor(databaseDAO: DatabaseDAOInterface) {
+    private authDAO: AuthenticationDAOInterface
+
+    constructor(
+        databaseDAO: DatabaseDAOInterface,
+        authDAO: AuthenticationDAOInterface
+    ) {
         this.databaseDAO = databaseDAO
+        this.authDAO = authDAO
+    }
+
+
+    /**
+     * Registers a user as a rider. If the user has not already made a driver account, this will create 
+     * their account data, otherwise it will just add the rider specified account info and won't override their existing account info (firstName etc.).
+     * @param info Fields required for registering the user as a driver.
+     */
+    async registerRider(info: RiderRegistrationInfo): Promise<void> {
+        const riderInfo: RiderInfo = {
+            isRider: true,
+            rating: 0,
+            ratingCount: 0
+        }
+
+        await this.authDAO.registerAccount(info.email, info.password).then(userID => {
+            const user = new User(info.firstName, info.lastName, info.phone, info.email, info.gender, info.dob, info.address, info.joinDate, undefined, riderInfo)
+            return this.databaseDAO.createUserInfo(userID, user)
+        }).catch(async err => {
+            if (err.code === 'already-exists') {
+                const userID = await this.authDAO.getUserID(info.email)
+                return this.databaseDAO.updateUserInfo(userID, { riderInfo: riderInfo })
+            } else {
+                return Promise.reject(err)
+            }
+        })
     }
 
     /**
-     * @param userID
-     * @param firstName 
-     * @param lastName 
-     * @param gender 
-     * @param email 
-     * @param dob 
-     * @param address 
-     * @param phone 
-     * @param joinDate 
+     * Registers a user as a driver. If the user has not already made a rider account, this will create 
+     * their account data, otherwise it will just add the driver specified account info and won't override their existing account info (firstName etc.).
+     * @param info Fields required for registering the user as a rider.
      */
-    async registerRider(
-        userID: string,
-        firstName: string,
-        lastName: string,
-        gender: string,
-        email: string,
-        dob: Date,
-        address: Address,
-        phone: string,
-        joinDate: Date
-    ): Promise<void> {
-        const user = new User(firstName, lastName, phone, email, gender, dob, address, joinDate, undefined, undefined)
-        await this.databaseDAO.createUserInfo(userID, user)
-            .catch(err => {
-                if (err.code === 'already-exists') {
+    async registerDriver(info: DriverRegistrationInfo): Promise<void> {
+        const driverInfo: DriverInfo = {
+            isDriver: true,
+            licenseNum: info.licenseNum,
+            rating: 0,
+            ratingCount: 0
+        }
 
-                } else {
-                    return Promise.reject(err)
-                }
-            })
-        this.databaseDAO.deleteDriverInfo('') //Placeholder so database warning goes away. Remove later.
-        throw new Error('Unimplemented.')
+        await this.authDAO.registerAccount(info.email, info.password).then(userID => {
+            const user = new User(info.firstName, info.lastName, info.phone, info.email, info.gender, info.dob, info.address, info.joinDate, driverInfo, undefined)
+            return this.databaseDAO.createUserInfo(userID, user)
+        }).catch(async err => {
+            if (err.code === 'already-exists') {
+                const userID = await this.authDAO.getUserID(info.email)
+                return this.databaseDAO.updateUserInfo(userID, { driverInfo: driverInfo })
+            } else {
+                return Promise.reject(err)
+            }
+        })
+
     }
-
-
 }
