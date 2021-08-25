@@ -1,0 +1,20 @@
+#bank-form {
+  background-color: #023e7d;
+  border-radius: 10px;
+  width: 90%;
+  margin: 5px;
+  padding: 2px;
+}
+#bank-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  background-color: #002855;
+  width: 95%;
+}
+#bank-input input,
+p {
+  margin: 5px;
+}

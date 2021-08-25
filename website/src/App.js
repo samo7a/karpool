@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import LandingPage from "./pages/Landing/LandingPage";
 import AboutUsPage from "./pages/AboutUs/AboutUsPage";
+import SignupPage from "./pages/Signup/SignupPage";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
             {/* <LoginPage /> */}
           </Route>
           <Route exact path="/register">
-            {/* <SignupPage /> */}
+            <SignupPage />
           </Route>
           <Route exact path="/home">
             {/* <HomePage /> */}

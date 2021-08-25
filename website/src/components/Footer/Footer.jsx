@@ -6,11 +6,11 @@ import appStore from "../../assets/appstore.svg";
 const Footer = () => {
   return (
     <div className="body">
-      <footer className="footer">
-        <div className="rights">
+      <footer id="footer">
+        <div id="rights">
           <h6>&copy; 2021 Karpool. All rights reserved</h6>
         </div>
-        <div className="pictures">
+        <div id="pictures">
           <img id="android" src={googlePlay} alt="android" />
           <img id="ios" src={appStore} alt="iphone" />
         </div>

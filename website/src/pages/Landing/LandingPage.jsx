@@ -11,8 +11,8 @@ import {
   checkPassword,
 } from "../../utils/InputValidators";
 
-export default function LandingPage() {
-  let isLoggedIn = true;
+const LandingPage = () => {
+  let isLoggedIn = false;
   let json = checkFirstName("123");
   console.log("checkFirstName : " + JSON.stringify(json));
   json = checkLastName("pooi");
@@ -22,6 +22,8 @@ export default function LandingPage() {
   json = checkPhoneNumber("000");
   console.log("checkPhone : " + JSON.stringify(json));
   json = checkPassword("@Hmed1994");
+  console.log("checkPassword : " + JSON.stringify(json));
+  json = checkPassword("1111");
   console.log("checkPassword : " + JSON.stringify(json));
 
   return (
@@ -64,4 +66,6 @@ export default function LandingPage() {
       </div>
     </>
   );
-}
+};
+
+export default LandingPage;

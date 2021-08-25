@@ -26,7 +26,7 @@ export function checkFirstName(name) {
 
 export function checkLastName(name) {
   var nameREGEX = /^[A-Za-z-,\s']+$/;
-  if (name.length < 1)
+  if (name.length <= 1)
     return {
       valid: false,
       msg: "First name should be at least 2 characters long!",
@@ -90,7 +90,7 @@ export function checkPhoneNumber(phoneNumber) {
     };
 
   var i;
-  for (i = 0; i < 10; i += 1)
+  for (i = 0; i < phoneNumber.length; i++)
     if (phoneNumber.charAt(i) < "0" || phoneNumber.charAt(i) > "9")
       return {
         valid: false,
@@ -136,25 +136,133 @@ export function checkConfirmPassword(confirmPassword, password) {
   };
 }
 
-export function checkCVC(cvc) {
-  if (cvc.length === 0)
+export function checkAge(dob) {
+  if (dob !== "") {
+    var today = new Date();
+    var birthDate = new Date(dob);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    var da = today.getDate() - birthDate.getDate();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+    if (m < 0) m += 12;
+
+    if (da < 0) da += 30;
+
+    if (age < 18 || age > 100)
+      return {
+        valid: false,
+        age: age,
+        msg: "You should be 18 years old or older!",
+      };
+    else return { valid: true, msg: "" };
+  } else
     return {
       valid: false,
-      msg: "cvc field is required!",
+      msg: "please provide your date of birth",
+    };
+}
+export function checkGender(gender) {
+  if (gender === "gender")
+    return {
+      valid: false,
+      msg: "Please Choose a gender",
+    };
+  else
+    return {
+      valid: true,
+      msg: "",
+    };
+}
+export function checkRiderSignup(
+  firstName,
+  lastName,
+  email,
+  phone,
+  dob,
+  gender,
+  password,
+  confirmPassword,
+  isDriver
+) {
+  return (
+    checkFirstName(firstName).valid &&
+    checkLastName(lastName).valid &&
+    checkEmail(email).valid &&
+    checkPhoneNumber(phone).valid &&
+    checkAge(dob).valid &&
+    checkGender(gender).valid &&
+    checkPassword(password).valid &&
+    checkConfirmPassword(confirmPassword, password).valid &&
+    !isDriver
+  );
+}
+export function checkLicense(plate) {
+  var plateREGEX = /^[0-9a-zA-Z]{6}$/;
+  if (plate.length !== 6)
+    return {
+      valid: false,
+      msg: "Please enter a valid license plate number!",
     };
 
-  if (cvc.length !== 3)
+  if (!plateREGEX.test(plate))
     return {
       valid: false,
-      msg: "Please enter a valid cvc number!",
+      msg: "Please enter a valid license plate number!",
+    };
+
+  return {
+    valid: true,
+    msg: "",
+  };
+}
+
+export function checkRoutingNumber(routingNumber) {
+  if (routingNumber.length === 0)
+    return {
+      valid: false,
+      msg: "Routing number field is required!",
+    };
+
+  if (routingNumber.length !== 9)
+    return {
+      valid: false,
+      msg: "Please enter a valid routing number!",
     };
 
   var i;
-  for (i = 0; i < 10; i += 1)
-    if (cvc.charAt(i) < "0" || cvc.charAt(i) > "9")
+  for (i = 0; i < routingNumber.length; i++)
+    if (routingNumber.charAt(i) < "0" || routingNumber.charAt(i) > "9")
       return {
         valid: false,
-        msg: "Please enter a valid cvv number!",
+        msg: "Please enter a valid routing number!",
+      };
+
+  return {
+    valid: true,
+    msg: "",
+  };
+}
+
+export function checkAccountNumber(accountNumber) {
+  if (accountNumber.length === 0)
+    return {
+      valid: false,
+      msg: "Account number field is required!",
+    };
+
+  if (accountNumber.length < 9 || accountNumber.length > 12)
+    return {
+      valid: false,
+      msg: "Please enter a valid account number!",
+    };
+
+  var i;
+  for (i = 0; i < accountNumber.length; i++)
+    if (accountNumber.charAt(i) < "0" || accountNumber.charAt(i) > "9")
+      return {
+        valid: false,
+        msg: "Please enter a valid account number!",
       };
 
   return {
