@@ -5,7 +5,6 @@ import '../util/Size.dart';
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);

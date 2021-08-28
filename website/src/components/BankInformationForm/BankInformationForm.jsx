@@ -10,7 +10,7 @@ const BankInformationForm = (props) => {
   return (
     <div id="bank-form">
       <h4>Bank information form</h4>
-      <form id="bank-input">
+      <div id="bank-input">
         <div className="i">
           <label>Routing Number</label>
           <input
@@ -42,7 +42,7 @@ const BankInformationForm = (props) => {
         </div>
         <p className="error">{props.accountNumberError}</p>
         <img alt="Powered by stripe" src={stripeImg} id="stripe-img" />
-      </form>
+      </div>
     </div>
   );
 };

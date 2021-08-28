@@ -2,19 +2,26 @@
   background-color: #023e7d;
   border-radius: 10px;
   width: 90%;
-  margin: 5px;
+  margin: 10px;
   padding: 2px;
 }
+
 #bank-input {
+  background-color: #002855;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 5px;
-  background-color: #002855;
-  width: 95%;
+  padding: 10px;
+  margin: 10px;
 }
-#bank-input input,
-p {
+
+#bank-input input {
   margin: 5px;
+}
+
+#stripe-img {
+  margin-top: 10px;
+  width: 50%;
+  height: auto;
 }

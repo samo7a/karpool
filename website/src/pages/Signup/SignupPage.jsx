@@ -17,6 +17,7 @@ import {
   checkPassword,
   checkConfirmPassword,
   checkGender,
+  checkRiderSignup,
 } from "../../utils/InputValidators";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -40,17 +41,28 @@ const SignupPage = () => {
   const [today, setToday] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [dateOfBirthError, setDateOfBirthError] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("gender");
   const [genderError, setGenderError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [isDriver, setIsDriver] = useState(false);
+  const [isDriver, setIsDriver] = useState(true);
   const [accountNumber, setAccountNumber] = useState("");
   const [accountNumberError, setAccountNumberError] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [routingNumberError, setRoutingNumberError] = useState("");
+  const [carBrand, setCarBrand] = useState("");
+  const [carModel, setCarModel] = useState("");
+  const [yearOfMan, setYearOfMan] = useState(0);
+  const [yearOfManError, setYearOfManError] = useState("");
+  const [carColor, setCarColor] = useState("");
+  const [licensePlate, setLicensePlate] = useState("");
+  const [licensePlateError, setLicensePlateError] = useState("");
+  const [insuranceProvider, setInsuranceProvider] = useState("");
+  const [coverageType, setCoverageType] = useState("");
+  const [coverageStartDate, setCoverageStartDate] = useState("");
+  const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
 
   useEffect(() => {
@@ -84,9 +96,86 @@ const SignupPage = () => {
     //return the url of the uploaded file
   };
 
-  const register = () => {
+  const registerDriver = (event) => {
+    event.preventDefault();
+    setFirstNameError("");
+    setLastNameError("");
+    setEmailError("");
+    setPhoneError("");
+    setDateOfBirthError("");
+    setGenderError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setRegisterError("");
+    //TODO
+    // const url = props.handleFileUpload(); //url of the uploaded file.
+    // if (errorUploading the file) {
+    //   return;
+    // }
+    const isValid = checkRiderSignup(
+      firstName,
+      lastName,
+      email,
+      phone,
+      dateOfBirth,
+      gender,
+      password,
+      confirmPassword,
+      isDriver
+    );
+    if (!isValid) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      setFirstNameError(checkFirstName(firstName).msg);
+      setLastNameError(checkLastName(lastName).msg);
+      setEmailError(checkEmail(email).msg);
+      setPhoneError(checkPhoneNumber(phone).msg);
+      setDateOfBirthError(checkAge(dateOfBirth).msg);
+      setGenderError(checkGender(gender).msg);
+      setPasswordError(checkPassword(password).msg);
+      setConfirmPasswordError(
+        checkConfirmPassword(confirmPassword, password).msg
+      );
+      return;
+    } else setRegisterError("");
+    if (
+      yearOfManError.length !== 0 ||
+      licensePlateError.length !== 0 ||
+      carBrand.length === 0 ||
+      carColor.length === 0 ||
+      insuranceProvider.length === 0 ||
+      coverageType.length === 0 ||
+      coverageStartDate.length === 0 ||
+      coverageEndDate.length === 0
+    ) {
+      
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+
+      return;
+    }
+    const obj = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      password: password,
+      routingNumber: routingNumber,
+      accountNumber: accountNumber,
+      carBrand: carBrand,
+      carModel: carModel,
+      yearOfMan: yearOfMan,
+      carColor: carColor,
+      isDriver: isDriver,
+      licensePlate: licensePlate,
+    };
     //TODO: add functionality to regsiter button;
-    console.log("register");
+    //send obj to the backend.
+    console.log(obj);
   };
   return (
     <div className="content">
@@ -202,6 +291,7 @@ const SignupPage = () => {
             <div className="i">
               <label>Date of birth</label>
               <input
+                required
                 type="date"
                 max={today}
                 onChange={(event) => {
@@ -333,22 +423,30 @@ const SignupPage = () => {
               <>
                 <h2>Sign-up as a Driver!</h2>
                 <BankInformationForm
-                  accountNumber={accountNumber}
-                  accountNumberError={accountNumberError}
                   setAccountNumber={setAccountNumber}
                   setAccountNumberError={setAccountNumberError}
-                  routingNumber={routingNumber}
-                  routingNumberError={routingNumberError}
                   setRoutingNumber={setRoutingNumber}
                   setRoutingNumberError={setRoutingNumberError}
                 />
-                <CarInformationForm />
-                <CarInsuranceForm />
-                <button id="primaryButton" onClick={register}>
+                <CarInformationForm
+                  setCarBrand={setCarBrand}
+                  setCarModel={setCarModel}
+                  setYearOfMan={setYearOfMan}
+                  setYearOfManError={setYearOfManError}
+                  setCarColor={setCarColor}
+                  setLicensePlate={setLicensePlate}
+                  setLicensePlateError={setLicensePlateError}
+                />
+                <CarInsuranceForm
+                  setInsuranceProvider={setInsuranceProvider}
+                  setCoverageType={setCoverageType}
+                  setCoverageStartDate={setCoverageStartDate}
+                  setCoverageEndDate={setCoverageEndDate}
+                />
+                <button id="primaryButton" onClick={registerDriver}>
                   Register
                 </button>
                 <p className="error">{registerError}</p>
-                {/* for the car manufacture year, make it 15 years old */}
               </>
             )}
           </form>

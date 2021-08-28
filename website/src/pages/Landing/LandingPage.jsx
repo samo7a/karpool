@@ -3,28 +3,9 @@ import "./LandingPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import vid from "../../assets/promo.mp4";
-import {
-  checkFirstName,
-  checkLastName,
-  checkEmail,
-  checkPhoneNumber,
-  checkPassword,
-} from "../../utils/InputValidators";
 
 const LandingPage = () => {
   let isLoggedIn = false;
-  let json = checkFirstName("123");
-  console.log("checkFirstName : " + JSON.stringify(json));
-  json = checkLastName("pooi");
-  console.log("checkLastName : " + JSON.stringify(json));
-  json = checkEmail("aelsssh@fiu.edu");
-  console.log("checkEmail : " + JSON.stringify(json));
-  json = checkPhoneNumber("000");
-  console.log("checkPhone : " + JSON.stringify(json));
-  json = checkPassword("@Hmed1994");
-  console.log("checkPassword : " + JSON.stringify(json));
-  json = checkPassword("1111");
-  console.log("checkPassword : " + JSON.stringify(json));
 
   return (
     <>

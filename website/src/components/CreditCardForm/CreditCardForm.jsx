@@ -11,7 +11,7 @@ import {
   checkPassword,
   checkConfirmPassword,
 } from "../../utils/InputValidators";
-import stripeImg from '../../assets/stripe_secure.png';
+import stripeImg from "../../assets/stripe_secure.png";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const CreditCardForm = (props) => {
@@ -31,7 +31,7 @@ const CreditCardForm = (props) => {
   const confirmPassword = props.confirmPassword;
   const isDriver = props.isDriver;
 
-  const register = async (event) => {
+  const registerRider = async (event) => {
     event.preventDefault();
     props.setFirstNameError("");
     props.setLastNameError("");
@@ -43,6 +43,7 @@ const CreditCardForm = (props) => {
     props.setConfirmPasswordError("");
     setCreditCardError("");
     setRegisterError("");
+
     //TODO
     // const url = props.handleFileUpload(); //url of the uploaded file.
     // if (errorUploading the file) {
@@ -95,6 +96,17 @@ const CreditCardForm = (props) => {
     }
     //TODO
     // axios post request to the signup endpoint
+    const obj = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phone,
+      dateOfBirth: dob,
+      gender: gender,
+      password: password,
+      isDriver: isDriver,
+    };
+    console.log(obj);
     return "yeah or nuh";
   };
 
@@ -126,10 +138,10 @@ const CreditCardForm = (props) => {
           }}
         />
         <p className="error">{creditCardError}</p>
-        <img alt="Powered by stripe" src={stripeImg} id="stripe-img"/>
+        <img alt="Powered by stripe" src={stripeImg} id="stripe-img" />
       </div>
 
-      <button id="primaryButton" onClick={register}>
+      <button id="primaryButton" onClick={registerRider}>
         Register
       </button>
       <p className="error">{registerError}</p>

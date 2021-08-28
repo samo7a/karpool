@@ -159,8 +159,27 @@ export function checkAge(dob) {
   } else
     return {
       valid: false,
-      msg: "please provide your date of birth",
+      msg: "Please provide your date of birth",
     };
+}
+export function checkCarAge(yearOfMan) {
+  var day = new Date();
+  var thisYear = day.getFullYear();
+  var age = thisYear - yearOfMan;
+
+  if (age > 15)
+    return {
+      valid: false,
+      age: age,
+      msg: "The car should not be more than 15 years old!",
+    };
+  if (age < 0)
+    return {
+      valid: false,
+      age: age,
+      msg: "Please enter a valid date!",
+    };
+  else return { valid: true, msg: "" };
 }
 export function checkGender(gender) {
   if (gender === "gender")
