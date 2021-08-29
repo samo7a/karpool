@@ -13,14 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primaryColor: Color(0xff33415C),
-        accentColor: Color(0xff0466C8),
-        accentIconTheme: IconThemeData(
-          color: Colors.red,
-          size: 10,
-        ),
-      ),
       initialRoute: SplashScreen.id,
       routes: {
         SplashScreen.id: (context) => SplashScreen(),
