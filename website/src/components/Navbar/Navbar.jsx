@@ -1,8 +1,9 @@
 import React from "react";
 import "./Navbar.css";
 import logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 const Navbar = (props) => {
+  const history = useHistory();
   let isLoggedIn = props.isLoggedIn;
   const SmartLink = ({ link, title }) => {
     var path = window.location.pathname;
@@ -19,14 +20,19 @@ const Navbar = (props) => {
         </li>
       );
   };
+  const goToSignup = () => {
+    history.push("/register");
+  };
   return (
-    <div className="body">
-      <nav className="navbar">
+    <div id="body">
+      <nav id="navbar">
         <div className="logo">
-          <img id="logo" src={logo} alt="logo" />
+          <Link to="/home">
+            <img id="logo" src={logo} alt="logo" />
+          </Link>
         </div>
         {isLoggedIn ? (
-          <div className="navbar-links">
+          <div id="navbar-links">
             <ul>
               <SmartLink link="/home" title="Home" />
               <SmartLink link="/account" title="Account" />
@@ -50,7 +56,7 @@ const Navbar = (props) => {
             >
               Sign In
             </button>
-            <button id="primaryButton" onClick={() => alert("Button Clicked")}>
+            <button id="primaryButton" onClick={goToSignup}>
               Sign Up
             </button>
           </div>

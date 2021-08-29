@@ -8,10 +8,10 @@ export default function AboutUsPage() {
   const isLoggedIn = true;
   return (
     <>
-      <div className="root">
+      <div className="content">
         <Navbar isLoggedIn={isLoggedIn} />
         <h1> Meet Our Team</h1>
-        <div className="team-members">
+        <div id="team-members">
           <TeamMember
             className="team-member"
             imgName="taoufik"

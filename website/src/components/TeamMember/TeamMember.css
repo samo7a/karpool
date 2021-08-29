@@ -1,30 +1,30 @@
-.team-member {
+#team-member {
   background-color: #001845;
   width: 33vw;
   justify-self: center;
   color: #ffffff;
 }
 
-.avatar {
+#avatar {
   vertical-align: middle;
   width: 50%;
   height: 50%;
   border-radius: 50%;
 }
 @media only screen and (max-width: 1300px) {
-  .root {
+  .content {
     display: block;
   }
-  .team-member {
+  #team-member {
     width: 40vw;
   }
 }
 
 @media only screen and (max-width: 854px) {
-  .root {
+  .content {
     display: block;
   }
-  .team-member {
+  #team-member {
     width: 90vw;
   }
 }

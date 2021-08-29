@@ -2,9 +2,9 @@ import React from "react";
 import "./TeamMember.css";
 const TeamMember = (props) => {
   return (
-    <div className="team-member">
+    <div id="team-member">
       <img
-        className="avatar"
+        id="avatar"
         src={require(`../../assets/${props.imgName}.jpg`).default}
         alt="team member avatar"
         width="200px"

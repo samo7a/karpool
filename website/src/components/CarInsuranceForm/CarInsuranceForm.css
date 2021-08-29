@@ -1,0 +1,33 @@
+#insurance-form {
+  background-color: #023e7d;
+  border-radius: 10px;
+  width: 90%;
+  margin: 10px;
+  padding: 2px;
+}
+#insurance-input {
+  background-color: #002855;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: 10px;
+}
+
+#insurance-input input {
+  margin: 5px;
+}
+#insurance-input label {
+  width: 30%;
+}
+
+#select {
+  width: 90%;
+  height: auto;
+}
+
+#date,
+#date2 {
+  width: 80%;
+}

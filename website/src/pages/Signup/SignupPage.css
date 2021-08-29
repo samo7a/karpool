@@ -1,0 +1,181 @@
+#img-uploader,
+#preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* font-size: 18px; */
+  border: none;
+  background-color: white;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.img-wrap {
+  position: relative;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: inherit;
+  width: inherit;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.img-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 2px 2px #000;
+}
+.img-wrap:hover .img-text {
+  visibility: visible;
+  opacity: 1;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+  background-color: #002855;
+  
+  width: 100%;
+}
+form p {
+  margin: 0px;
+  padding: 0px;
+}
+form input {
+  margin: 5px;
+  width: 200px;
+  height: 40px;
+}
+.i {
+  width: 75%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px;
+}
+.i input {
+  width: 50%;
+}
+.i label {
+  width: 40%;
+}
+
+#gender {
+  margin: 10px;
+  padding: 10px;
+}
+#gender-dropdown {
+  width: 150px;
+  height: 30px;
+}
+#gender-label {
+  margin-right: 10px;
+}
+
+#radio {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin: 10px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+button {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border: transparent;
+  border-radius: 50rem;
+  padding: 5px;
+  margin: 10px;
+  width: 10rem;
+}
+#primaryButton {
+  background-color: #0466c8;
+  color: #ffffff;
+}
+#primaryButton:hover {
+  background-color: #001233;
+  color: #ffffff;
+}
+.error {
+  color: red;
+}
+.green {
+  color: green;
+}

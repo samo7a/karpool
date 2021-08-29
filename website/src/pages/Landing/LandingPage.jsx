@@ -3,8 +3,10 @@ import "./LandingPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import vid from "../../assets/promo.mp4";
-export default function LandingPage() {
-  let isLoggedIn = true;
+
+const LandingPage = () => {
+  let isLoggedIn = false;
+
   return (
     <>
       <div className="content">
@@ -45,4 +47,6 @@ export default function LandingPage() {
       </div>
     </>
   );
-}
+};
+
+export default LandingPage;
