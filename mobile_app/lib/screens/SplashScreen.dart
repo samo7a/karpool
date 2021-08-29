@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mobile_app/screens/MainScreen.dart';
 import '../util/Size.dart';
 
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+class SplashScreen extends StatefulWidget {
+  static const id = 'splachScreen';
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Future(() {
+      Navigator.of(context).pushNamed(MainScreen.id);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

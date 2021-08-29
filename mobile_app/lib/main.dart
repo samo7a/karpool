@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/screens/MainScreen.dart';
 import './screens/SplashScreen.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -21,9 +21,10 @@ class MyApp extends StatelessWidget {
           size: 10,
         ),
       ),
-      initialRoute: '/',
+      initialRoute: SplashScreen.id,
       routes: {
-        '/': (context) => SplashScreen(),
+        SplashScreen.id: (context) => SplashScreen(),
+        MainScreen.id: (context) => MainScreen(),
       },
     );
   }
