@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import "./CarInsuranceForm.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
@@ -6,27 +11,92 @@ import {
   InsuranceProviders,
   coverageTypes,
 } from "../../utils/InsuranceProviders";
-// import { checkCarAge, checkLicense } from "../../utils/InputValidators";
 
-const CarInsuranceForm = (props) => {
+const CarInsuranceForm = forwardRef((props, ref) => {
   const [provider, setProvider] = useState("");
   const [providerError, setProviderError] = useState("");
   const [coverageType, setCoverageType] = useState("");
   const [coverageTypeError, setCoverageTypeError] = useState("");
+  const [today, setToday] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [coverageEndDateError, setCoverageEndDateError] = useState("");
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageStartDateError, setCoverageStartDateError] = useState("");
-  const [today, setToday] = useState("");
-  const [modelYearError, setModelYearError] = useState("");
-  const [plateError, setPlateError] = useState("");
 
+  useImperativeHandle(ref, () => ({
+    setInsuranceInfo(val) {
+      setProviderError(val);
+      setCoverageTypeError(val);
+      setCoverageStartDateError(val);
+      setCoverageEndDateError(val);
+    },
+    checkInsInfo() {
+      const start = new Date(coverageStartDate);
+      const day = new Date();
+      const end = new Date(coverageEndDate);
+      return (
+        provider.length !== 0 &&
+        coverageType.length !== 0 &&
+        start.getTime() <= day.getTime() &&
+        end.getTime() >= day.getTime()
+      );
+    },
+    checkProvider1() {
+      if (provider.length !== 0) {
+        setProviderError("");
+        return true;
+      } else {
+        setProviderError("Please select your vehicle provider");
+        return false;
+      }
+    },
+    checkCoverageType1() {
+      if (coverageType.length !== 0) {
+        setCoverageTypeError("");
+        return true;
+      } else {
+        setCoverageTypeError("What is your coverage type?");
+        return false;
+      }
+    },
+    checkStartDate1() {
+      const start = new Date(coverageStartDate);
+      const day = new Date();
+      if (start.getTime() > day.getTime()) {
+        setCoverageStartDateError(
+          "Your Insurance policy will start in the future!"
+        );
+        return false;
+      } else {
+        setCoverageStartDateError("");
+        return true;
+      }
+    },
+    checkEndDate1() {
+      console.log("enddate", coverageEndDate);
+      const end = new Date(coverageEndDate);
+      const day = new Date();
+      if (end.getTime() < day.getTime()) {
+        setCoverageEndDateError("Your Insurance policy expired!");
+        return false;
+      } else {
+        setCoverageEndDateError("");
+        return true;
+      }
+    },
+  }));
   useEffect(() => {
-    var day = new Date();
-    var yyyy = day.getFullYear();
-    var mm = day.getMonth();
-    var date = yyyy + "-" + mm;
-    setToday(date);
+    const updateToday = () => {
+      const day = new Date();
+      const yyyy = day.getFullYear();
+      const mm = day.getMonth() + 1;
+      const date = yyyy + "-" + mm;
+      setToday(date);
+      setCoverageEndDate(today);
+      setCoverageStartDate(today);
+    };
+    updateToday();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function customTheme(theme) {
@@ -116,19 +186,14 @@ const CarInsuranceForm = (props) => {
             max={today}
             onChange={(event) => {
               setCoverageStartDate(event.target.value);
+              props.setCoverageStartDate(event.target.value);
               const start = new Date(event.target.value);
               const day = new Date();
-              if (start.getTime() > day.getTime()) {
-                props.setCoverageStartDate("");
-                setCoverageStartDate("");
+              if (start.getTime() > day.getTime())
                 setCoverageStartDateError(
                   "Your Insurance policy will start in the future!"
                 );
-              } else {
-                props.setCoverageStartDate(event.target.value);
-                setCoverageStartDate(event.target.value);
-                setCoverageStartDateError("");
-              }
+              else setCoverageStartDateError("");
             }}
           />
         </div>
@@ -140,19 +205,15 @@ const CarInsuranceForm = (props) => {
             id="date2"
             type="month"
             min={today}
+            value={coverageEndDate}
             onChange={(event) => {
-              console.log(event.target.value);
+              setCoverageEndDate(event.target.value);
+              props.setCoverageEndDate(event.target.value);
               const end = new Date(event.target.value);
               const day = new Date();
-              if (end.getTime() < day.getTime()) {
-                props.setCoverageEndDate("");
-                setCoverageEndDate("");
+              if (end.getTime() < day.getTime())
                 setCoverageEndDateError("Your Insurance policy expired!");
-              } else {
-                props.setCoverageEndDate(event.target.value);
-                setCoverageEndDate(event.target.value);
-                setCoverageEndDateError("");
-              }
+              else setCoverageEndDateError("");
             }}
           />
         </div>
@@ -160,5 +221,5 @@ const CarInsuranceForm = (props) => {
       </div>
     </div>
   );
-};
+});
 export default CarInsuranceForm;

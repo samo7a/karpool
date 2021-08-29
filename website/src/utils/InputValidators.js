@@ -216,6 +216,29 @@ export function checkRiderSignup(
     !isDriver
   );
 }
+export function checkDriverSignUp(
+  firstName,
+  lastName,
+  email,
+  phone,
+  dob,
+  gender,
+  password,
+  confirmPassword,
+  isDriver
+) {
+  return (
+    checkFirstName(firstName).valid &&
+    checkLastName(lastName).valid &&
+    checkEmail(email).valid &&
+    checkPhoneNumber(phone).valid &&
+    checkAge(dob).valid &&
+    checkGender(gender).valid &&
+    checkPassword(password).valid &&
+    checkConfirmPassword(confirmPassword, password).valid &&
+    isDriver
+  );
+}
 export function checkLicense(plate) {
   var plateREGEX = /^[0-9a-zA-Z]{6}$/;
   if (plate.length !== 6)
@@ -288,4 +311,29 @@ export function checkAccountNumber(accountNumber) {
     valid: true,
     msg: "",
   };
+}
+
+export function checkBrand(brand) {
+  if (brand.length === 0)
+    return {
+      valid: false,
+      msg: "Please choose a car brand!",
+    };
+  else
+    return {
+      valid: true,
+      msg: "",
+    };
+}
+export function checkColor(color) {
+  if (color.length === 0)
+    return {
+      valid: false,
+      msg: "Please choose a car brand!",
+    };
+  else
+    return {
+      valid: true,
+      msg: "",
+    };
 }

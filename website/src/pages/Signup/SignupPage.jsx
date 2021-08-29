@@ -17,13 +17,11 @@ import {
   checkPassword,
   checkConfirmPassword,
   checkGender,
-  checkRiderSignup,
+  checkDriverSignUp,
 } from "../../utils/InputValidators";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-const stripePromise = loadStripe(
-  "pk_test_51JR83uJIU8d9wquzsDhMJrc9nMGIAUGbDzJc7YP6Cngaz0bRFyLsrFd3P4M83TXdkXEijMSY3BfAOZk4OuiUBPC300QLOU9GVg"
-);
+const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
 const SignupPage = () => {
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState();
@@ -49,21 +47,21 @@ const SignupPage = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [isDriver, setIsDriver] = useState(true);
   const [accountNumber, setAccountNumber] = useState("");
-  const [accountNumberError, setAccountNumberError] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
-  const [routingNumberError, setRoutingNumberError] = useState("");
   const [carBrand, setCarBrand] = useState("");
   const [carModel, setCarModel] = useState("");
   const [yearOfMan, setYearOfMan] = useState(0);
-  const [yearOfManError, setYearOfManError] = useState("");
   const [carColor, setCarColor] = useState("");
+  const [colorHex, setColorHex] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
-  const [licensePlateError, setLicensePlateError] = useState("");
   const [insuranceProvider, setInsuranceProvider] = useState("");
   const [coverageType, setCoverageType] = useState("");
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const bankInfoRef = useRef();
+  const carInfoRef = useRef();
+  const carInsuranceRef = useRef();
 
   useEffect(() => {
     if (photo) {
@@ -87,8 +85,14 @@ const SignupPage = () => {
     const file = event.target.files[0];
     if (file && file.type.substr(0, 5) === "image") setPhoto(file);
     else setPhoto(null);
+    if (photo === null) setPhotoError("Please pick a profile picture");
+    else setPhotoError("");
   };
   const handleFileUpload = async () => {
+    if (photo === null) {
+      setPhotoError("Please pick a profile picture");
+      return "error";
+    }
     const fd = new FormData();
     fd.append("image", photo, photo.name);
     //axios http post request to the endpoint when created. (MAX)
@@ -98,6 +102,7 @@ const SignupPage = () => {
 
   const registerDriver = (event) => {
     event.preventDefault();
+    setPhotoError("");
     setFirstNameError("");
     setLastNameError("");
     setEmailError("");
@@ -106,13 +111,16 @@ const SignupPage = () => {
     setGenderError("");
     setPasswordError("");
     setConfirmPasswordError("");
+    bankInfoRef.current.setBankError("");
+    carInfoRef.current.setCarInfo("");
+    carInsuranceRef.current.setInsuranceInfo("");
     setRegisterError("");
     //TODO
-    // const url = props.handleFileUpload(); //url of the uploaded file.
+    //const url = handleFileUpload(); //url of the uploaded file.
     // if (errorUploading the file) {
     //   return;
     // }
-    const isValid = checkRiderSignup(
+    const firstCheck = checkDriverSignUp(
       firstName,
       lastName,
       email,
@@ -123,7 +131,7 @@ const SignupPage = () => {
       confirmPassword,
       isDriver
     );
-    if (!isValid) {
+    if (!firstCheck) {
       setRegisterError(
         "Please fill all the required data or fix the format of the input!"
       );
@@ -137,25 +145,43 @@ const SignupPage = () => {
       setConfirmPasswordError(
         checkConfirmPassword(confirmPassword, password).msg
       );
-      return;
-    } else setRegisterError("");
-    if (
-      yearOfManError.length !== 0 ||
-      licensePlateError.length !== 0 ||
-      carBrand.length === 0 ||
-      carColor.length === 0 ||
-      insuranceProvider.length === 0 ||
-      coverageType.length === 0 ||
-      coverageStartDate.length === 0 ||
-      coverageEndDate.length === 0
-    ) {
-      
+    }
+    const secondCheck = bankInfoRef.current.checkBankInfo();
+    if (!secondCheck) {
       setRegisterError(
         "Please fill all the required data or fix the format of the input!"
       );
-
-      return;
+      bankInfoRef.current.checkAccountNumber1();
+      bankInfoRef.current.checkRoutingNumber1();
     }
+    const thirdCheck = carInfoRef.current.checkCarInfo();
+    if (!thirdCheck) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      carInfoRef.current.checkBrand1();
+      carInfoRef.current.checkCarModel1();
+      carInfoRef.current.checkColor1();
+      carInfoRef.current.checkCarAge1();
+      carInfoRef.current.checkLicense1();
+    }
+    const forthCheck = carInsuranceRef.current.checkInsInfo();
+    if (!forthCheck) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      carInsuranceRef.current.checkProvider1();
+      carInsuranceRef.current.checkCoverageType1();
+      console.log(carInsuranceRef.current.checkStartDate1());
+      console.log(carInsuranceRef.current.checkEndDate1());
+    }
+    console.group("checks");
+    console.log(firstCheck, secondCheck, thirdCheck, forthCheck);
+    console.groupEnd("end checks");
+    if (firstCheck && secondCheck && thirdCheck && forthCheck)
+      setRegisterError("");
+    else return;
+    //add photo url to the payload.
     const obj = {
       firstName: firstName,
       lastName: lastName,
@@ -170,8 +196,13 @@ const SignupPage = () => {
       carModel: carModel,
       yearOfMan: yearOfMan,
       carColor: carColor,
+      colorHex: colorHex,
       isDriver: isDriver,
       licensePlate: licensePlate,
+      insuranceProvider: insuranceProvider,
+      coverageType: coverageType,
+      coverageStartDate: coverageStartDate,
+      coverageEndDate: coverageEndDate,
     };
     //TODO: add functionality to regsiter button;
     //send obj to the backend.
@@ -424,24 +455,26 @@ const SignupPage = () => {
                 <h2>Sign-up as a Driver!</h2>
                 <BankInformationForm
                   setAccountNumber={setAccountNumber}
-                  setAccountNumberError={setAccountNumberError}
+                  // setAccountNumberError={setAccountNumberError}
                   setRoutingNumber={setRoutingNumber}
-                  setRoutingNumberError={setRoutingNumberError}
+                  // setRoutingNumberError={setRoutingNumberError}
+                  ref={bankInfoRef}
                 />
                 <CarInformationForm
                   setCarBrand={setCarBrand}
                   setCarModel={setCarModel}
                   setYearOfMan={setYearOfMan}
-                  setYearOfManError={setYearOfManError}
                   setCarColor={setCarColor}
+                  setColorHex={setColorHex}
                   setLicensePlate={setLicensePlate}
-                  setLicensePlateError={setLicensePlateError}
+                  ref={carInfoRef}
                 />
                 <CarInsuranceForm
                   setInsuranceProvider={setInsuranceProvider}
                   setCoverageType={setCoverageType}
                   setCoverageStartDate={setCoverageStartDate}
                   setCoverageEndDate={setCoverageEndDate}
+                  ref={carInsuranceRef}
                 />
                 <button id="primaryButton" onClick={registerDriver}>
                   Register

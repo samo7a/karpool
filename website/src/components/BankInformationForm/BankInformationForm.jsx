@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, forwardRef, useImperativeHandle } from "react";
 import "./BankInformationFrom.css";
 import {
   checkAccountNumber,
@@ -6,7 +6,43 @@ import {
 } from "../../utils/InputValidators";
 import stripeImg from "../../assets/stripe_secure.png";
 
-const BankInformationForm = (props) => {
+const BankInformationForm = forwardRef((props, ref) => {
+  const [routingNumber, setRoutingNumber] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [routingNumberError, setRoutingNumberError] = useState("");
+  const [accountNumberError, setAccountNumberError] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    setBankError(val) {
+      setAccountNumberError(val);
+      setRoutingNumberError(val);
+    },
+    checkBankInfo() {
+      return (
+        checkAccountNumber(accountNumber).valid && checkRoutingNumber(routingNumber).valid
+      );
+    },
+    checkAccountNumber1() {
+      const obj = checkAccountNumber(accountNumber);
+      if (obj.valid === false) {
+        setAccountNumberError(obj.msg);
+        return false;
+      } else {
+        setAccountNumberError("");
+        return true;
+      }
+    },
+    checkRoutingNumber1() {
+      const obj = checkRoutingNumber(routingNumber);
+      if (obj.valid === false) {
+        setRoutingNumberError(obj.msg);
+        return false;
+      } else {
+        setRoutingNumberError("");
+        return true;
+      }
+    },
+  }));
   return (
     <div id="bank-form">
       <h4>Bank information form</h4>
@@ -18,14 +54,16 @@ const BankInformationForm = (props) => {
             placeholder="Bank Routing Number"
             onChange={(event) => {
               const obj = checkRoutingNumber(event.target.value);
-              if (obj.valid === false) props.setRoutingNumberError(obj.msg);
-              else props.setRoutingNumberError("");
+              if (obj.valid === false) setRoutingNumberError(obj.msg);
+              else setRoutingNumberError("");
+
+              setRoutingNumber(event.target.value);
               props.setRoutingNumber(event.target.value);
             }}
             maxLength="9"
           />
         </div>
-        <p className="error">{props.routingNumberError}</p>
+        <p className="error">{routingNumberError}</p>
         <div className="i">
           <label>Account Number</label>
           <input
@@ -33,17 +71,20 @@ const BankInformationForm = (props) => {
             placeholder="Personal Account Number"
             onChange={(event) => {
               const obj = checkAccountNumber(event.target.value);
-              if (obj.valid === false) props.setAccountNumberError(obj.msg);
-              else props.setAccountNumberError("");
+              if (obj.valid === false) setAccountNumberError(obj.msg);
+              else setAccountNumberError("");
+
+              setAccountNumber(event.target.value);
               props.setAccountNumber(event.target.value);
             }}
             maxLength="12"
           />
         </div>
-        <p className="error">{props.accountNumberError}</p>
+        <p className="error">{accountNumberError}</p>
         <img alt="Powered by stripe" src={stripeImg} id="stripe-img" />
       </div>
     </div>
   );
-};
+});
+
 export default BankInformationForm;

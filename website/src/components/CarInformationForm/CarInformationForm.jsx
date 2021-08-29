@@ -1,15 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import "./CarInformationForm.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { carColors, cars } from "../../utils/CarModels";
 import axios from "axios";
-import { checkCarAge, checkLicense } from "../../utils/InputValidators";
+import {
+  checkBrand,
+  checkColor,
+  checkCarAge,
+  checkLicense,
+} from "../../utils/InputValidators";
 
-const CarInformationForm = (props) => {
+const CarInformationForm = forwardRef((props, ref) => {
   const [brand, setBrand] = useState("");
-  const [carModel, setCarModel] = useState("");
+  const [brandError, setBrandError] = useState("");
+  const [, setCarModel] = useState("");
+  const [carModelError, setCarModelError] = useState("");
   const [color, setColor] = useState("");
+  const [colorError, setColorError] = useState("");
   const [colorHex, setColorHex] = useState("");
   const [carModels, setCarModels] = useState([]);
   const [today, setToday] = useState("");
@@ -17,33 +30,104 @@ const CarInformationForm = (props) => {
   const [modelYearError, setModelYearError] = useState("");
   const [plate, setPlate] = useState("");
   const [plateError, setPlateError] = useState("");
-  const getCarModels = async () => {
-    if (brand.length !== 0) {
-      const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${brand}/vehicleType/car?format=json`;
-      const res = await axios.get(url);
-      if (res.status === 200) {
-        if (res.data.Count !== 0) {
-          const count = res.data.Count;
-          const array = [];
-          for (var i = 0; i < count; i++) {
-            var item = res.data.Results[i].Model_Name;
-            array.push({ label: item });
+
+  useImperativeHandle(ref, () => ({
+    setCarInfo(val) {
+      setBrandError(val);
+      setColorError(val);
+      setModelYearError(val);
+      setPlateError(val);
+    },
+    checkCarInfo() {
+      return (
+        checkBrand(brand).valid &&
+        checkCarAge(modelYear).valid &&
+        checkColor(color).valid &&
+        checkLicense(plate).valid
+      );
+    },
+    checkBrand1() {
+      if (brand.length !== 0) {
+        setBrandError("");
+        return true;
+      } else {
+        setBrandError(checkBrand("").msg);
+        return false;
+      }
+    },
+    checkCarModel1() {
+      if (color.length !== 0) {
+        setCarModelError("");
+        return true;
+      } else {
+        if (carModels.length === 0) {
+          setCarModelError("");
+          return true;
+        } else {
+          setCarModelError("Please select a car model!");
+          return false;
+        }
+      }
+    },
+    checkColor1() {
+      if (color.length !== 0) {
+        setColorError("");
+        return true;
+      } else {
+        setColorError(checkColor("").msg);
+        return false;
+      }
+    },
+    checkCarAge1() {
+      const obj = checkCarAge(modelYear);
+      if (obj.valid === false) {
+        setModelYearError(obj.msg);
+        return false;
+      } else {
+        setModelYearError("");
+        return true;
+      }
+    },
+    checkLicense1() {
+      const obj = checkLicense(plate);
+      if (obj.valid === false) {
+        setPlateError(obj.msg);
+        return false;
+      } else {
+        setPlateError("");
+        return true;
+      }
+    },
+  }));
+
+  useEffect(() => {
+    const getCarModels = async () => {
+      if (brand.length !== 0) {
+        const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${brand}/vehicleType/car?format=json`;
+        const res = await axios.get(url);
+        if (res.status === 200) {
+          if (res.data.Count !== 0) {
+            const count = res.data.Count;
+            const array = [];
+            for (var i = 0; i < count; i++) {
+              var item = res.data.Results[i].Model_Name;
+              array.push({ label: item });
+            }
+            setCarModels(array);
           }
-          setCarModels(array);
+        } else {
+          setCarModels([]);
+          props.setCarModel("");
+          setCarModel("");
         }
       } else {
         setCarModels([]);
         props.setCarModel("");
         setCarModel("");
       }
-    } else {
-      setCarModels([]);
-      props.setCarModel("");
-      setCarModel("");
-    }
-  };
-  useEffect(() => {
+    };
     getCarModels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brand]);
   useEffect(() => {
     var day = new Date();
@@ -91,7 +175,9 @@ const CarInformationForm = (props) => {
                 if (value) {
                   props.setCarBrand(value.label);
                   setBrand(value.label);
+                  setBrandError("");
                 } else {
+                  setBrandError(checkBrand("").msg);
                   props.setCarBrand("");
                   setBrand("");
                 }
@@ -99,30 +185,38 @@ const CarInformationForm = (props) => {
             />
           </div>
         </div>
+        <p className="error">{brandError}</p>
         {carModels.length === 0 ? (
           <></>
         ) : (
-          <div className="i">
-            <label>Model</label>
-            <div id="select">
-              <Select
-                placeholder="Select your car model"
-                isSearchable
-                theme={customTheme}
-                styles={customStyles}
-                options={carModels}
-                onChange={(value) => {
-                  if (value) {
-                    setCarModel(value.label);
-                    props.setCarModel(value.label);
-                  } else {
-                    setCarModel("");
-                    props.setCarModel("");
-                  }
-                }}
-              />
+          <>
+            <div className="i">
+              <label>Model</label>
+              <div id="select">
+                <Select
+                  placeholder="Select your car model"
+                  isSearchable
+                  isClearable
+                  theme={customTheme}
+                  styles={customStyles}
+                  options={carModels}
+                  onChange={(value) => {
+                    if (value) {
+                      setCarModelError("");
+                      setCarModel(value.label);
+                      props.setCarModel(value.label);
+                    } else {
+                      if (carModels.length === 0) setCarModelError("");
+                      else setCarModelError("Please select a car model!");
+                      setCarModel("");
+                      props.setCarModel("");
+                    }
+                  }}
+                />
+              </div>
             </div>
-          </div>
+            <p className="error">{carModelError}</p>
+          </>
         )}
         <div className="i">
           <label>Color</label>
@@ -135,18 +229,23 @@ const CarInformationForm = (props) => {
               options={carColors}
               onChange={(value) => {
                 if (value) {
+                  setColorError("");
                   setColor(value.label);
                   setColorHex(value.hex);
+                  props.setColorHex(value.hex);
                   props.setCarColor(value.label);
                 } else {
+                  setColorError(checkColor("").msg);
                   setColor("");
-                  setColorHex(value.label.toString());
+                  setColorHex("");
                   props.setCarColor("");
+                  props.setColorHex("");
                 }
               }}
             />
           </div>
         </div>
+        <p className="error">{colorError}</p>
         {colorHex.length === 0 ? (
           <></>
         ) : (
@@ -167,13 +266,9 @@ const CarInformationForm = (props) => {
             max={today}
             onChange={(event) => {
               const obj = checkCarAge(event.target.value);
-              if (obj.valid === false) {
-                setModelYearError(obj.msg);
-                props.setYearOfManError(obj.msg);
-              } else {
-                setModelYearError("");
-                props.setYearOfMan("");
-              }
+              if (obj.valid === false) setModelYearError(obj.msg);
+              else setModelYearError("");
+
               setModelYear(event.target.value);
               props.setYearOfMan(event.target.value);
             }}
@@ -187,13 +282,9 @@ const CarInformationForm = (props) => {
             placeholder="License Plate"
             onChange={(event) => {
               const obj = checkLicense(event.target.value);
-              if (obj.valid === false) {
-                setPlateError(obj.msg);
-                props.setLicensePlateError(obj.msg);
-              } else {
-                setPlateError("");
-                props.setLicensePlateError("");
-              }
+              if (obj.valid === false) setPlateError(obj.msg);
+              else setPlateError("");
+
               setPlate(event.target.value);
               props.setLicensePlate(event.target.value);
             }}
@@ -201,9 +292,8 @@ const CarInformationForm = (props) => {
           />
         </div>
         <p className="error">{plateError}</p>
-        <p className="error">{}</p>
       </div>
     </div>
   );
-};
+});
 export default CarInformationForm;
