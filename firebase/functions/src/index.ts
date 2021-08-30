@@ -1,39 +1,22 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
-import { RiderService } from "./rider-service";
-import { DatabaseDAO } from "./database-dao";
 
-export function add(a: number, b: number): number {
-    return a + b
-}
-
+import { AuthenticationDAO } from "./auth/dao";
+import { RiderRegistrationInfo } from "./models-shared/register";
+import { HttpsError } from "firebase-functions/lib/providers/https";
+import { RiderService } from "./features/rider/rider-service";
 /**
  * Required at global scope to use class-transformer decorators in classes.
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
-import { UserService } from "./user-service";
-import { AuthenticationDAO } from "./auth-dao";
-import { RiderRegistrationInfo } from "./models/register";
-import { Address } from "./models/address";
-import { HttpsError } from "firebase-functions/lib/providers/https";
-import { UserFieldsPublic } from "./models/user";
+import { UserDAO } from "./database/user/dao";
+import { IsBoolean, IsDate, IsNumber, IsString } from "class-validator";
+import { decodeDoc } from "./database/utils";
 
 admin.initializeApp()
+admin.firestore().settings({ ignoreUndefinedProperties: true })
 
-/**
- 
-    firstName: string
-     lastName: string
-     gender: string
-     email: string
-     password: string
-     dob: Date
-     address: Address
-     phone: string
-     joinDate: Date
-
- */
 
 export function validateAuthorization(context: functions.https.CallableContext): string {
     const uid = context.auth?.uid
@@ -51,56 +34,108 @@ function validateRiderInfo(data: any): RiderRegistrationInfo {
         firstName: 'Steven',
         lastName: 'J',
         gender: 'Male',
-        email: 'Steven@gmail.com',
+        email: 'Steven2@gmail.com',
         password: 'password',
         dob: new Date(),
-        address: new Address('Nunya', 'Bussiness', 'FL', '32839', undefined),
+        address: {
+            street: 'Street 1',
+            street2: undefined,
+            state: 'FL',
+            city: 'Orlando',
+            zip: '23819'
+        },
         phone: '7271920192',
         joinDate: new Date()
     }
 }
 
-const dbDAO = new DatabaseDAO(admin.firestore())
-const authDAO = new AuthenticationDAO(admin.auth())
-const userService = new UserService(dbDAO, authDAO)
 
-
-function validateUserInfo(data: any): string {
-    const userID = data.userID
-    if (userID === undefined) {
-        throw new HttpsError('invalid-argument', 'Must provide user id.')
-    } else {
-        return userID
-    }
+function userDao(): UserDAO {
+    return new UserDAO(admin.firestore())
 }
+
+function authDAO(): AuthenticationDAO {
+    return new AuthenticationDAO(admin.auth())
+}
+
+function riderService(): RiderService {
+    return new RiderService(
+        userDao(),
+        authDAO()
+    )
+}
+
+
+export const test = functions.https.onCall((data, context) => {
+
+    return admin.firestore().collection('test').doc('test').get().then(doc => decodeDoc(TestClass, doc)).then(c => {
+        console.log(c.name)
+        console.log(c.date.toISOString())
+        console.log(c.bool)
+        console.log(c.num)
+    })
+})
+
+class TestClass {
+
+    @IsString()
+    name: string
+
+    @IsDate()
+    date: Date
+
+    @IsBoolean()
+    bool: boolean
+
+    @IsNumber()
+    num: number
+
+    constructor(name: string, date: Date, bool: boolean, num: number) {
+        this.name = name
+        this.date = date
+        this.bool = bool
+        this.num = num
+    }
+
+}
+
+
+// function validateUserInfo(data: any): string {
+//     const userID = data.userID
+//     if (userID === undefined) {
+//         throw new HttpsError('invalid-argument', 'Must provide user id.')
+//     } else {
+//         return userID
+//     }
+// }
 
 
 /**
  * Gets a user's publicly available information. 
  * Use for when a user requests another user profile.
  */
-export const getUserPublic = functions.https.onCall(async (data, context) => {
+// export const getUserPublic = functions.https.onCall(async (data, context) => {
 
-    // validateAuthorization(context)
+//     // validateAuthorization(context)
 
-    const targetUID = validateUserInfo(data)
+//     const targetUID = validateUserInfo(data)
 
-    const user = await dbDAO.getuserInfo(targetUID)
+//     const user = await dbDAO.getuserInfo(targetUID)
 
-    const publicInfo: UserFieldsPublic = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        gender: user.gender,
-        joinDate: user.joinDate,
-        driverRating: user.driverInfo?.rating,
-        riderRating: user.riderInfo?.rating,
-        profileURL: user.profileURL
-    }
+//     const publicInfo: UserFieldsPublic = {
+//         firstName: user.firstName,
+//         lastName: user.lastName,
+//         phone: user.phone,
+//         gender: user.gender,
+//         joinDate: user.joinDate,
+//         driverRating: user.driverInfo?.rating,
+//         riderRating: user.riderInfo?.rating,
+//         profileURL: user.profileURL
+//     }
 
-    return publicInfo
+//     return publicInfo
 
-})
+// })
 
 
 /**
@@ -113,7 +148,7 @@ export const getUserPrivate = functions.https.onCall(async (data, context) => {
 
 export const registerRider = functions.https.onCall(async (data, context) => {
 
-    return userService.registerRider(validateRiderInfo(data))
+    return riderService().register(validateRiderInfo(data))
         .then(() => {
             return 'Rider successfully created.'
         }).catch(err => {
@@ -124,19 +159,19 @@ export const registerRider = functions.https.onCall(async (data, context) => {
 })
 
 
-export const setupPaymentMethod = functions.https.onCall(async (data, context) => {
+// export const setupPaymentMethod = functions.https.onCall(async (data, context) => {
 
-    //Authorize user
-
-
-    const dao = new DatabaseDAO(admin.firestore())
-
-    const service = new RiderService(dao)
-
-    service.setupPaymentMethod('')
+//     //Authorize user
 
 
-})
+//     const dao = new DatabaseDAO(admin.firestore())
+
+//     const service = new RiderService(dao)
+
+//     service.setupPaymentMethod('')
+
+
+// })
 
 // const db = admin.firestore()
 
