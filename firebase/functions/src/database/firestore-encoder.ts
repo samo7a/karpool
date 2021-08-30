@@ -1,7 +1,8 @@
 import { classToPlain } from 'class-transformer';
 import { firestore } from 'firebase-admin';
 
-/**
+/**TODO: Make a function isntead of class since were not using state at all.
+ * 
  * A helper class for transforming a class instance into a javascript object that can be sent to Firestore.
  * Class instances cannot be directly sent to Firestore. 
  */

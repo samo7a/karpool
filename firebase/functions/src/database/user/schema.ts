@@ -29,17 +29,12 @@ export interface UserSchema {
     /**
      * The user's gender.
      */
-    gender: string
+    gender?: string
 
     /**
      * The user's date of birth.
      */
     dob: Date
-
-    /**
-     * The user's current address of residency.
-     */
-    address: AddressSchema
 
     /**
      * The date the user joined the Karpool platform.
@@ -102,33 +97,4 @@ export interface RiderInfoSchema {
      * Used to calculate the new average rating.
      */
     ratingCount: number
-}
-
-
-
-interface AddressSchema {
-    /**
-     * The street of the address.
-     */
-    street: string
-
-    /**
-     * Optional for specifying apartment building.
-     */
-    street2?: string
-
-    /**
-     * City the address is in.
-     */
-    city: string
-
-    /**
-     * State the address is in. Abbreviated state format (Uppercase).
-     */
-    state: string
-
-    /**
-     * Zip code the address is in.
-     */
-    zip: string
 }

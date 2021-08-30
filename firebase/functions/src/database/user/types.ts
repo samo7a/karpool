@@ -28,17 +28,12 @@ export interface UserCreationInfo {
     /**
      * The user's gender.
      */
-    gender: string
+    gender?: string
 
     /**
      * The user's date of birth.
      */
     dob: Date
-
-    /**
-     * The user's current address of residency.
-     */
-    address: Address
 
     driverInfo?: {
         licenseNum: string
@@ -52,34 +47,6 @@ export interface UserCreationInfo {
     }
 
 }
-
-interface Address {
-    /**
-     * The street of the address.
-     */
-    street: string
-
-    /**
-     * Optional for specifying apartment building.
-     */
-    street2?: string
-
-    /**
-     * City the address is in.
-     */
-    city: string
-
-    /**
-     * State the address is in. Abbreviated state format (Uppercase).
-     */
-    state: string
-
-    /**
-     * Zip code the address is in.
-     */
-    zip: string
-}
-
 
 
 export type Role = 'Rider' | 'Driver'
