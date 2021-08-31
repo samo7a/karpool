@@ -81,6 +81,11 @@ mobile_app/.atom/
 mobile_app/.buildlog/
 mobile_app/.history
 mobile_app/.svn/
+mobile_app/android/.project
+mobile_app/android/.settings/
+mobile_app/android/app/.classpath
+mobile_app/android/app/.project
+mobile_app/android/app/.settings/
 
 # IntelliJ related
 mobile_app/*.iml

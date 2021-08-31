@@ -8,7 +8,7 @@ import CarInformationForm from "../../components/CarInformationForm/CarInformati
 import CarInsuranceForm from "../../components/CarInsuranceForm/CarInsuranceForm";
 import vid from "../../assets/promo.mp4";
 import pic from "../../assets/ahmed.jpg";
-import {
+import { 
   checkFirstName,
   checkLastName,
   checkEmail,
