@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 export const addAuthListener = (callback) => {
   const onChange = (user) => {
     if (user) {
-      callback({});
+      callback(user);
     } else {
       callback(null);
     }

@@ -2,6 +2,8 @@ import React from "react";
 import "./Navbar.css";
 import logo from "../../assets/logo.png";
 import { Link, useHistory } from "react-router-dom";
+import { signOut } from "../../auth/signout";
+
 const Navbar = (props) => {
   const history = useHistory();
   let isLoggedIn = props.isLoggedIn;
@@ -20,8 +22,19 @@ const Navbar = (props) => {
         </li>
       );
   };
+  const logout = async () => {
+    try {
+      await signOut();
+      history.push("/");
+    } catch (e) {
+      console.log(e.msg);
+    }
+  };
   const goToSignup = () => {
     history.push("/register");
+  };
+  const goToSignIn = async () => {
+    history.push("/login");
   };
   return (
     <div id="body">
@@ -44,16 +57,13 @@ const Navbar = (props) => {
         )}
         {isLoggedIn ? (
           <div className="navbar-buttons">
-            <button id="primaryButton" onClick={() => alert("Button Clicked")}>
+            <button id="primaryButton" onClick={logout}>
               Logout
             </button>
           </div>
         ) : (
           <div className="navbar-buttons">
-            <button
-              id="secondaryButton"
-              onClick={() => alert("Button Clicked")}
-            >
+            <button id="secondaryButton" onClick={goToSignIn}>
               Sign In
             </button>
             <button id="primaryButton" onClick={goToSignup}>
