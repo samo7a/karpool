@@ -1,10 +1,13 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import { useAuth } from "./auth/useAuth";
 import LandingPage from "./pages/Landing/LandingPage";
 import AboutUsPage from "./pages/AboutUs/AboutUsPage";
 import SignupPage from "./pages/Signup/SignupPage";
 
 function App() {
+  const { isLoading, user } = useAuth();
   return (
     <Router>
       <div className="App">
@@ -18,15 +21,31 @@ function App() {
           <Route exact path="/register">
             <SignupPage />
           </Route>
-          <Route exact path="/home">
+          {/*for authenticated users only*/}
+          <ProtectedRoute
+            isAuthed={!!user}
+            isLoading={isLoading}
+            exact
+            path="/home"
+          >
             {/* <HomePage /> */}
-          </Route>
-          <Route exact path="/about-us">
+          </ProtectedRoute>
+          <ProtectedRoute
+            isAuthed={!!user}
+            isLoading={isLoading}
+            exact
+            path="/about-us"
+          >
             <AboutUsPage />
-          </Route>
-          <Route exact path="/account">
+          </ProtectedRoute>
+          <ProtectedRoute
+            isAuthed={!!user}
+            isLoading={isLoading}
+            exact
+            path="/account"
+          >
             {/* <Account /> */}
-          </Route>
+          </ProtectedRoute>
         </Switch>
       </div>
     </Router>
