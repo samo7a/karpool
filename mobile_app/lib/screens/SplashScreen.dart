@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
 import '../util/Size.dart';
+import 'dart:async';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   static const id = 'splachScreen';
@@ -11,17 +13,34 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   Future(() {
-  //     Navigator.of(context).pushNamed(MainScreen.id);
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    startTime();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Future<FirebaseApp> _firebaseApp = Firebase.initializeApp();
+    return initScreen(context);
+  }
+
+  startTime() async {
+    var duration = new Duration(seconds: 2);
+    return new Timer(duration, route);
+  }
+
+  route() {
+    final firebaseUser = Provider.of<User?>(context, listen: false);
+    if (firebaseUser != null) {
+      //TODO: figure out the type of user
+      //call the getProfile function from firebase
+      //if(driver) return driverHomePage()
+      //if(rider) return riderHomePage(0)
+    } else
+      Navigator.pushNamed(context, MainScreen.id);
+  }
+
+  initScreen(BuildContext context) {
     Size size = Size(Context: context);
     return Container(
       decoration: BoxDecoration(
@@ -35,33 +54,22 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
       ),
-      child: FutureBuilder(
-        future: _firebaseApp,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text("Error"); //TODO: create a better error screen.
-          } else if (snapshot.hasData) {
-            return MainScreen();
-          } else {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image(
-                    image: AssetImage('images/splashIcon.png'),
-                    width: size.BLOCK_WIDTH * 50,
-                    height: size.BLOCK_HEIGHT * 50,
-                  ),
-                  SpinKitFadingCircle(
-                    color: Color(0xff002855),
-                    size: size.BLOCK_WIDTH * 15,
-                  ),
-                ],
-              ),
-            );
-          }
-        },
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image(
+              image: AssetImage('images/splashIcon.png'),
+              width: size.BLOCK_WIDTH * 50,
+              height: size.BLOCK_HEIGHT * 50,
+            ),
+            SpinKitFadingCircle(
+              color: Color(0xff002855),
+              size: size.BLOCK_WIDTH * 15,
+            ),
+          ],
+        ),
       ),
     );
   }
