@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "532093429300",
+    "project_id": "karpool-1ea95",
+    "storage_bucket": "karpool-1ea95.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532093429300:android:16b15fc1dfa86939790c61",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "532093429300-apcq3apneh9ltqj9spieu898gv6oi2pn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9V1HwU9qQEGofwLLRRn8pjd1BRWq0PtM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "532093429300-apcq3apneh9ltqj9spieu898gv6oi2pn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "532093429300-hmm1195r47os8svopau6avjij7l4v47m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.karpool.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
