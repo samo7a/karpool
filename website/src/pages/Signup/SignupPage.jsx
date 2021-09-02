@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./SignupPage.css";
+import Modal from "react-modal";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import CreditCardForm from "../../components/CreditCardForm/CreditCardForm";
@@ -8,7 +9,7 @@ import CarInformationForm from "../../components/CarInformationForm/CarInformati
 import CarInsuranceForm from "../../components/CarInsuranceForm/CarInsuranceForm";
 import vid from "../../assets/promo.mp4";
 import pic from "../../assets/ahmed.jpg";
-import { 
+import {
   checkFirstName,
   checkLastName,
   checkEmail,
@@ -21,7 +22,12 @@ import {
 } from "../../utils/InputValidators";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { signup } from "../../auth/signup";
+import { signOut } from "../../auth/signout";
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
+
+Modal.setAppElement("#root");
+
 const SignupPage = () => {
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState();
@@ -45,7 +51,7 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [isDriver, setIsDriver] = useState(true);
+  const [isDriver, setIsDriver] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [carBrand, setCarBrand] = useState("");
@@ -59,6 +65,8 @@ const SignupPage = () => {
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uid, setUid] = useState("");
   const bankInfoRef = useRef();
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
@@ -99,9 +107,16 @@ const SignupPage = () => {
     //upload photo to the database
     //return the url of the uploaded file
   };
-
-  const registerDriver = (event) => {
+  const uploadFile = () => {
+    //TODO
+    //const url = handleFileUpload(); //url of the uploaded file.
+    // if (errorUploading the file) {
+    //   return;
+    // }
+  };
+  const registerDriver = async (event) => {
     event.preventDefault();
+    setIsModalOpen(true);
     setPhotoError("");
     setFirstNameError("");
     setLastNameError("");
@@ -115,11 +130,7 @@ const SignupPage = () => {
     carInfoRef.current.setCarInfo("");
     carInsuranceRef.current.setInsuranceInfo("");
     setRegisterError("");
-    //TODO
-    //const url = handleFileUpload(); //url of the uploaded file.
-    // if (errorUploading the file) {
-    //   return;
-    // }
+
     const firstCheck = checkDriverSignUp(
       firstName,
       lastName,
@@ -181,8 +192,15 @@ const SignupPage = () => {
     if (firstCheck && secondCheck && thirdCheck && forthCheck)
       setRegisterError("");
     else return;
-    //add photo url to the payload.
+    try {
+      const user = await signup(email, password);
+      setUid(user.user.uid);
+      signOut();
+    } catch (e) {
+      setRegisterError(e);
+    }
     const obj = {
+      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -204,59 +222,78 @@ const SignupPage = () => {
       coverageStartDate: coverageStartDate,
       coverageEndDate: coverageEndDate,
     };
+    console.log(obj);
     //TODO: add functionality to regsiter button;
     //send obj to the backend.
-    console.log(obj);
+    // on success open modal to upload profile pic
+    setIsModalOpen(true);
   };
   return (
     <div className="content">
       <Navbar loggedIn="false" />
       <div className="wrapper">
-        <div className="left">
-          <h1>Welcome to karpool!</h1>
-          <form>
-            <div className="img-wrap">
-              {preview ? (
-                <img
-                  id="preview"
-                  alt="profile-pic"
-                  src={preview}
-                  style={{ objectFit: "cover" }}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    photoRef.current.click();
-                  }}
-                />
-              ) : (
-                <input
-                  id="img-uploader"
-                  type="button"
-                  name="button"
-                  value="Upload Profile Picture"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    photoRef.current.click();
-                  }}
-                />
-              )}
-              <p
+        <Modal
+          id="modal"
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          style={{
+            overlay: {
+              backgroundColor: "transparent",
+            },
+            content: {
+              backgroundColor: "#001845",
+              color: "white",
+            },
+          }}
+        >
+          <h1>Upload a profile picture</h1>
+          <div className="img-wrap">
+            {preview ? (
+              <img
+                id="preview"
+                alt="profile-pic"
+                src={preview}
+                style={{ objectFit: "cover" }}
                 onClick={(event) => {
                   event.preventDefault();
                   photoRef.current.click();
                 }}
-                className="img-text"
-              >
-                Pick Profile Picture
-              </p>
-            </div>
-            <input
-              style={{ display: "none" }}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={photoRef}
-            />
-            <p className="error">{photoError}</p>
+              />
+            ) : (
+              <input
+                id="img-uploader"
+                type="button"
+                name="button"
+                value="Upload Profile Picture"
+                onClick={(event) => {
+                  event.preventDefault();
+                  photoRef.current.click();
+                }}
+              />
+            )}
+            <p
+              onClick={(event) => {
+                event.preventDefault();
+                photoRef.current.click();
+              }}
+              className="img-text"
+            >
+              Pick Profile Picture
+            </p>
+          </div>
+          <input
+            style={{ display: "none" }}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            ref={photoRef}
+          />
+          <button onClick={uploadFile}>Upload</button>
+          <p className="error">{photoError}</p>
+        </Modal>
+        <div className="left">
+          <h1>Welcome to karpool!</h1>
+          <form>
             <div className="i">
               <label>First Name</label>
               <input
@@ -290,7 +327,6 @@ const SignupPage = () => {
             <p className="error">{lastNameError}</p>
             <div className="i">
               <label>Email Address</label>
-
               <input
                 type="text"
                 placeholder="Email Address"
@@ -374,6 +410,7 @@ const SignupPage = () => {
               <input
                 type="password"
                 placeholder="Password"
+                autoComplete="on"
                 onChange={(event) => {
                   const obj = checkPassword(event.target.value);
                   const obj2 = checkConfirmPassword(
@@ -394,6 +431,7 @@ const SignupPage = () => {
               <label>Confirm the Password</label>
               <input
                 type="password"
+                autoComplete="on"
                 placeholder="Confirm the password"
                 onChange={(event) => {
                   const obj = checkConfirmPassword(
@@ -492,6 +530,23 @@ const SignupPage = () => {
           <a href="https://www.vecteezy.com/video/2905810-cheerful-woman-spread-arms-on-car-rooftop-under-bright-sky-at-mountain-with-nature-background-during-road-trip-on-vacation">
             https://www.vecteezy.com
           </a>
+          <article className="post">
+            <h1>Share a Ride, Save The Planet!</h1>
+            <p className="para">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+              porta nunc at nisi laoreet, eget dapibus velit semper. Vivamus id
+              hendrerit mi. Cras odio urna, blandit a odio vel, dapibus varius
+              odio. Donec elit lacus, mollis ac sem non, luctus sollicitudin
+              velit. Cras tincidunt tellus lectus, a consequat nulla venenatis
+              sed. Sed sed quam a erat lobortis sollicitudin porttitor
+              ullamcorper ex. Fusce accumsan nunc ut justo interdum tristique in
+              at nisl. Morbi mattis pulvinar rhoncus. Mauris quam risus,
+              pulvinar et urna et, convallis accumsan nisl. Praesent nec lectus
+              vel velit lobortis lobortis. Etiam sollicitudin, sapien eget porta
+              euismod, elit massa egestas est, id blandit mi ligula eu neque.
+              Nulla interdum nibh nisi, non mollis mi luctus ac.
+            </p>
+          </article>
         </div>
       </div>
       <Footer />

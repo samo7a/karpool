@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./LandingPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import vid from "../../assets/promo.mp4";
+import { signOut } from "../../auth/signout";
 
 const LandingPage = () => {
   let isLoggedIn = false;
-
+  useEffect(() => {
+    signOut();
+  }, []);
   return (
     <>
       <div className="content">

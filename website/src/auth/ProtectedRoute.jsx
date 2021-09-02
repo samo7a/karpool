@@ -17,5 +17,5 @@ const ProtectedRoute = ({ isAuthed, isLoading, ...props }) => {
   }
   return <Route {...props} />;
 };
-
+ 
 export default ProtectedRoute;

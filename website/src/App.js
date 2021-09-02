@@ -5,6 +5,7 @@ import { useAuth } from "./auth/useAuth";
 import LandingPage from "./pages/Landing/LandingPage";
 import AboutUsPage from "./pages/AboutUs/AboutUsPage";
 import SignupPage from "./pages/Signup/SignupPage";
+import LoginPage from "./pages/Login/LoginPage";
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -16,7 +17,7 @@ function App() {
             <LandingPage />
           </Route>
           <Route exact path="/login">
-            {/* <LoginPage /> */}
+            <LoginPage />
           </Route>
           <Route exact path="/register">
             <SignupPage />
@@ -26,7 +27,15 @@ function App() {
             isAuthed={!!user}
             isLoading={isLoading}
             exact
-            path="/home"
+            path="/driver-home"
+          >
+            {/* <HomePage /> */}
+          </ProtectedRoute>
+          <ProtectedRoute
+            isAuthed={!!user}
+            isLoading={isLoading}
+            exact
+            path="/rider-home"
           >
             {/* <HomePage /> */}
           </ProtectedRoute>
