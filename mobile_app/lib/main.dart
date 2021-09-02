@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      
       providers: [
         Provider<Auth>(
           create: (_) => Auth(FirebaseAuth.instance),

@@ -26,7 +26,8 @@ class MainScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(5.0),
                   // ignore: deprecated_member_use
                   child: FlatButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
                     minWidth: size.BLOCK_WIDTH * 80,
                     height: size.BLOCK_HEIGHT * 10,
                     color: Color(0xFF0466CB),
@@ -41,7 +42,8 @@ class MainScreen extends StatelessWidget {
                   child: FlatButton(
                     minWidth: size.BLOCK_WIDTH * 80,
                     height: size.BLOCK_HEIGHT * 10,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
                     color: Color(0xFF0466CB),
                     child: Text('New Karpool User',
                         style: TextStyle(color: Colors.white, fontSize: 30)),
