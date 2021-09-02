@@ -63,3 +63,18 @@
     width: 100%;
   }
 }
+
+.post {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+}
+.para {
+  text-align: justify;
+  margin: 10px;
+  padding: 10px;
+  font-size: 20px;
+}
