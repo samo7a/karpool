@@ -1,3 +1,4 @@
+import { HttpsError } from "firebase-functions/lib/providers/https"
 
 /**
  * Checks if the given value is string. If not a string an error is thrown.
@@ -7,14 +8,32 @@
 export function validateString(value: any, propName?: string): string {
     if (typeof value !== 'string') {
         if (propName) {
-            throw new Error(`Expected ${propName} to be a string but found ${typeof value}.`)
+            throw new HttpsError('failed-precondition', `Expected ${propName} to be a string but found ${typeof value}.`)
         } else {
-            throw new Error(`Validation failed: ${typeof value} is not a string.`)
+            throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not a string.`)
         }
     } else {
         return value
     }
 }
+
+/**
+ * Checks if the given value is string or undefined. If not a string an error is thrown.
+ * @param value Any value
+ * @returns A string or undefined
+ */
+export function validateStringOptional(value: any, propName?: string): string | undefined {
+    if (typeof value !== 'string' && value !== undefined) {
+        if (propName) {
+            throw new HttpsError('failed-precondition', `Expected ${propName} to be an optional string but found ${typeof value}.`)
+        } else {
+            throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not an optional string.`)
+        }
+    } else {
+        return value
+    }
+}
+
 
 /**
  * Checks if a given value is an array where each element is a string. 
@@ -24,11 +43,11 @@ export function validateString(value: any, propName?: string): string {
  */
 export function validateStringArray(value: any): string[] {
     if (!Array.isArray(value)) {
-        throw new Error(`Validation failed: ${typeof value} is not a string array.`)
+        throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not a string array.`)
     }
     value.forEach(element => {
         if (typeof element !== 'string') {
-            throw new Error(`Validation failed: Non-string element was found in the array.`)
+            throw new HttpsError('failed-precondition', `Validation failed: Non-string element was found in the array.`)
         }
     })
     return value
@@ -41,7 +60,7 @@ export function validateStringArray(value: any): string[] {
  */
 export function validateBool(value: any): boolean {
     if (typeof value !== 'boolean') {
-        throw new Error(`Validation failed: ${typeof value} is not a boolean.`)
+        throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not a boolean.`)
     } else {
         return value
     }
@@ -54,7 +73,7 @@ export function validateBool(value: any): boolean {
  */
 export function validateNumber(value: any): number {
     if (isNaN(Number(value))) {
-        throw new Error(`Validation failed: ${value} is Nan.`)
+        throw new HttpsError('failed-precondition', `Validation failed: ${value} is Nan.`)
     } else {
         return Number(value)
     }
@@ -70,6 +89,6 @@ export function validateDate(value: any): Date {
     if (((d as any) !== 'Invalid Date') && !isNaN((d as any))) {
         return new Date(value)
     } else {
-        throw new Error(`Validation failed: ${typeof value} is not convertible to Date.`)
+        throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not convertible to Date.`)
     }
 }

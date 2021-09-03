@@ -62,6 +62,11 @@ export interface UserSchema {
      * The url pointing to the location of the image associated with the user's profile.
      */
     profileURL?: string
+
+    bankAccount?: {
+        accountNum: string
+        routingNum: string
+    }
 }
 
 
@@ -82,6 +87,7 @@ export interface DriverInfoSchema {
      * Used to calculate the new average rating.
      */
     ratingCount: number
+
 }
 
 
@@ -97,4 +103,9 @@ export interface RiderInfoSchema {
      * Used to calculate the new average rating.
      */
     ratingCount: number
+
+    /**
+     * 
+     */
+    stripeToken: string
 }

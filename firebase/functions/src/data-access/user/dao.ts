@@ -1,12 +1,12 @@
 
 
 import * as admin from 'firebase-admin'
-import { FirestoreEncoder } from '../firestore-encoder'
 import { FirestoreKey } from '../../constants'
 import { UserSchema } from './schema'
-import { UserCreationInfo, Role } from './types'
+import { Role } from './types'
 import { User } from '../../models-shared/user'
-import { decodeDoc } from '../utils'
+import { fireDecode } from '../utils/decode'
+import { fireEncode } from '../utils/encode'
 
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
@@ -20,7 +20,7 @@ export interface UserDAOInterface {
      * @param uid The user's id.
      * @param info A user schema object.
      */
-    createAccountData(uid: string, info: UserCreationInfo): Promise<void>
+    createAccountData(uid: string, info: Partial<UserSchema>): Promise<void>
 
     /**
      * Updates only the fields provided in the fields parameter. All other fields will be left unmodified.
@@ -61,7 +61,7 @@ export class UserDAO implements UserDAOInterface {
         this.db = db
     }
 
-    async createAccountData(uid: string, info: UserCreationInfo): Promise<void> {
+    async createAccountData(uid: string, info: Partial<UserSchema>): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
 
         if (info.driverInfo) {
@@ -71,32 +71,20 @@ export class UserDAO implements UserDAOInterface {
             roles['Rider'] = true
         }
 
-        const data: UserSchema = {
-            firstName: info.firstName,
-            lastName: info.lastName,
-            phone: info.phone,
-            email: info.email,
-            gender: info.gender,
-            dob: info.dob,
-            joinDate: new Date(),
-            roles: roles,
-            driverInfo: info.driverInfo,
-            riderInfo: info.riderInfo,
-            profileURL: undefined
-        }
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
-        await userRef.create(data)
+
+        await userRef.create(info)
     }
 
     async updateAccountData(uid: string, fields: Partial<UserSchema>): Promise<void> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
-        const data = new FirestoreEncoder().encode(fields)
-        await userRef.update(data)
+        await userRef.update(fireEncode(fields))
     }
 
-    async getAccountData(uid: string): Promise<User> {
+    getAccountData(uid: string): Promise<User> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
-        return userRef.get().then(doc => decodeDoc(User, doc))
+        return userRef.get().then(doc => fireDecode(User, doc))
+
     }
 
     async deleteAccountData(uid: string): Promise<void> {
@@ -104,27 +92,32 @@ export class UserDAO implements UserDAOInterface {
         await userRef.delete()
     }
 
-    /*TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
-    async getEarnings(driverID: string, startDate: Date, endDate: Date): Promise<number> {
+    //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
+    // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {
 
-        return this.db.collection('trips')
-            .where('driverID', '==', driverID)
-            .where('date', '>', startDate)
-            .where('date', '<', endDate)
-            .get()
-            .then(snapshot => {
-                return snapshot.docs.map(doc => {
-                    return doc.data() as Trip
-                })
-            }).then(trips => {
-                let sum: number = 0
-                trips.forEach(trip => {
-                    sum += trip.totalFairs
-                })
-                return sum
-            })
-    }
-    */
+    // const trips = await this.db.collection('trips')
+    //     .where('driverID', '==', driverID)
+    //     .where('date', '>', startDate)
+    //     .where('date', '<', endDate)
+    //     .get()
+    //     .then(snapshot => {
+    //         return snapshot.docs.map(doc => {
+    //             return doc.data() as Trip
+    //         })
+    //     }).then(trips => {
+    //         let sum: number = 0
+    //         trips.forEach(trip => {
+    //             sum += trip.totalFairs
+    //         })
+    //         return sum
+    //     })
+
+    // this.db.collection('trips')
+    //     .where(riderID, '==', true)
+
+
+
+    // }
 
 
 }

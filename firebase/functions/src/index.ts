@@ -2,9 +2,9 @@ import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
 
 import { AuthenticationDAO } from "./auth/dao";
-import { UserDAO } from "./database/user/dao";
+import { UserDAO } from "./data-access/user/dao";
 import { IsBoolean, IsDate, IsNumber, IsString } from "class-validator";
-import { decodeDoc } from "./database/utils";
+import { fireDecode } from "./data-access/utils/decode";
 
 //MARK: Setup
 
@@ -14,6 +14,8 @@ import { decodeDoc } from "./database/utils";
  */
 import 'reflect-metadata';
 import { AccountService } from "./features/account-management/account-service";
+import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
+import { UserRegistrationData } from "./features/account-management/types";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -31,16 +33,22 @@ export function newAuthDAO(): AuthenticationDAO {
     return new AuthenticationDAO(admin.auth())
 }
 
+export function newCloudStorageDAO(): CloudStorageDAO {
+    return new CloudStorageDAO(admin.storage())
+}
+
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
-        newAuthDAO()
+        newAuthDAO(),
+        newCloudStorageDAO()
     )
 }
 
 //MARK: Exposed cloud function endpoints
 
 
+const info: UserRegistrationData = { 'firstName': 'Chris', 'lastName': 'Foreman', 'gender': 'Male', 'email': 'Chris1133@gmail.com', 'password': 'Somepassword', 'dob': new Date(), 'phone': '12341234123412', 'cardNum': '0101', 'cardExpDate': '9/22', 'cardCVC': '123', 'stripeToken': 'asldkfja;lfkja;sldfkjads;lfjkasd', 'profilePicData': 'asdfadsf', 'isDriver': false }
 exports.account = require('./features/account-management/cloud-functions')
 
 
@@ -54,15 +62,29 @@ exports.account = require('./features/account-management/cloud-functions')
 
 //MARK: Experimental: Delete later.
 
+export const test2 = functions.https.onCall(async (data, context) => {
+
+    console.log('Client Data', data)
+
+
+    const res = await admin.firestore().collection('what ever the fuck you want').doc().set({
+        firstName: 'Chris',
+        age: 23
+    })
+
+    return res
+})
+
 export const test = functions.https.onCall((data, context) => {
 
-    return admin.firestore().collection('test').doc('test').get().then(doc => decodeDoc(TestClass, doc)).then(c => {
+    return admin.firestore().collection('test').doc('test').get().then(doc => fireDecode(TestClass, doc)).then(c => {
         console.log(c.name)
         console.log(c.date.toISOString())
         console.log(c.bool)
         console.log(c.num)
     })
 })
+
 
 class TestClass {
 

@@ -1,5 +1,6 @@
 
-export interface RiderRegistrationInfo {
+
+export interface UserRegistrationData {
 
     /**
      * The user's firstName.
@@ -14,7 +15,7 @@ export interface RiderRegistrationInfo {
     /**
      * The user's gender.
      */
-    gender?: string
+    gender: string
 
     /**
      * The user's email address.
@@ -27,60 +28,76 @@ export interface RiderRegistrationInfo {
     password: string
 
     /**
+     * 
+     */
+    licenseNum?: string
+
+    /**
      * The user's date of birth.
      */
-    dob: Date
+    dob: Date //  11/12/2012
 
     /**
      * The user's phone number.
      */
     phone: string
 
-}
-
-
-export interface DriverRegistrationInfo {
 
     /**
-     * The user's firstName.
+     * 
      */
-    firstName: string
+    cardNum?: string
+
+    cardExpDate?: string
+
+    cardCVC?: string
+
+
+    stripeToken?: string
+
 
     /**
-     * The user's lastName.
+     * Base 64
      */
-    lastName: string
+    profilePicData: string
 
     /**
-     * The user's gender.
+     * 
      */
-    gender?: string
+    accountNum?: string
 
     /**
-     * The user's email address.
+     * 
      */
-    email: string
+    routingNum?: string
 
     /**
-     * The user's account password.
+     * 
      */
-    password: string
+    make?: string
 
     /**
-     * The user's date of birth.
+     * 
      */
-    dob: Date
+    color?: string
+
 
     /**
-     * The user's phone number.
+     * 
      */
-    phone: string
+    isDriver: boolean
 
-    /**
-     * The user's driver's license number.
-     */
-    licenseNum: string
+    year?: string
 
+    plateNum?: string
+
+    provider?: string
+
+    coverage?: string
+
+    startDate?: Date
+
+    endDate?: Date
 
 }
 
@@ -154,7 +171,16 @@ export interface UserFieldsExternal {
     licenseNum?: string
 
 
+    /**
+     * A dictionary containing the role as a string key and the value as true. 
+     * Current possible keys are "Rider" or "Driver".
+     * The values will only be true. If the role isn't in the dictionary then the user implicitly doesn't have a role.
+     */
+    roles: Record<string, boolean>
 
 }
+
+
+
 
 

@@ -1,7 +1,8 @@
 
 
+import * as admin from 'firebase-admin'
 
-import { add } from '../src/index'
+admin.initializeApp()
 
 // test('Basic add', () => {
 //     const a = 5
@@ -13,3 +14,5 @@ import { add } from '../src/index'
 //Write tests that fail.
 //Implement skeleton.
 //Check everything succeeds.
+
+require('./data-access/utils/unit.test')

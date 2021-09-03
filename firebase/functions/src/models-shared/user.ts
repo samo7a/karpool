@@ -1,4 +1,4 @@
-import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../database/user/schema"
+import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../data-access/user/schema"
 
 /**
  * Internal data model that represents a User in the system.
@@ -15,7 +15,7 @@ export class User implements UserSchema {
     driverInfo?: DriverInfoSchema
     riderInfo?: RiderInfoSchema
     profileURL?: string
-    roles: Partial<Record<string, boolean>>
+    roles: Record<string, boolean>
 
     constructor(
         firstName: string,
@@ -25,10 +25,10 @@ export class User implements UserSchema {
         gender: string,
         dob: Date,
         joinDate: Date,
-        roles: Partial<Record<string, boolean>>,
+        roles: Record<string, boolean>,
         driverInfo?: DriverInfoSchema,
         riderInfo?: RiderInfoSchema,
-        profileURL?: string
+        profileURL?: string,
     ) {
         this.firstName = firstName
         this.lastName = lastName
@@ -41,6 +41,10 @@ export class User implements UserSchema {
         this.driverInfo = driverInfo
         this.riderInfo = riderInfo
         this.profileURL = profileURL
+    }
+
+    getFullName(): string {
+        return `${this.firstName} ${this.lastName}`
     }
 
 }
