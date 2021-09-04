@@ -11,12 +11,17 @@ import {
   checkPassword,
   checkConfirmPassword,
 } from "../../utils/InputValidators";
+import { signup } from "../../auth/signup";
+import { signOut } from "../../auth/signout";
+import { getCurrentUser } from "../../auth/getCurrentUser";
+import firebase from "firebase";
 import stripeImg from "../../assets/stripe_secure.png";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const CreditCardForm = (props) => {
   const [creditCardError, setCreditCardError] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [uid, setUid] = useState("");
 
   const stripe = useStripe();
   const elements = useElements();
@@ -43,12 +48,6 @@ const CreditCardForm = (props) => {
     props.setConfirmPasswordError("");
     setCreditCardError("");
     setRegisterError("");
-
-    //TODO
-    // const url = props.handleFileUpload(); //url of the uploaded file.
-    // if (errorUploading the file) {
-    //   return;
-    // }
 
     const isValid = checkRiderSignup(
       firstName,
@@ -77,6 +76,7 @@ const CreditCardForm = (props) => {
       );
       return;
     } else setRegisterError("");
+
     const cardElement = elements.getElement(CardElement);
     console.log(cardElement);
     const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -94,9 +94,24 @@ const CreditCardForm = (props) => {
       setCreditCardError("");
       setRegisterError("");
     }
-    //TODO
-    // axios post request to the signup endpoint
+    //TODO: Check the logic here.
+    try {
+      const user = await signup(email, password);
+      if (user !== undefined) {
+        setUid(user.user.uid);
+        signOut();
+        console.log(uid);
+      } else {
+        getCurrentUser().delete();
+        return;
+      }
+    } catch (e) {
+      setRegisterError(e.message);
+      return;
+    }
+    //TODO: add credit card to obj
     const obj = {
+      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -106,6 +121,16 @@ const CreditCardForm = (props) => {
       password: password,
       isDriver: isDriver,
     };
+    console.log(obj);
+    const register = firebase.functions().httpsCallable("account-registerUser");
+    try {
+      const result = await register(obj);
+      console.log("result", result);
+    } catch (e) {
+      console.log(e);
+    }
+
+    
     console.log(obj);
     return "yeah or nuh";
   };

@@ -27,10 +27,7 @@ import firebase from "firebase";
 import { getCurrentUser } from "../../auth/getCurrentUser";
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
 
-
-
 const SignupPage = () => {
-  
   //text input variables
   const [firstName, setFirstName] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -68,7 +65,6 @@ const SignupPage = () => {
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
 
-  
   useEffect(() => {
     var day = new Date();
     var dd = String(day.getDate()).padStart(2, "0");
@@ -78,7 +74,6 @@ const SignupPage = () => {
     setToday(day2);
   }, []);
 
-  
   const registerDriver = async (event) => {
     event.preventDefault();
     setFirstNameError("");
@@ -155,6 +150,8 @@ const SignupPage = () => {
     if (firstCheck && secondCheck && thirdCheck && forthCheck)
       setRegisterError("");
     else return;
+
+    //TODO: Check the logic here.
     try {
       const user = await signup(email, password);
       if (user !== undefined) {
@@ -193,7 +190,6 @@ const SignupPage = () => {
       coverageEndDate: coverageEndDate,
     };
     console.log(obj);
-    //TODO: add functionality to regsiter button;
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
@@ -201,9 +197,7 @@ const SignupPage = () => {
     } catch (e) {
       console.log(e);
     }
-    //send obj to the backend.
-    // on success open modal to upload profile pic
-    //setIsModalOpen(true);
+    //direct the user to the login screen.
   };
   return (
     <div className="content">
