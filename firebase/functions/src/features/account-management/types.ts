@@ -120,6 +120,8 @@ export interface UserFieldsExternal {
      */
     lastName: string
 
+    email?: string
+
     /**
      * The user's phone number.
      */
@@ -177,6 +179,10 @@ export interface UserFieldsExternal {
      * The values will only be true. If the role isn't in the dictionary then the user implicitly doesn't have a role.
      */
     roles: Record<string, boolean>
+
+
+    //TODO: Bank info
+
 
 }
 

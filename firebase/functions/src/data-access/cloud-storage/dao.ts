@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin'
-import { Bucket } from '@google-cloud/storage'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
@@ -26,19 +25,19 @@ export interface CloudStorageDAOInterface {
 
     /**
      * 
-     * @param path 
+     * @param filePath 
      */
-    readFile(path: string): Promise<any>
+    readFile(filePath: string): Promise<any>
 
 }
 
 
 export class CloudStorageDAO implements CloudStorageDAOInterface {
 
-    private bucket: Bucket
+    private storage: admin.storage.Storage
 
     constructor(storage: admin.storage.Storage) {
-        this.bucket = storage.bucket()
+        this.storage = storage
     }
 
 
@@ -57,7 +56,7 @@ export class CloudStorageDAO implements CloudStorageDAOInterface {
         //     fs.writeFileSync(tmpPath, data)
         // }
 
-        const downloadURL: string = await this.bucket.upload(tmpPath, {
+        const downloadURL: string = await this.storage.bucket().upload(tmpPath, {
             destination: storagePath,
             public: isPublic
         }).then(res => {
@@ -72,13 +71,13 @@ export class CloudStorageDAO implements CloudStorageDAOInterface {
 
     }
 
-    readFile(path: string): Promise<any> {
-        return this.bucket.file(path).download().then(res => {
+    readFile(filePath: string): Promise<any> {
+        return this.storage.bucket().file(filePath).download().then(res => {
             const buffer = res[0]
             return buffer.toString()
         }).catch(err => {
             if (err.code === 404) {
-                throw new Error(`File not found at path: ${path}.`)
+                throw new Error(`File not found at path: ${filePath}.`)
             }
         })
 

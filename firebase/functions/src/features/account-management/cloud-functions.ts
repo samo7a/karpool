@@ -3,7 +3,7 @@
 import * as functions from 'firebase-functions'
 import { validateAuthorization } from '../../auth/utils'
 import { newAccountService } from '../../index'
-import { validateString } from '../../utils/validation'
+import { validateBool, validateString } from '../../utils/validation'
 import { validateRegistrationData } from './validation'
 
 
@@ -16,17 +16,6 @@ export const registerUser = functions.https.onCall(async (data, context) => {
     const registrationData = validateRegistrationData(data)
 
     return newAccountService().registerUser(registrationData)
-
-    /**
-     * TODO:
-     * Validate data (DONE)
-     * Verify account doesn't already exist. (DONE)
-     * Create the account in auth (DONE)
-     * Store the profile picture 
-     * Get URL from picture 
-     * Cretae the user account document. (DONE)
-     */
-
 
 })
 
@@ -69,15 +58,14 @@ export const getUser = functions.https.onCall(async (data, context) => {
     const callerUID = validateAuthorization(context)
 
     const targetUID = validateString(data.uid)
-    // const isDriver = validateBool(data.driver)
 
-    // user trip rider 
+    const driver = validateBool(data.driver)
 
     const includePrivateFields = callerUID === targetUID
 
-    return newAccountService().getRiderProfile(targetUID, includePrivateFields)
+    return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
         .then(fields => {
-            return JSON.stringify(fields)
+            return JSON.parse(JSON.stringify(fields))
         })
 
 })

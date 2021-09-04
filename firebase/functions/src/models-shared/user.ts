@@ -17,6 +17,11 @@ export class User implements UserSchema {
     profileURL?: string
     roles: Record<string, boolean>
 
+    bankAccount?: {
+        accountNum: string
+        routingNum: string
+    }
+
     constructor(
         firstName: string,
         lastName: string,
@@ -29,6 +34,10 @@ export class User implements UserSchema {
         driverInfo?: DriverInfoSchema,
         riderInfo?: RiderInfoSchema,
         profileURL?: string,
+        bankAccount?: {
+            accountNum: string,
+            routingNum: string
+        }
     ) {
         this.firstName = firstName
         this.lastName = lastName
@@ -41,6 +50,7 @@ export class User implements UserSchema {
         this.driverInfo = driverInfo
         this.riderInfo = riderInfo
         this.profileURL = profileURL
+        this.bankAccount = bankAccount
     }
 
     getFullName(): string {

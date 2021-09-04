@@ -2,8 +2,9 @@
 
 import { AuthenticationDAOInterface } from "../../auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
-import { UserFieldsExternal, UserRegistrationData } from './types'
+import { UserRegistrationData } from './types'
 import { UserSchema } from "../../data-access/user/schema";
+import { UserFieldsExternal } from '../../features/account-management/types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 
@@ -61,23 +62,25 @@ export class AccountService {
      * @param uid 
      * @returns 
      */
-    getRiderProfile(uid: string, includePrivate: boolean): Promise<UserFieldsExternal> {
-        return Promise.reject('')
-        // return this.userDAO.getAccountData(uid).then(user => {
-        //     return {
-        //         firstName: user.firstName,
-        //         lastName: user.lastName,
-        //         phone: user.phone,
-        //         gender: user.gender,
-        //         joinDate: user.joinDate,
-        //         driverRating: undefined,
-        //         driverRatingCount: undefined,
-        //         riderRating: user.driverInfo?.rating,
-        //         riderRatingCount: user.driverInfo?.ratingCount,
-        //         profileURL: user.profileURL,
-        //         licenseNum: includePrivate ? user.driverInfo?.licenseNum : undefined
+    async getUserProfile(uid: string, driver: boolean, includePrivate: boolean): Promise<UserFieldsExternal> {
+
+        return Promise.reject('') //Remove this later
+
+        // const user = await this.userDAO.getAccountData(uid)
+
+        // return {
+        //     firstName: user.firstName,
+        //     lastName: user.lastName,
+        //     phone: user.phone,
+        //     gender: user.gender,
+        //     dob: user.dob,
+        //     joinDate: user.joinDate,
+        //     driverInfo: {
+        //         licenseNum: includePrivate ? user.driverInfo?.licenseNum : undefined,
+
+
         //     }
-        // })
+        // }
     }
 
 

@@ -54,9 +54,8 @@ export function newAccountService(): AccountService {
 exports.account = require('./features/account-management/cloud-functions')
 
 
-
 //account-registerUser
-//account-getUserProfile
+//account-getUserProile
 
 
 
