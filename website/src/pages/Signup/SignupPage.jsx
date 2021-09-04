@@ -24,6 +24,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { signup } from "../../auth/signup";
 import { signOut } from "../../auth/signout";
+import firebase from "firebase";
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
 
 Modal.setAppElement("#root");
@@ -116,7 +117,6 @@ const SignupPage = () => {
   };
   const registerDriver = async (event) => {
     event.preventDefault();
-    setIsModalOpen(true);
     setPhotoError("");
     setFirstNameError("");
     setLastNameError("");
@@ -130,7 +130,7 @@ const SignupPage = () => {
     carInfoRef.current.setCarInfo("");
     carInsuranceRef.current.setInsuranceInfo("");
     setRegisterError("");
-
+    console.log(dateOfBirth);
     const firstCheck = checkDriverSignUp(
       firstName,
       lastName,
@@ -196,8 +196,10 @@ const SignupPage = () => {
       const user = await signup(email, password);
       setUid(user.user.uid);
       signOut();
+      console.log(uid);
     } catch (e) {
-      setRegisterError(e);
+      setRegisterError(e.message);
+      return;
     }
     const obj = {
       uid: uid,
@@ -224,9 +226,16 @@ const SignupPage = () => {
     };
     console.log(obj);
     //TODO: add functionality to regsiter button;
+    const register = firebase.functions().httpsCallable("account-registerUser");
+    try {
+      const result = await register(obj);
+      console.log("result",result);
+    } catch (e) {
+      console.log(e);
+    }
     //send obj to the backend.
     // on success open modal to upload profile pic
-    setIsModalOpen(true);
+    //setIsModalOpen(true);
   };
   return (
     <div className="content">
