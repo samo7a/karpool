@@ -68,7 +68,7 @@ const LoginPage = () => {
                 maxLength="50"
               />
             </div>
-            <Link to="/">
+            <Link to="/reset-password">
               <h5>Forgot your password?</h5>
             </Link>
             <div id="radio">
