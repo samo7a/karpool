@@ -15,7 +15,6 @@ import { fireDecode } from "./data-access/utils/decode";
 import 'reflect-metadata';
 import { AccountService } from "./features/account-management/account-service";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
-import { UserRegistrationData } from "./features/account-management/types";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -48,9 +47,16 @@ export function newAccountService(): AccountService {
 //MARK: Exposed cloud function endpoints
 
 
-const info: UserRegistrationData = { 'firstName': 'Chris', 'lastName': 'Foreman', 'gender': 'Male', 'email': 'Chris1133@gmail.com', 'password': 'Somepassword', 'dob': new Date(), 'phone': '12341234123412', 'cardNum': '0101', 'cardExpDate': '9/22', 'cardCVC': '123', 'stripeToken': 'asldkfja;lfkja;sldfkjads;lfjkasd', 'profilePicData': 'asdfadsf', 'isDriver': false }
+// { 'firstName': 'Chris', 'lastName': 'Foreman', 'gender': 'Male', 'email': 'Chris1134@gmail.com', 'password': 'Somepassword', 'dob': new Date(), 'phone': '12341234123412', 'cardNum': '0101', 'cardExpDate': '9/22', 'cardCVC': '123', 'stripeToken': 'asldkfja;lfkja;sldfkjads;lfjkasd', 'profilePicData': 'asdfadsf', 'isDriver': false }
+
+
+
 exports.account = require('./features/account-management/cloud-functions')
 
+
+
+//account-registerUser
+//account-getUserProfile
 
 
 

@@ -1,17 +1,17 @@
 
 
-
-
 import * as functions from 'firebase-functions'
 import { validateAuthorization } from '../../auth/utils'
 import { newAccountService } from '../../index'
 import { validateString } from '../../utils/validation'
 import { validateRegistrationData } from './validation'
+
+
+
 /**
  * Registers a new user account.
  */
 export const registerUser = functions.https.onCall(async (data, context) => {
-
 
     const registrationData = validateRegistrationData(data)
 

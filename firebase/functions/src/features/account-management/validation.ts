@@ -10,6 +10,7 @@ import { UserRegistrationData } from "./types";
  * @returns Validated user registration information.
  */
 export function validateRegistrationData(data: any): UserRegistrationData {
+
     const isDriver = validateBool(data.isDriver)
 
     if (isDriver) {

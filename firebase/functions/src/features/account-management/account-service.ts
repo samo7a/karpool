@@ -5,6 +5,7 @@ import { UserDAOInterface } from '../../data-access/user/dao'
 import { UserFieldsExternal, UserRegistrationData } from './types'
 import { UserSchema } from "../../data-access/user/schema";
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
+import { HttpsError } from "firebase-functions/lib/providers/https";
 
 export class AccountService {
 
@@ -28,7 +29,7 @@ export class AccountService {
     async registerUser(data: UserRegistrationData): Promise<void> {
         await this.authDAO.registerAccount(data.email, data.password).then(async uid => {
 
-            const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', true)
+            const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', data.profilePicData, 'base64', true)
 
             await this.userDAO.createAccountData(uid, {
                 firstName: data.firstName,
@@ -50,7 +51,7 @@ export class AccountService {
             })
 
         }).catch(err => {
-            console.log(err.message)
+            throw new HttpsError('internal', err.message)
         })
     }
 

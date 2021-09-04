@@ -20,7 +20,7 @@ export interface UserDAOInterface {
      * @param uid The user's id.
      * @param info A user schema object.
      */
-    createAccountData(uid: string, info: Partial<UserSchema>): Promise<void>
+    createAccountData(uid: string, info: UserSchema): Promise<void>
 
     /**
      * Updates only the fields provided in the fields parameter. All other fields will be left unmodified.
@@ -61,7 +61,7 @@ export class UserDAO implements UserDAOInterface {
         this.db = db
     }
 
-    async createAccountData(uid: string, info: Partial<UserSchema>): Promise<void> {
+    async createAccountData(uid: string, info: UserSchema): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
 
         if (info.driverInfo) {
