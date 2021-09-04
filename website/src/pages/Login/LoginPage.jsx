@@ -6,6 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import { signIn } from "../../auth/signin";
 import { signOut } from "../../auth/signout";
 import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ const LoginPage = () => {
           //call getprofileinfo
           //compare isDriver with isDriver
           // direct the user to the right page.
-          history.push("/about-us"); //remove it later
+          history.push("/reset-password"); //remove it later
         }
       }
     } catch (e) {
@@ -67,6 +68,9 @@ const LoginPage = () => {
                 maxLength="50"
               />
             </div>
+            <Link to="/">
+              <h5>Forgot your password?</h5>
+            </Link>
             <div id="radio">
               <label>Are you driving?</label>
               <label className="switch">

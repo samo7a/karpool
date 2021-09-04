@@ -6,6 +6,9 @@ import LandingPage from "./pages/Landing/LandingPage";
 import AboutUsPage from "./pages/AboutUs/AboutUsPage";
 import SignupPage from "./pages/Signup/SignupPage";
 import LoginPage from "./pages/Login/LoginPage";
+import ResetPasswordPage from "./pages/ResetPassword/ResetPasswordPage";
+import NotFoundPage from "./pages/NotFound/NotFoundPage";
+import VerifyEmailPage from "./pages/VerifyEmail/VerifyEmailPage";
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -15,6 +18,12 @@ function App() {
         <Switch>
           <Route exact path="/">
             <LandingPage />
+          </Route>
+          <Route exact path="/reset-password">
+            <ResetPasswordPage />
+          </Route>
+          <Route exact path="/verify-email">
+            <VerifyEmailPage />
           </Route>
           <Route exact path="/login">
             <LoginPage />
@@ -55,6 +64,9 @@ function App() {
           >
             {/* <Account /> */}
           </ProtectedRoute>
+          <Route path="*">
+            <NotFoundPage />
+          </Route>
         </Switch>
       </div>
     </Router>
