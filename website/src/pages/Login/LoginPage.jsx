@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./LoginPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import vid from "../../assets/promo.mp4";
+
 import { signIn } from "../../auth/signin";
 import { signOut } from "../../auth/signout";
 import { useHistory } from "react-router";
@@ -88,7 +88,10 @@ const LoginPage = () => {
         </div>
         <div className="right">
           <video width="75%" loop autoPlay muted>
-            <source src={vid} type="video/mp4" />
+            <source
+              src="https://firebasestorage.googleapis.com/v0/b/karpool-1ea95.appspot.com/o/vids%2Fpromo.mp4?alt=media&token=01833b23-d0f6-44ed-be5b-33a8ad92ea85"
+              type="video/mp4"
+            />
           </video>
           <span> source: </span>
           <a href="https://www.vecteezy.com/video/2905810-cheerful-woman-spread-arms-on-car-rooftop-under-bright-sky-at-mountain-with-nature-background-during-road-trip-on-vacation">
