@@ -3,13 +3,40 @@ import "./LoginPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import vid from "../../assets/promo.mp4";
+import { signIn } from "../../auth/signin";
+import { signOut } from "../../auth/signout";
+import { useHistory } from "react-router";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isDriver, setIsDriver] = useState("");
-  const [signupError, setSignupError] = useState("");
-  const login = () => {};
+  const [signinError, setSigninError] = useState("");
+  const history = useHistory();
+  const login = async (event) => {
+    event.preventDefault();
+    try {
+      const res = await signIn(email, password);
+      console.log(res);
+      if (res !== undefined) {
+        if (!res.user.emailVerified) {
+          signOut();
+          return;
+        } else {
+          //getprofile
+          const uid = res.user.uid;
+          console.log(uid);
+          //call getprofileinfo
+          //compare isDriver with isDriver
+          // direct the user to the right page.
+          history.push("/about-us"); //remove it later
+        }
+      }
+    } catch (e) {
+      setSigninError(e);
+      signOut();
+    }
+  };
   return (
     <div className="content">
       <Navbar loggedIn="false" />
@@ -56,7 +83,7 @@ const LoginPage = () => {
             <button id="primaryButton" onClick={login}>
               Register
             </button>
-            <p className="error">{signupError}</p>
+            <p className="error">{signinError}</p>
           </form>
         </div>
         <div className="right">

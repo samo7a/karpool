@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./SignupPage.css";
-import Modal from "react-modal";
+
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import CreditCardForm from "../../components/CreditCardForm/CreditCardForm";
@@ -8,7 +8,7 @@ import BankInformationForm from "../../components/BankInformationForm/BankInform
 import CarInformationForm from "../../components/CarInformationForm/CarInformationForm";
 import CarInsuranceForm from "../../components/CarInsuranceForm/CarInsuranceForm";
 import vid from "../../assets/promo.mp4";
-import pic from "../../assets/ahmed.jpg";
+
 import {
   checkFirstName,
   checkLastName,
@@ -25,15 +25,13 @@ import { loadStripe } from "@stripe/stripe-js";
 import { signup } from "../../auth/signup";
 import { signOut } from "../../auth/signout";
 import firebase from "firebase";
+import { getCurrentUser } from "../../auth/getCurrentUser";
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
 
-Modal.setAppElement("#root");
+
 
 const SignupPage = () => {
-  const [photo, setPhoto] = useState(null);
-  const [preview, setPreview] = useState();
-  const photoRef = useRef();
-  const [photoError, setPhotoError] = useState("");
+  
   //text input variables
   const [firstName, setFirstName] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -66,22 +64,12 @@ const SignupPage = () => {
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [uid, setUid] = useState("");
   const bankInfoRef = useRef();
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
 
-  useEffect(() => {
-    if (photo) {
-      console.log(photo);
-      const fileReader = new FileReader();
-      fileReader.onloadend = () => {
-        setPreview(fileReader.result);
-      };
-      fileReader.readAsDataURL(photo);
-    } else setPreview(pic);
-  }, [photo]);
+  
   useEffect(() => {
     var day = new Date();
     var dd = String(day.getDate()).padStart(2, "0");
@@ -90,34 +78,10 @@ const SignupPage = () => {
     var day2 = yyyy + "-" + mm + "-" + dd;
     setToday(day2);
   }, []);
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.substr(0, 5) === "image") setPhoto(file);
-    else setPhoto(null);
-    if (photo === null) setPhotoError("Please pick a profile picture");
-    else setPhotoError("");
-  };
-  const handleFileUpload = async () => {
-    if (photo === null) {
-      setPhotoError("Please pick a profile picture");
-      return "error";
-    }
-    const fd = new FormData();
-    fd.append("image", photo, photo.name);
-    //axios http post request to the endpoint when created. (MAX)
-    //upload photo to the database
-    //return the url of the uploaded file
-  };
-  const uploadFile = () => {
-    //TODO
-    //const url = handleFileUpload(); //url of the uploaded file.
-    // if (errorUploading the file) {
-    //   return;
-    // }
-  };
+
+  
   const registerDriver = async (event) => {
     event.preventDefault();
-    setPhotoError("");
     setFirstNameError("");
     setLastNameError("");
     setEmailError("");
@@ -194,9 +158,14 @@ const SignupPage = () => {
     else return;
     try {
       const user = await signup(email, password);
-      setUid(user.user.uid);
-      signOut();
-      console.log(uid);
+      if (user !== undefined) {
+        setUid(user.user.uid);
+        signOut();
+        console.log(uid);
+      } else {
+        getCurrentUser().delete();
+        return;
+      }
     } catch (e) {
       setRegisterError(e.message);
       return;
@@ -229,7 +198,7 @@ const SignupPage = () => {
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      console.log("result",result);
+      console.log("result", result);
     } catch (e) {
       console.log(e);
     }
@@ -241,65 +210,6 @@ const SignupPage = () => {
     <div className="content">
       <Navbar loggedIn="false" />
       <div className="wrapper">
-        <Modal
-          id="modal"
-          isOpen={isModalOpen}
-          onRequestClose={() => setIsModalOpen(false)}
-          style={{
-            overlay: {
-              backgroundColor: "transparent",
-            },
-            content: {
-              backgroundColor: "#001845",
-              color: "white",
-            },
-          }}
-        >
-          <h1>Upload a profile picture</h1>
-          <div className="img-wrap">
-            {preview ? (
-              <img
-                id="preview"
-                alt="profile-pic"
-                src={preview}
-                style={{ objectFit: "cover" }}
-                onClick={(event) => {
-                  event.preventDefault();
-                  photoRef.current.click();
-                }}
-              />
-            ) : (
-              <input
-                id="img-uploader"
-                type="button"
-                name="button"
-                value="Upload Profile Picture"
-                onClick={(event) => {
-                  event.preventDefault();
-                  photoRef.current.click();
-                }}
-              />
-            )}
-            <p
-              onClick={(event) => {
-                event.preventDefault();
-                photoRef.current.click();
-              }}
-              className="img-text"
-            >
-              Pick Profile Picture
-            </p>
-          </div>
-          <input
-            style={{ display: "none" }}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            ref={photoRef}
-          />
-          <button onClick={uploadFile}>Upload</button>
-          <p className="error">{photoError}</p>
-        </Modal>
         <div className="left">
           <h1>Welcome to karpool!</h1>
           <form>
@@ -493,7 +403,7 @@ const SignupPage = () => {
                     confirmPassword={confirmPassword}
                     setConfirmPasswordError={setConfirmPasswordError}
                     isDriver={isDriver}
-                    handleFileUpload={handleFileUpload}
+                    //handleFileUpload={handleFileUpload}
                   />
                 </Elements>
               </>
