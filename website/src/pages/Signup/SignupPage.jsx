@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./SignupPage.css";
+
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import CreditCardForm from "../../components/CreditCardForm/CreditCardForm";
 import BankInformationForm from "../../components/BankInformationForm/BankInformationForm";
 import CarInformationForm from "../../components/CarInformationForm/CarInformationForm";
 import CarInsuranceForm from "../../components/CarInsuranceForm/CarInsuranceForm";
-import vid from "../../assets/promo.mp4";
-import pic from "../../assets/ahmed.jpg";
-import { 
+
+import {
   checkFirstName,
   checkLastName,
   checkEmail,
@@ -21,12 +21,13 @@ import {
 } from "../../utils/InputValidators";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { signup } from "../../auth/signup";
+import { signOut } from "../../auth/signout";
+import firebase from "firebase";
+import { getCurrentUser } from "../../auth/getCurrentUser";
 const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
+
 const SignupPage = () => {
-  const [photo, setPhoto] = useState(null);
-  const [preview, setPreview] = useState();
-  const photoRef = useRef();
-  const [photoError, setPhotoError] = useState("");
   //text input variables
   const [firstName, setFirstName] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
@@ -45,7 +46,7 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [isDriver, setIsDriver] = useState(true);
+  const [isDriver, setIsDriver] = useState(false);
   const [accountNumber, setAccountNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [carBrand, setCarBrand] = useState("");
@@ -59,20 +60,11 @@ const SignupPage = () => {
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [uid, setUid] = useState("");
   const bankInfoRef = useRef();
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
 
-  useEffect(() => {
-    if (photo) {
-      console.log(photo);
-      const fileReader = new FileReader();
-      fileReader.onloadend = () => {
-        setPreview(fileReader.result);
-      };
-      fileReader.readAsDataURL(photo);
-    } else setPreview(pic);
-  }, [photo]);
   useEffect(() => {
     var day = new Date();
     var dd = String(day.getDate()).padStart(2, "0");
@@ -81,28 +73,9 @@ const SignupPage = () => {
     var day2 = yyyy + "-" + mm + "-" + dd;
     setToday(day2);
   }, []);
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.substr(0, 5) === "image") setPhoto(file);
-    else setPhoto(null);
-    if (photo === null) setPhotoError("Please pick a profile picture");
-    else setPhotoError("");
-  };
-  const handleFileUpload = async () => {
-    if (photo === null) {
-      setPhotoError("Please pick a profile picture");
-      return "error";
-    }
-    const fd = new FormData();
-    fd.append("image", photo, photo.name);
-    //axios http post request to the endpoint when created. (MAX)
-    //upload photo to the database
-    //return the url of the uploaded file
-  };
 
-  const registerDriver = (event) => {
+  const registerDriver = async (event) => {
     event.preventDefault();
-    setPhotoError("");
     setFirstNameError("");
     setLastNameError("");
     setEmailError("");
@@ -115,11 +88,7 @@ const SignupPage = () => {
     carInfoRef.current.setCarInfo("");
     carInsuranceRef.current.setInsuranceInfo("");
     setRegisterError("");
-    //TODO
-    //const url = handleFileUpload(); //url of the uploaded file.
-    // if (errorUploading the file) {
-    //   return;
-    // }
+    console.log(dateOfBirth);
     const firstCheck = checkDriverSignUp(
       firstName,
       lastName,
@@ -181,8 +150,24 @@ const SignupPage = () => {
     if (firstCheck && secondCheck && thirdCheck && forthCheck)
       setRegisterError("");
     else return;
-    //add photo url to the payload.
+
+    //TODO: Check the logic here.
+    try {
+      const user = await signup(email, password);
+      if (user !== undefined) {
+        setUid(user.user.uid);
+        signOut();
+        console.log(uid);
+      } else {
+        getCurrentUser().delete();
+        return;
+      }
+    } catch (e) {
+      setRegisterError(e.message);
+      return;
+    }
     const obj = {
+      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -204,9 +189,15 @@ const SignupPage = () => {
       coverageStartDate: coverageStartDate,
       coverageEndDate: coverageEndDate,
     };
-    //TODO: add functionality to regsiter button;
-    //send obj to the backend.
     console.log(obj);
+    const register = firebase.functions().httpsCallable("account-registerUser");
+    try {
+      const result = await register(obj);
+      console.log("result", result);
+    } catch (e) {
+      console.log(e);
+    }
+    //direct the user to the login screen.
   };
   return (
     <div className="content">
@@ -215,48 +206,6 @@ const SignupPage = () => {
         <div className="left">
           <h1>Welcome to karpool!</h1>
           <form>
-            <div className="img-wrap">
-              {preview ? (
-                <img
-                  id="preview"
-                  alt="profile-pic"
-                  src={preview}
-                  style={{ objectFit: "cover" }}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    photoRef.current.click();
-                  }}
-                />
-              ) : (
-                <input
-                  id="img-uploader"
-                  type="button"
-                  name="button"
-                  value="Upload Profile Picture"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    photoRef.current.click();
-                  }}
-                />
-              )}
-              <p
-                onClick={(event) => {
-                  event.preventDefault();
-                  photoRef.current.click();
-                }}
-                className="img-text"
-              >
-                Pick Profile Picture
-              </p>
-            </div>
-            <input
-              style={{ display: "none" }}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={photoRef}
-            />
-            <p className="error">{photoError}</p>
             <div className="i">
               <label>First Name</label>
               <input
@@ -290,7 +239,6 @@ const SignupPage = () => {
             <p className="error">{lastNameError}</p>
             <div className="i">
               <label>Email Address</label>
-
               <input
                 type="text"
                 placeholder="Email Address"
@@ -374,6 +322,7 @@ const SignupPage = () => {
               <input
                 type="password"
                 placeholder="Password"
+                autoComplete="on"
                 onChange={(event) => {
                   const obj = checkPassword(event.target.value);
                   const obj2 = checkConfirmPassword(
@@ -394,6 +343,7 @@ const SignupPage = () => {
               <label>Confirm the Password</label>
               <input
                 type="password"
+                autoComplete="on"
                 placeholder="Confirm the password"
                 onChange={(event) => {
                   const obj = checkConfirmPassword(
@@ -446,7 +396,7 @@ const SignupPage = () => {
                     confirmPassword={confirmPassword}
                     setConfirmPasswordError={setConfirmPasswordError}
                     isDriver={isDriver}
-                    handleFileUpload={handleFileUpload}
+                    //handleFileUpload={handleFileUpload}
                   />
                 </Elements>
               </>
@@ -486,12 +436,32 @@ const SignupPage = () => {
         </div>
         <div className="right">
           <video width="75%" loop autoPlay muted>
-            <source src={vid} type="video/mp4" />
+            <source
+              src="https://firebasestorage.googleapis.com/v0/b/karpool-1ea95.appspot.com/o/vids%2Fpromo.mp4?alt=media&token=01833b23-d0f6-44ed-be5b-33a8ad92ea85"
+              type="video/mp4"
+            />
           </video>
           <span> source: </span>
           <a href="https://www.vecteezy.com/video/2905810-cheerful-woman-spread-arms-on-car-rooftop-under-bright-sky-at-mountain-with-nature-background-during-road-trip-on-vacation">
             https://www.vecteezy.com
           </a>
+          <article className="post">
+            <h1>Share a Ride, Save The Planet!</h1>
+            <p className="para">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+              porta nunc at nisi laoreet, eget dapibus velit semper. Vivamus id
+              hendrerit mi. Cras odio urna, blandit a odio vel, dapibus varius
+              odio. Donec elit lacus, mollis ac sem non, luctus sollicitudin
+              velit. Cras tincidunt tellus lectus, a consequat nulla venenatis
+              sed. Sed sed quam a erat lobortis sollicitudin porttitor
+              ullamcorper ex. Fusce accumsan nunc ut justo interdum tristique in
+              at nisl. Morbi mattis pulvinar rhoncus. Mauris quam risus,
+              pulvinar et urna et, convallis accumsan nisl. Praesent nec lectus
+              vel velit lobortis lobortis. Etiam sollicitudin, sapien eget porta
+              euismod, elit massa egestas est, id blandit mi ligula eu neque.
+              Nulla interdum nibh nisi, non mollis mi luctus ac.
+            </p>
+          </article>
         </div>
       </div>
       <Footer />

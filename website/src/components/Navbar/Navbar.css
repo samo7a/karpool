@@ -68,6 +68,7 @@
 #primaryButton {
   background-color: #0466c8;
   color: #ffffff;
+  height: 40px;
 }
 #primaryButton:hover {
   background-color: #001233;
@@ -77,6 +78,7 @@
 #secondaryButton {
   background-color: #ffffff;
   color: #001233;
+  height: 40px;
 }
 #secondaryButton:hover {
   background-color: #001233;
