@@ -40,7 +40,7 @@ const Navbar = (props) => {
     <div id="body">
       <nav id="navbar">
         <div className="logo">
-          <Link to="/home">
+          <Link to="/">
             <img id="logo" src={logo} alt="logo" />
           </Link>
         </div>
