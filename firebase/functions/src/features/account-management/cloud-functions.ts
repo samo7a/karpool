@@ -1,11 +1,8 @@
 
 
 import * as functions from 'firebase-functions'
-import { validateAuthorization } from '../../auth/utils'
 import { newAccountService } from '../../index'
-import { validateBool, validateString } from '../../utils/validation'
 import { validateRegistrationData } from './validation'
-
 
 
 /**
@@ -22,20 +19,21 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 /**
  * Function Name: account-registerUser
  * Parameters:
- * 
+ *
  */
 
 /**
  * Function Name: account-getUser
- * 
- * Parameters: 
+ *
+ * Parameters:
  * uid: string
  * driver: boolean
- * 
+ *
  * Returns:
- * 
- * 
+ *
+ *
  */
+
 
 //  firstName: string
 //  lastName: string
@@ -51,21 +49,24 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 // roles: Record < string, boolean >
 
 /**
- * 
+ *
  */
-export const getUser = functions.https.onCall(async (data, context) => {
 
-    const callerUID = validateAuthorization(context)
 
-    const targetUID = validateString(data.uid)
 
-    const driver = validateBool(data.driver)
+// export const getUser = functions.https.onCall(async (data, context) => {
 
-    const includePrivateFields = callerUID === targetUID
+//     const callerUID = validateAuthorization(context)
 
-    return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
-        .then(fields => {
-            return JSON.parse(JSON.stringify(fields))
-        })
+//     const targetUID = validateString(data.uid)
 
-})
+//     const driver = validateBool(data.driver)
+
+//     const includePrivateFields = callerUID === targetUID
+
+//     return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
+//         .then(fields => {
+//             return JSON.parse(JSON.stringify(fields))
+//         })
+
+// })

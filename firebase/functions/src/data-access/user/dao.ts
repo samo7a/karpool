@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema } from './schema'
+import { UserSchema, CreditCardSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
@@ -45,6 +45,12 @@ export interface UserDAOInterface {
     deleteAccountData(uid: string): Promise<void>
 
 
+    /**
+     * Creates a credit card document related to the user.
+     * @param data Object containing fields required to create a credit card.
+     */
+    createCreditCard(data: CreditCardSchema): Promise<void>
+
 }
 
 
@@ -60,6 +66,8 @@ export class UserDAO implements UserDAOInterface {
     constructor(db: admin.firestore.Firestore) {
         this.db = db
     }
+
+    //MARK: User Methods
 
     async createAccountData(uid: string, info: UserSchema): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
@@ -84,13 +92,21 @@ export class UserDAO implements UserDAOInterface {
     getAccountData(uid: string): Promise<User> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
         return userRef.get().then(doc => fireDecode(User, doc))
-
     }
 
     async deleteAccountData(uid: string): Promise<void> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
         await userRef.delete()
     }
+
+
+    //MARK: Credit Card Methods
+    async createCreditCard(data: CreditCardSchema): Promise<void> {
+        const ref = this.db.collection(FirestoreKey.creditCards).doc()
+        await ref.create(fireEncode(data))
+    }
+
+
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {

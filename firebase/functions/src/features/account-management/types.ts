@@ -28,14 +28,9 @@ export interface UserRegistrationData {
     password: string
 
     /**
-     * 
-     */
-    licenseNum?: string
-
-    /**
      * The user's date of birth.
      */
-    dob: Date //  11/12/2012
+    dob: string //  yyyy-mm-dd
 
     /**
      * The user's phone number.
@@ -46,11 +41,11 @@ export interface UserRegistrationData {
     /**
      * 
      */
-    cardNum?: string
+    cardNum?: number
 
     cardExpDate?: string
 
-    cardCVC?: string
+    cardCVC?: number
 
 
     stripeToken?: string
@@ -70,6 +65,16 @@ export interface UserRegistrationData {
      * 
      */
     routingNum?: string
+
+    /**
+     * 
+    */
+    licenseNum?: string
+
+    /**
+     * 
+     */
+    licenseExpDate?: string
 
     /**
      * 

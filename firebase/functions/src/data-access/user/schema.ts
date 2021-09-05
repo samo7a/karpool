@@ -34,7 +34,7 @@ export interface UserSchema {
     /**
      * The user's date of birth.
      */
-    dob: Date
+    dob: string //yyyy-mm-dd
 
     /**
      * The date the user joined the Karpool platform.
@@ -78,6 +78,11 @@ export interface DriverInfoSchema {
     licenseNum: string
 
     /**
+     * 
+     */
+    licenseExpDate: string
+
+    /**
      * The average rating of the driver based on reviews of riders. (0-5)
      */
     rating: number
@@ -108,4 +113,23 @@ export interface RiderInfoSchema {
      * 
      */
     stripeToken: string
+}
+
+
+
+
+export interface CreditCardSchema {
+
+    cardNum: number
+
+    cvc: number
+
+    /**
+     * Expiration date in form of MM/YY
+     */
+    expDate: string
+
+    uid: string
+
+
 }

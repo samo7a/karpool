@@ -37,6 +37,7 @@ export class AuthenticationDAO implements AuthenticationDAOInterface {
         }).then(record => {
             return record.uid
         })
+
     }
 
     getUserID(email: string): Promise<string> {

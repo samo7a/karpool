@@ -2,5 +2,8 @@
 
 export const FirestoreKey = {
 
-    users: 'users'
+    users: 'users',
+    vehicles: 'vehicles',
+    trips: 'trips',
+    creditCards: 'credit-cards'
 }

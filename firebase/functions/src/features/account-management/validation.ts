@@ -1,5 +1,5 @@
 
-import { validateBool, validateDate, validateString } from "../../utils/validation"
+import { validateBool, validateDate, validateNumber, validateString } from "../../utils/validation"
 import { UserRegistrationData } from "./types";
 
 
@@ -20,7 +20,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             gender: validateString(data.gender),
             email: validateString(data.email),
             password: validateString(data.password),
-            dob: validateDate(data.dob),
+            dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),
             accountNum: validateString(data.accountNum),
@@ -43,12 +43,12 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             gender: validateString(data.gender),
             email: validateString(data.email),
             password: validateString(data.password),
-            dob: validateDate(data.dob),
+            dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),
-            cardNum: validateString(data.cardNum),
+            cardNum: validateNumber(data.cardNum),
             cardExpDate: validateString(data.cardExpDate),
-            cardCVC: validateString(data.cardCVC),
+            cardCVC: validateNumber(data.cardCVC),
             isDriver: false,
             stripeToken: validateString(data.stripeToken)
         }

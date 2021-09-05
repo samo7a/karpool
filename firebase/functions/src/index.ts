@@ -15,6 +15,7 @@ import { fireDecode } from "./data-access/utils/decode";
 import 'reflect-metadata';
 import { AccountService } from "./features/account-management/account-service";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
+import { VehicleDAO } from "./data-access/vehicle/dao";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -36,11 +37,16 @@ export function newCloudStorageDAO(): CloudStorageDAO {
     return new CloudStorageDAO(admin.storage())
 }
 
+export function newVehicleDAO(): VehicleDAO {
+    return new VehicleDAO(admin.firestore())
+}
+
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
         newAuthDAO(),
-        newCloudStorageDAO()
+        newCloudStorageDAO(),
+        newVehicleDAO()
     )
 }
 
@@ -52,16 +58,6 @@ export function newAccountService(): AccountService {
 
 
 exports.account = require('./features/account-management/cloud-functions')
-
-
-//account-registerUser
-//account-getUserProile
-
-
-
-
-
-
 
 
 

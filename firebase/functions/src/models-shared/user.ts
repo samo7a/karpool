@@ -10,7 +10,7 @@ export class User implements UserSchema {
     phone: string
     email: string
     gender: string
-    dob: Date
+    dob: string
     joinDate: Date
     driverInfo?: DriverInfoSchema
     riderInfo?: RiderInfoSchema
@@ -28,7 +28,7 @@ export class User implements UserSchema {
         phone: string,
         email: string,
         gender: string,
-        dob: Date,
+        dob: string,
         joinDate: Date,
         roles: Record<string, boolean>,
         driverInfo?: DriverInfoSchema,

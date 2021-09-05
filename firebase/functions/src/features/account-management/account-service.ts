@@ -3,12 +3,15 @@
 import { AuthenticationDAOInterface } from "../../auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
 import { UserRegistrationData } from './types'
-import { UserSchema } from "../../data-access/user/schema";
+import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
 import { UserFieldsExternal } from '../../features/account-management/types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
+import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 
 export class AccountService {
+
+    // Database, Firebase authentication, Cloud storage, StripeAPI
 
     private userDAO: UserDAOInterface
 
@@ -16,14 +19,18 @@ export class AccountService {
 
     private cloudStorageDAO: CloudStorageDAOInterface
 
+    private vehicleDAO: VehicleDAOInterface
+
     constructor(
         userDAO: UserDAOInterface,
         authDAO: AuthenticationDAOInterface,
-        storageDAO: CloudStorageDAOInterface
+        storageDAO: CloudStorageDAOInterface,
+        vehicleDAO: VehicleDAOInterface,
     ) {
         this.userDAO = userDAO
         this.authDAO = authDAO
         this.cloudStorageDAO = storageDAO
+        this.vehicleDAO = vehicleDAO
     }
 
 
@@ -32,6 +39,20 @@ export class AccountService {
 
             const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', data.profilePicData, 'base64', true)
 
+            const driverInfo: DriverInfoSchema = {
+                rating: 0,
+                ratingCount: 0,
+                licenseExpDate: data.licenseExpDate!,
+                licenseNum: data.licenseNum!
+            }
+
+            const riderInfo: RiderInfoSchema = {
+                rating: 0,
+                ratingCount: 0,
+                stripeToken: data.stripeToken!
+            }
+
+            //Create user document
             await this.userDAO.createAccountData(uid, {
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -40,9 +61,9 @@ export class AccountService {
                 gender: data.gender,
                 dob: data.dob,
                 joinDate: new Date(),
-                roles: { 'Rider': true },
-                driverInfo: data.isDriver ? { licenseNum: data.licenseNum!, rating: 0, ratingCount: 0 } : undefined,
-                riderInfo: data.isDriver ? undefined : { rating: 0, ratingCount: 0, stripeToken: data.stripeToken! },
+                roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
+                driverInfo: data.isDriver ? driverInfo : undefined,
+                riderInfo: data.isDriver ? undefined : riderInfo,
                 profileURL: downloadURL,
                 bankAccount: {
                     accountNum: data.accountNum!,
@@ -50,6 +71,33 @@ export class AccountService {
                 }
 
             })
+
+            //Create vehicle document if applicable
+            if (data.isDriver) {
+                this.vehicleDAO.createVehicle({
+                    color: data.color!,
+                    insurance: {
+                        provider: data.provider!,
+                        coverageType: data.coverage!,
+                        startDate: data.startDate!,
+                        endDate: data.endDate!
+                    },
+                    licensePlateNum: data.plateNum!,
+                    make: data.make!,
+                    year: data.year!,
+                    uid: uid
+                })
+            }
+
+            //Create credit card document if applicable.
+            if (!data.isDriver) {
+                this.userDAO.createCreditCard({
+                    cardNum: data.cardNum!,
+                    cvc: data.cardCVC!,
+                    expDate: data.cardExpDate!,
+                    uid: uid
+                })
+            }
 
         }).catch(err => {
             throw new HttpsError('internal', err.message)
