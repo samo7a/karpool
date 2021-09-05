@@ -1,6 +1,5 @@
 export function checkFirstName(name) {
   var nameREGEX = /^[A-Za-z-,\s']+$/;
-  // r"(/^[A-Za-z-,\s']+$/)"
   if (name.length <= 1)
     return {
       valid: false,
