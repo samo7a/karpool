@@ -47,7 +47,8 @@ const Navbar = (props) => {
         {isLoggedIn ? (
           <div id="navbar-links">
             <ul>
-              <SmartLink link="/home" title="Home" />
+              {/* getProfile rider-home driver-home */}
+              <SmartLink link="/rider-home" title="Home" />
               <SmartLink link="/account" title="Account" />
               <SmartLink link="/about-us" title="About Us" />
             </ul>
