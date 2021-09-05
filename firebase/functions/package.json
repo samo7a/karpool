@@ -1,22 +1,26 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
+    "lint": "eslint \"src/**/*\"",
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "jest"
+    "unit-tests": "jest \"test/unit.test.ts\""
   },
   "engines": {
     "node": "14"
   },
   "main": "lib/index.js",
   "dependencies": {
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "firebase-admin": "^9.8.0",
-    "firebase-functions": "^3.14.1"
+    "firebase-functions": "^3.14.1",
+    "reflect-metadata": "^0.1.13",
+    "stripe": "^8.171.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",

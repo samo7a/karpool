@@ -1,10 +1,18 @@
 
 
+import * as admin from 'firebase-admin'
 
-import { add } from '../src/index'
+admin.initializeApp()
 
-test('Basic add', () => {
-    const a = 5
-    const b = 2
-    expect(add(a, b)).toBe(a + b)
-})
+// test('Basic add', () => {
+//     const a = 5
+//     const b = 2
+//     expect(add(a, b)).toBe(a + b)
+// })
+
+//Write skeleton.
+//Write tests that fail.
+//Implement skeleton.
+//Check everything succeeds.
+
+require('./data-access/utils/unit.test')

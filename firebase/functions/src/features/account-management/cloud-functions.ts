@@ -1,0 +1,72 @@
+
+
+import * as functions from 'firebase-functions'
+import { newAccountService } from '../../index'
+import { validateRegistrationData } from './validation'
+
+
+/**
+ * Registers a new user account.
+ */
+export const registerUser = functions.https.onCall(async (data, context) => {
+
+    const registrationData = validateRegistrationData(data)
+
+    return newAccountService().registerUser(registrationData)
+
+})
+
+/**
+ * Function Name: account-registerUser
+ * Parameters:
+ *
+ */
+
+/**
+ * Function Name: account-getUser
+ *
+ * Parameters:
+ * uid: string
+ * driver: boolean
+ *
+ * Returns:
+ *
+ *
+ */
+
+
+//  firstName: string
+//  lastName: string
+//  phone: string
+//  gender: string
+//  joinDate: Date
+//  driverRating?: number
+//  driverRatingCount?: number
+//  riderRating?: number
+//  riderRatingCount?: number
+//  profileURL?: string
+// licenseNum ?: string
+// roles: Record < string, boolean >
+
+/**
+ *
+ */
+
+
+
+// export const getUser = functions.https.onCall(async (data, context) => {
+
+//     const callerUID = validateAuthorization(context)
+
+//     const targetUID = validateString(data.uid)
+
+//     const driver = validateBool(data.driver)
+
+//     const includePrivateFields = callerUID === targetUID
+
+//     return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
+//         .then(fields => {
+//             return JSON.parse(JSON.stringify(fields))
+//         })
+
+// })
