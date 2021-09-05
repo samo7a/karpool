@@ -40,14 +40,15 @@ const Navbar = (props) => {
     <div id="body">
       <nav id="navbar">
         <div className="logo">
-          <Link to="/home">
+          <Link to="/">
             <img id="logo" src={logo} alt="logo" />
           </Link>
         </div>
         {isLoggedIn ? (
           <div id="navbar-links">
             <ul>
-              <SmartLink link="/home" title="Home" />
+              {/* getProfile rider-home driver-home */}
+              <SmartLink link="/rider-home" title="Home" />
               <SmartLink link="/account" title="Account" />
               <SmartLink link="/about-us" title="About Us" />
             </ul>
