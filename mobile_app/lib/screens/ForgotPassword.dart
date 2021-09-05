@@ -6,6 +6,7 @@ import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:mobile_app/widgets/text-input-field.dart';
 
 class ForgotPassword extends StatelessWidget {
+  static const id = 'forgotPassword';
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

@@ -4,6 +4,7 @@ import 'package:mobile_app/pallete.dart';
 import 'package:mobile_app/widgets/widgets.dart';
 
 class LoginScreen extends StatelessWidget {
+  static const id = 'loginScreen';
   @override
   Widget build(BuildContext context) {
     return Stack(

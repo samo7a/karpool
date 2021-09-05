@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/auth.dart';
 import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
@@ -30,10 +31,15 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        initialRoute: SplashScreen.id,
+        initialRoute: RegisterScreen.id,
         routes: {
           SplashScreen.id: (context) => SplashScreen(),
           MainScreen.id: (context) => MainScreen(),
+          LoginScreen.id: (context) => LoginScreen(),
+          RegisterScreen.id: (context) => RegisterScreen(),
+          ForgotPassword.id: (context) => ForgotPassword(),
+          ResetCode.id: (context) => ResetCode(),
+          ResetPassword.id: (context) => ResetPassword(),
         },
       ),
     );
