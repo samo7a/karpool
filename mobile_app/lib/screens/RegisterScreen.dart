@@ -23,6 +23,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void validate2() {
+    RegExp regex = new RegExp(r"/^[^\s@]+@[^\s@\d]+.[^\s@\d]+$/");
+    print(regex.hasMatch("samo@ll.co"));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -79,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MaxLengthValidator(50,
                           errorText:
                               "First name should not exceed 50 characters!"),
-                      PatternValidator(r"(/^[A-Za-z-,\s']+$/)",
+                      PatternValidator(r"(^[A-Za-z-,\s']+$)",
                           errorText: "Please enter valid name!"),
                     ]),
                     keyboardType: TextInputType.text,
@@ -99,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MaxLengthValidator(50,
                           errorText:
                               "Last name should not exceed 50 characters!"),
-                      PatternValidator(r"(/^[A-Za-z-,\s']+$/)",
+                      PatternValidator(r"(^[A-Za-z-,\s']+$)",
                           errorText: "Please enter valid name!"),
                     ]),
                     keyboardType: TextInputType.text,
@@ -131,7 +136,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: "Phone Number"),
                     validator: MultiValidator([
                       RequiredValidator(errorText: "Phone Number is Required!"),
-                      //PatternValidator(pattern, errorText: errorText),
+                      MaxLengthValidator(10,
+                          errorText:
+                              "US Phone Number should not exceed 10 digits!"),
+                      MinLengthValidator(10,
+                          errorText:
+                              "US Phone Number should not be less than 10 digits!"),
+                      PatternValidator(r"^[0-9]{10}$",
+                          errorText: "Please enter a valid phone number!"),
                     ]),
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
@@ -145,10 +157,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: OutlineInputBorder(), labelText: "Password"),
                     validator: MultiValidator([
                       RequiredValidator(errorText: "Password is Required!"),
+                      MaxLengthValidator(50,
+                          errorText:
+                              "Password should not exceed 50 characters!"),
                       MinLengthValidator(8,
                           errorText:
                               'Password must be at least 8 digits long!'),
-                      //PatternValidator("r(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,50}$/)", errorText: "Please enter valid password!"),
+                      // r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,50}$"
+                      //r'(?=.*?[#?!@$%^&*-])'
+                      PatternValidator(
+                          r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,50}$", // Change RegExp to match Firebase Password Rules
+                          errorText:
+                              'Your password must be at least 8 characters long, contain at least one number, one symbol and have a mixture of uppercase and lowercase letters. Password should not exceed 50 characters!')
                     ]),
                     textInputAction: TextInputAction.next,
                   ),
@@ -168,7 +188,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Padding(
                   padding: EdgeInsets.only(top: 25.0),
                   child: ElevatedButton(
-                    onPressed: validate,
+                    onPressed: () {
+                      validate();
+                      validate2();
+                    },
                     child: Text("Register"),
                   ),
                 ),

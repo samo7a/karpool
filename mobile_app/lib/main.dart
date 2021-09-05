@@ -38,8 +38,6 @@ class MyApp extends StatelessWidget {
           LoginScreen.id: (context) => LoginScreen(),
           RegisterScreen.id: (context) => RegisterScreen(),
           ForgotPassword.id: (context) => ForgotPassword(),
-          ResetCode.id: (context) => ResetCode(),
-          ResetPassword.id: (context) => ResetPassword(),
         },
       ),
     );
