@@ -1,112 +1,153 @@
+//MARK: Parameter Shapes
 
+
+/**
+ * UID 
+ */
 
 export interface UserRegistrationData {
 
     /**
-     * The user's firstName.
+     * The user's firstName. (Driver&Rider)
      */
     firstName: string
 
     /**
-     * The user's lastName.
+     * The user's lastName. (Driver&Rider)
      */
     lastName: string
 
     /**
-     * The user's gender.
+     * The user's gender. (Driver&Rider)
      */
     gender: string
 
     /**
-     * The user's email address.
+     * The user's email address. (Driver&Rider)
      */
     email: string
 
     /**
-     * The user's account password.
+     * The user's account password. (Driver&Rider)
      */
     password: string
 
     /**
-     * The user's date of birth.
+     * The user's date of birth. (Driver&Rider)
      */
-    dob: string //  yyyy-mm-dd
+    dob: string //  yyyy-mm-dd 
 
     /**
-     * The user's phone number.
+     * The user's phone number. (Driver&Rider)
      */
     phone: string
 
 
     /**
-     * 
+     * The first credit card number used for user registration
+     * Last 4 digits
+     * (Rider)
      */
     cardNum?: number
 
+    /**
+     * The credit card exp date (Rider)
+     */
     cardExpDate?: string
 
+    /**
+     * The card cvc code (Rider)
+     */
     cardCVC?: number
 
-
+    /**
+     * The customer stripe token used to make payments from rider
+     * (Rider)
+     */
     stripeToken?: string
 
-
     /**
-     * Base 64
+     * Base 64 encoded (Driver&Rider)
      */
     profilePicData: string
 
     /**
-     * 
+     * Bank account number (Driver)
      */
     accountNum?: string
 
     /**
-     * 
+     * Bank account routing number (Driver)
      */
     routingNum?: string
 
     /**
-     * 
-    */
+     * Driver's license number. (Driver)
+     */
     licenseNum?: string
 
     /**
-     * 
+     * Driver's license expiration date (yyyy-mm-dd).
+     * (Driver)
      */
     licenseExpDate?: string
 
     /**
-     * 
+     * The car's make.
+     * (Driver)
      */
     make?: string
 
     /**
-     * 
+     * The vehicle's color.
+     * (Driver)
      */
     color?: string
 
 
     /**
-     * 
+     * Flag for determining if the user is registering as a rider or driver.
+     * (Driver = true; Rider = false)
      */
     isDriver: boolean
 
+    /**
+     * The vehicle's year.
+     * (Driver)
+     */
     year?: string
 
+    /**
+     * The vehicle's license plate number.
+     * (Driver)
+     */
     plateNum?: string
 
+    /**
+     * The vehicle's insurance provider.
+     * (Driver)
+     */
     provider?: string
 
+    /**
+     * The vehicle's insurance coverage.
+     * (Driver)
+     */
     coverage?: string
 
-    startDate?: Date
+    /**
+     * The insurance coverage start date as (yyyy-mm-dd)
+     * (Driver)
+     */
+    startDate?: string
 
-    endDate?: Date
+    /**
+     * The insurance coverage end date as (yyyy-mm-dd)
+     * (Driver)
+     */
+    endDate?: string
 
 }
-
-
 
 
 /**

@@ -75,8 +75,8 @@ export class AccountService {
                     insurance: {
                         provider: data.provider!,
                         coverageType: data.coverage!,
-                        startDate: data.startDate!,
-                        endDate: data.endDate!
+                        startDate: new Date(data.startDate!),
+                        endDate: new Date(data.endDate!)
                     },
                     licensePlateNum: data.plateNum!,
                     make: data.make!,
@@ -87,7 +87,7 @@ export class AccountService {
 
             //Create credit card document if applicable.
             if (!data.isDriver) {
-               await  this.userDAO.createCreditCard({
+                await this.userDAO.createCreditCard({
                     cardNum: data.cardNum!,
                     cvc: data.cardCVC!,
                     expDate: data.cardExpDate!,
@@ -109,23 +109,38 @@ export class AccountService {
     async getUserProfile(uid: string, driver: boolean, includePrivate: boolean): Promise<UserFieldsExternal> {
 
         const user = await this.userDAO.getAccountData(uid)
-            if(driver){
+
+        const hasDriverRole = user.roles['Driver'] ?? false
+        const hasRiderRole = user.roles['Rider'] ?? false
+
+        if (driver) {
+            if (hasDriverRole) {
                 return {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     phone: user.phone,
                     profileURL: user.profileURL,
-                    driverRating: user.driverInfo?.rating  
+                    driverRating: user.driverInfo?.rating,
+                    roles: user.roles
                 }
-            }else{
-                return {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    phone: user.phone,
-                    profileURL: user.profileURL,
-                    riderRating: user.riderInfo?.rating
-                }
+            } else {
+                throw new HttpsError('failed-precondition', `User ${uid} is not a driver.`)
             }
+
+        } else {
+            if (hasRiderRole) {
+                return {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phone: user.phone,
+                    profileURL: user.profileURL,
+                    riderRating: user.riderInfo?.rating,
+                    roles: user.roles
+                }
+            } else {
+                throw new HttpsError('failed-precondition', `User ${uid} is not a rider.`)
+            }
+        }
     }
 
     /**

@@ -4,7 +4,8 @@ import * as functions from 'firebase-functions'
 import { newAccountService } from '../../index'
 import { validateRegistrationData } from './validation'
 import { validateBool, validateString } from '../../utils/validation'
-import { validateAuthorization } from '../../auth/utils'
+// import { validateAuthorization } from '../../auth/utils'
+import { driverRegisterDummy } from '../../dummy-data'
 
 
 
@@ -13,7 +14,7 @@ import { validateAuthorization } from '../../auth/utils'
  */
 export const registerUser = functions.https.onCall(async (data, context) => {
 
-    const registrationData = validateRegistrationData(data)
+    const registrationData = validateRegistrationData(driverRegisterDummy())
 
     return newAccountService().registerUser(registrationData)
 
@@ -58,9 +59,9 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 
 
 export const getUser = functions.https.onCall(async (data, context) => {
-  
 
-    const callerUID = validateAuthorization(context)
+
+    const callerUID = 'dGidzkLmsbR7KHikdMAcIlJNpgl1' // validateAuthorization(context)
 
     const targetUID = validateString(data.uid)
 

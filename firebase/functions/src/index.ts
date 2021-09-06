@@ -66,7 +66,6 @@ export const test2 = functions.https.onCall(async (data, context) => {
 
     console.log('Client Data', data)
 
-
     const res = await admin.firestore().collection('what ever the fuck you want').doc().set({
         firstName: 'Chris',
         age: 23
@@ -77,11 +76,11 @@ export const test2 = functions.https.onCall(async (data, context) => {
 
 export const test = functions.https.onCall((data, context) => {
 
-   // return admin.firestore().collection('test').doc('test').get().then(doc => fireDecode(TestClass, doc)).then(c => {
-        // console.log(c.name)
-        // console.log(c.date.toISOString())
-        // console.log(c.bool)
-        // console.log(c.num)
+    // return admin.firestore().collection('test').doc('test').get().then(doc => fireDecode(TestClass, doc)).then(c => {
+    // console.log(c.name)
+    // console.log(c.date.toISOString())
+    // console.log(c.bool)
+    // console.log(c.num)
     // })
     return Promise.resolve({
         firstname: "Taoufik"

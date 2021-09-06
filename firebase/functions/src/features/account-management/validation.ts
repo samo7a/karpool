@@ -1,8 +1,25 @@
 
-import { validateBool, validateDate, validateNumber, validateString } from "../../utils/validation"
+import { validateBool, validateNumber, validateString } from "../../utils/validation"
 import { UserRegistrationData } from "./types";
 
-
+/*
+{
+    firstName: string
+    lastName: string
+    gender: string
+    email: string
+    password: string
+    dob: string (yyyy-mm-dd)
+    phone: string
+    profilePicData: string (base64Encoded)
+    accountNum: string
+    routingNum: string
+    make: string
+    color: string
+    isDriver: true,
+    year: 
+}
+*/
 
 /**
  * Validates the 
@@ -32,8 +49,8 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             plateNum: validateString(data.plateNum),
             provider: validateString(data.provider),
             coverage: validateString(data.coverage),
-            startDate: validateDate(data.startDate),
-            endDate: validateDate(data.endDate),
+            startDate: validateString(data.startDate),
+            endDate: validateString(data.endDate),
             licenseNum: validateString(data.licenseNum)
         }
     } else {
