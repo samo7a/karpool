@@ -63,10 +63,6 @@ export interface UserSchema {
      */
     profileURL?: string
 
-    bankAccount?: {
-        accountNum: string
-        routingNum: string
-    }
 }
 
 
@@ -92,6 +88,16 @@ export interface DriverInfoSchema {
      * Used to calculate the new average rating.
      */
     ratingCount: number
+
+    /**
+     * Driver's Bank Account number. 
+     */
+     accountNum: string
+
+     /**
+     * Driver's Bank routing number. 
+     */
+    routingNum: string
 
 }
 

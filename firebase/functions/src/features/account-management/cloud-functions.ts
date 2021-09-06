@@ -3,6 +3,9 @@
 import * as functions from 'firebase-functions'
 import { newAccountService } from '../../index'
 import { validateRegistrationData } from './validation'
+import { validateBool, validateString } from '../../utils/validation'
+import { validateAuthorization } from '../../auth/utils'
+
 
 
 /**
@@ -54,19 +57,20 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 
 
 
-// export const getUser = functions.https.onCall(async (data, context) => {
+export const getUser = functions.https.onCall(async (data, context) => {
+  
 
-//     const callerUID = validateAuthorization(context)
+    const callerUID = validateAuthorization(context)
 
-//     const targetUID = validateString(data.uid)
+    const targetUID = validateString(data.uid)
 
-//     const driver = validateBool(data.driver)
+    const driver = validateBool(data.driver)
 
-//     const includePrivateFields = callerUID === targetUID
+    const includePrivateFields = callerUID === targetUID
 
-//     return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
-//         .then(fields => {
-//             return JSON.parse(JSON.stringify(fields))
-//         })
+    return newAccountService().getUserProfile(targetUID, driver, includePrivateFields)
+        .then(fields => {
+            return JSON.parse(JSON.stringify(fields))
+        })
 
-// })
+})

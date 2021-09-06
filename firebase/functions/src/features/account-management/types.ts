@@ -135,12 +135,12 @@ export interface UserFieldsExternal {
     /**
      * The user's gender.
      */
-    gender: string
+    gender?: string
 
     /**
      * The date the user joined the Karpool platform.
      */
-    joinDate: Date
+    joinDate?: Date
 
     /**
      * The user's driver rating. (0-5)
@@ -183,7 +183,7 @@ export interface UserFieldsExternal {
      * Current possible keys are "Rider" or "Driver".
      * The values will only be true. If the role isn't in the dictionary then the user implicitly doesn't have a role.
      */
-    roles: Record<string, boolean>
+    roles?: Record<string, boolean>
 
 
     //TODO: Bank info

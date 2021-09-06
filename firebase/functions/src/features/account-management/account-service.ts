@@ -2,9 +2,8 @@
 
 import { AuthenticationDAOInterface } from "../../auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
-import { UserRegistrationData } from './types'
 import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
-import { UserFieldsExternal } from '../../features/account-management/types'
+import { UserFieldsExternal, UserRegistrationData } from './types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
@@ -43,7 +42,9 @@ export class AccountService {
                 rating: 0,
                 ratingCount: 0,
                 licenseExpDate: data.licenseExpDate!,
-                licenseNum: data.licenseNum!
+                licenseNum: data.licenseNum!,
+                accountNum: data.accountNum!,
+                routingNum: data.routingNum!
             }
 
             const riderInfo: RiderInfoSchema = {
@@ -64,17 +65,12 @@ export class AccountService {
                 roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
                 driverInfo: data.isDriver ? driverInfo : undefined,
                 riderInfo: data.isDriver ? undefined : riderInfo,
-                profileURL: downloadURL,
-                bankAccount: {
-                    accountNum: data.accountNum!,
-                    routingNum: data.routingNum!
-                }
-
+                profileURL: downloadURL
             })
 
             //Create vehicle document if applicable
             if (data.isDriver) {
-                this.vehicleDAO.createVehicle({
+                await this.vehicleDAO.createVehicle({
                     color: data.color!,
                     insurance: {
                         provider: data.provider!,
@@ -91,7 +87,7 @@ export class AccountService {
 
             //Create credit card document if applicable.
             if (!data.isDriver) {
-                this.userDAO.createCreditCard({
+               await  this.userDAO.createCreditCard({
                     cardNum: data.cardNum!,
                     cvc: data.cardCVC!,
                     expDate: data.cardExpDate!,
@@ -112,25 +108,25 @@ export class AccountService {
      */
     async getUserProfile(uid: string, driver: boolean, includePrivate: boolean): Promise<UserFieldsExternal> {
 
-        return Promise.reject('') //Remove this later
-
-        // const user = await this.userDAO.getAccountData(uid)
-
-        // return {
-        //     firstName: user.firstName,
-        //     lastName: user.lastName,
-        //     phone: user.phone,
-        //     gender: user.gender,
-        //     dob: user.dob,
-        //     joinDate: user.joinDate,
-        //     driverInfo: {
-        //         licenseNum: includePrivate ? user.driverInfo?.licenseNum : undefined,
-
-
-        //     }
-        // }
+        const user = await this.userDAO.getAccountData(uid)
+            if(driver){
+                return {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phone: user.phone,
+                    profileURL: user.profileURL,
+                    driverRating: user.driverInfo?.rating  
+                }
+            }else{
+                return {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phone: user.phone,
+                    profileURL: user.profileURL,
+                    riderRating: user.riderInfo?.rating
+                }
+            }
     }
-
 
     /**
      * 
