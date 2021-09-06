@@ -7,6 +7,7 @@ import { signIn } from "../../auth/signin";
 import { signOut } from "../../auth/signout";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
+import { useAlert } from "react-alert";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +15,12 @@ const LoginPage = () => {
   const [isDriver, setIsDriver] = useState("");
   const [signinError, setSigninError] = useState("");
   const history = useHistory();
+  const alert = useAlert();
   const login = async (event) => {
     event.preventDefault();
     try {
       const res = await signIn(email, password);
-      console.log(res);
+      console.log("signin res", res);
       if (res !== undefined) {
         if (!res.user.emailVerified) {
           signOut();
@@ -30,11 +32,12 @@ const LoginPage = () => {
           //call getprofileinfo
           //compare isDriver with isDriver
           // direct the user to the right page.
-          history.push("/reset-password"); //remove it later
+          alert.success("Successfuly logged in!");
+          history.push("/about-us"); //change this
         }
       }
     } catch (e) {
-      setSigninError(e);
+      setSigninError(e.message);
       signOut();
     }
   };

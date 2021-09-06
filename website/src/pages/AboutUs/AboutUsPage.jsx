@@ -4,7 +4,7 @@ import TeamMember from "../../components/TeamMember/TeamMember";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
-export default function AboutUsPage() {
+const AboutUsPage = () => {
   const isLoggedIn = true;
   return (
     <>
@@ -59,4 +59,5 @@ export default function AboutUsPage() {
       </div>
     </>
   );
-}
+};
+export default AboutUsPage;

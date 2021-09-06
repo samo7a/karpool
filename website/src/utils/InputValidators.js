@@ -104,7 +104,7 @@ export function checkPhoneNumber(phoneNumber) {
 }
 
 export function checkPassword(password) {
-  var passwordREGEX = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,50}$/;
+  var passwordREGEX = /^(?=.*[0-9])(?=.*[a-zA-Z])(?=\S+$).{6,50}$/;
   if (password.length === 0)
     return {
       valid: false,
@@ -114,7 +114,7 @@ export function checkPassword(password) {
   if (!passwordREGEX.test(password))
     return {
       valid: false,
-      msg: "Your password must be at least 8 characters long, contain at least one number, one symbol and have a mixture of uppercase and lowercase letters.Password should not exceed 50 characters!",
+      msg: "Your password must be at least 6 characters long, contain at least one number, and one letter.Password should not exceed 50 characters!",
     };
 
   return {
