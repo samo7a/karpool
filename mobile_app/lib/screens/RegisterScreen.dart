@@ -6,6 +6,9 @@ import 'package:mobile_app/pallete.dart';
 import 'package:mobile_app/widgets/widgets.dart';
 
 class RegisterScreen extends StatefulWidget {
+  static const id = 'registerScreen';
+  const RegisterScreen({Key? key}) : super(key: key);
+  
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }

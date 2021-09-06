@@ -50,6 +50,14 @@ flutter:
   assets:
     - images/
 
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Black.ttf
+    - family: Glory
+      fonts:
+        - asset: fonts/Glory-VariableFont_wght.ttf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

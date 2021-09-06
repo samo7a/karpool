@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/screens/LoginScreen.dart';
+import 'package:mobile_app/screens/RegisterScreen.dart';
 import '../util/Size.dart';
+import 'package:mobile_app/pallete.dart';
 
 class MainScreen extends StatelessWidget {
   static const id = 'mainScreen';
@@ -12,15 +15,33 @@ class MainScreen extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          backgroundColor: Color(0xFF9DA9C1),
+          backgroundColor: kBackgroundColor,
           body: SafeArea(
               child: Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image(
-                  image: AssetImage('images/splashIcon.png'),
-                  width: size.BLOCK_WIDTH * 60,
-                  height: size.BLOCK_HEIGHT * 60,
+                Text(
+                  'Kärpōōl',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 60,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  'Ensuring mobility in a mobile world.',
+                  style: TextStyle(
+                    fontFamily: 'Glory',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 27,
+                  ),
+                ),
+                SizedBox(
+                  height: 175,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5.0),
@@ -28,26 +49,33 @@ class MainScreen extends StatelessWidget {
                   child: FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50)),
-                    minWidth: size.BLOCK_WIDTH * 80,
-                    height: size.BLOCK_HEIGHT * 10,
-                    color: Color(0xFF0466CB),
-                    child: Text('Existing Karpool User',
-                        style: TextStyle(color: Colors.white, fontSize: 30)),
-                    onPressed: () {},
+                    minWidth: size.BLOCK_WIDTH * 70,
+                    height: size.BLOCK_HEIGHT * 7,
+                    color: kButtonColor,
+                    child: Text('Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                        )),
+                    onPressed: () {
+                      Navigator.pushNamed(context, LoginScreen.id);
+                    },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   // ignore: deprecated_member_use
                   child: FlatButton(
-                    minWidth: size.BLOCK_WIDTH * 80,
-                    height: size.BLOCK_HEIGHT * 10,
+                    minWidth: size.BLOCK_WIDTH * 70,
+                    height: size.BLOCK_HEIGHT * 7,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50)),
-                    color: Color(0xFF0466CB),
-                    child: Text('New Karpool User',
+                    color: kButtonColor,
+                    child: Text('Sign Up',
                         style: TextStyle(color: Colors.white, fontSize: 30)),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, RegisterScreen.id);
+                    },
                   ),
                 )
               ],
@@ -56,3 +84,9 @@ class MainScreen extends StatelessWidget {
         ));
   }
 }
+
+// Image(
+                //   image: AssetImage('images/splashIcon.png'),
+                //   width: size.BLOCK_WIDTH * 60,
+                //   height: size.BLOCK_HEIGHT * 60,
+                // ),

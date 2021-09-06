@@ -6,6 +6,9 @@ import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:mobile_app/widgets/text-input-field.dart';
 
 class ResetCode extends StatelessWidget {
+  static const id = 'reseyCode';
+  const ResetCode({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
