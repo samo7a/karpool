@@ -5,11 +5,13 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import firebase from "firebase/app";
 import { signOut } from "../../auth/signout";
+import { useAlert } from "react-alert";
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [resetError, setResetError] = useState("");
   const history = useHistory();
+  const alert = useAlert();
 
   useEffect(() => {
     signOut();
@@ -20,7 +22,7 @@ const ResetPasswordPage = () => {
     try {
       const res = await firebase.auth().sendPasswordResetEmail(email);
       console.log(res);
-      alert("Succes");
+      alert.success("Email has been sent!");
       history.push("/login");
     } catch (e) {
       setResetError(e.message);

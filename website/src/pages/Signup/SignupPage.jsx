@@ -3,7 +3,6 @@ import "./SignupPage.css";
 
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import CreditCardForm from "../../components/CreditCardForm/CreditCardForm";
 import BankInformationForm from "../../components/BankInformationForm/BankInformationForm";
 import CarInformationForm from "../../components/CarInformationForm/CarInformationForm";
 import CarInsuranceForm from "../../components/CarInsuranceForm/CarInsuranceForm";
@@ -18,14 +17,13 @@ import {
   checkConfirmPassword,
   checkGender,
   checkDriverSignUp,
+  checkRiderSignup,
 } from "../../utils/InputValidators";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { signup } from "../../auth/signup";
+
 import { signOut } from "../../auth/signout";
 import firebase from "firebase";
-import { getCurrentUser } from "../../auth/getCurrentUser";
-const stripePromise = loadStripe(process.env.REACT_APP_PUBLIC_STRIPE_API_KEY);
+import pic from "../../assets/ahmed.jpg";
+import { useAlert } from "react-alert";
 
 const SignupPage = () => {
   //text input variables
@@ -55,16 +53,65 @@ const SignupPage = () => {
   const [carColor, setCarColor] = useState("");
   const [colorHex, setColorHex] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
+  const [driverLicense, setDriverLicense] = useState("");
+  const [licenseExpDate, setLicenseExpDate] = useState("");
   const [insuranceProvider, setInsuranceProvider] = useState("");
   const [coverageType, setCoverageType] = useState("");
   const [coverageStartDate, setCoverageStartDate] = useState("");
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
-  const [uid, setUid] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const bankInfoRef = useRef();
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
+  // photo vars
+  const [photo, setPhoto] = useState(null);
+  const [preview, setPreview] = useState();
+  const photoRef = useRef();
+  const [photoError, setPhotoError] = useState("");
+  const alert = useAlert();
+  useEffect(() => {
+    if (photo) {
+      // console.log(photo);
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        setPreview(fileReader.result);
+      };
+      fileReader.readAsDataURL(photo);
+    } else setPreview(pic);
+  }, [photo]);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file === undefined) {
+      setPhoto(null);
+      //setPreview(pic);
+      setPhotoError("Please pick a profile picture");
+      return;
+    }
+    console.log(file);
+    if (file && file.type.substr(0, 5) === "image") {
+      setPhoto(file);
+      setPhotoError("");
+    } else {
+      setPhoto(null);
+      setPhotoError("Please pick a profile picture");
+    }
+  };
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        let encoded = reader.result.toString().replace(/^data:(.*,)?/, "");
+        if (encoded.length % 4 > 0) {
+          encoded += "=".repeat(4 - (encoded.length % 4));
+        }
+        resolve(encoded);
+      };
+      // reader.readAsArrayBuffer(file);
+      reader.onerror = (error) => reject(error);
+    });
 
   useEffect(() => {
     var day = new Date();
@@ -77,9 +124,99 @@ const SignupPage = () => {
   useEffect(() => {
     signOut();
   }, []);
+  const registerRider = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setFirstNameError("");
+    setLastNameError("");
+    setEmailError("");
+    setPhoneError("");
+    setDateOfBirthError("");
+    setGenderError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setPhotoError("");
+    setRegisterError("");
+    const validPhoto = photo !== null;
+    if (!validPhoto) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      setPhotoError("Please pick a profile picture");
+    }
+    const isValid = checkRiderSignup(
+      firstName,
+      lastName,
+      email,
+      phone,
+      dateOfBirth,
+      gender,
+      password,
+      confirmPassword,
+      isDriver
+    );
 
+    if (!isValid) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      setFirstNameError(checkFirstName(firstName).msg);
+      setLastNameError(checkLastName(lastName).msg);
+      setEmailError(checkEmail(email).msg);
+      setPhoneError(checkPhoneNumber(phone).msg);
+      setDateOfBirthError(checkAge(dateOfBirth).msg);
+      setGenderError(checkGender(gender).msg);
+      setPasswordError(checkPassword(password).msg);
+      setConfirmPasswordError(
+        checkConfirmPassword(confirmPassword, password).msg
+      );
+    }
+    if (isValid && validPhoto) setRegisterError("");
+    else {
+      setIsLoading(false);
+      return;
+    }
+
+    const base64 = await toBase64(photo).catch((e) => Error(e));
+    if (base64 instanceof Error) {
+      setPhotoError(base64.message);
+      console.log("Error: ", base64.message);
+      setIsLoading(false);
+      return;
+    }
+    console.log("base64", photo);
+    const obj = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+      phone: phone,
+      dob: dateOfBirth,
+      gender: gender,
+      isDriver: isDriver,
+      profilePicData: base64,
+    };
+    console.log("obj", obj);
+    //null means everything good.
+    //error if something went wrong
+
+    const register = firebase.functions().httpsCallable("account-registerUser");
+    try {
+      const result = await register(obj);
+      if (result === null) {
+        alert.success("Signed Up!");
+      }
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e.message);
+      setRegisterError(e.message);
+      setIsLoading(false);
+    }
+    // direct the user to the login page.
+  };
   const registerDriver = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     setFirstNameError("");
     setLastNameError("");
     setEmailError("");
@@ -92,7 +229,13 @@ const SignupPage = () => {
     carInfoRef.current.setCarInfo("");
     carInsuranceRef.current.setInsuranceInfo("");
     setRegisterError("");
-    console.log(dateOfBirth);
+    const validPhoto = photo !== null;
+    if (!validPhoto) {
+      setRegisterError(
+        "Please fill all the required data or fix the format of the input!"
+      );
+      setPhotoError("Please pick a profile picture");
+    }
     const firstCheck = checkDriverSignUp(
       firstName,
       lastName,
@@ -137,6 +280,8 @@ const SignupPage = () => {
       carInfoRef.current.checkColor1();
       carInfoRef.current.checkCarAge1();
       carInfoRef.current.checkLicense1();
+      carInfoRef.current.checkDriverLicense();
+      carInfoRef.current.checkDriverLicenseExpDate();
     }
     const forthCheck = carInsuranceRef.current.checkInsInfo();
     if (!forthCheck) {
@@ -145,62 +290,61 @@ const SignupPage = () => {
       );
       carInsuranceRef.current.checkProvider1();
       carInsuranceRef.current.checkCoverageType1();
-      console.log(carInsuranceRef.current.checkStartDate1());
-      console.log(carInsuranceRef.current.checkEndDate1());
     }
-    console.group("checks");
-    console.log(firstCheck, secondCheck, thirdCheck, forthCheck);
-    console.groupEnd("end checks");
-    if (firstCheck && secondCheck && thirdCheck && forthCheck)
+
+    if (firstCheck && secondCheck && thirdCheck && forthCheck && validPhoto)
       setRegisterError("");
-    else return;
-
-    //TODO: Check the logic here.
-    try {
-      const user = await signup(email, password);
-
-      if (user !== undefined) {
-        setUid(user.user.uid);
-        signOut();
-        console.log(uid);
-      } else {
-        getCurrentUser().delete();
-        return;
-      }
-    } catch (e) {
-      setRegisterError(e.message);
+    else {
+      setIsLoading(false);
       return;
     }
+
+    const base64 = await toBase64(photo).catch((e) => Error(e));
+    if (base64 instanceof Error) {
+      setPhotoError(base64.message);
+      console.log("Error: ", base64.message);
+      setIsLoading(false);
+      return;
+    }
+    console.log("base64", photo);
     const obj = {
-      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
-      phoneNumber: phone,
-      dateOfBirth: dateOfBirth,
+      phone: phone,
+      dob: dateOfBirth,
       gender: gender,
       password: password,
-      routingNumber: routingNumber,
-      accountNumber: accountNumber,
-      carBrand: carBrand,
+      routingNum: routingNumber,
+      accountNum: accountNumber,
+      make: carBrand,
       carModel: carModel,
-      yearOfMan: yearOfMan,
-      carColor: carColor,
+      year: yearOfMan,
+      color: carColor,
       colorHex: colorHex,
       isDriver: isDriver,
-      licensePlate: licensePlate,
-      insuranceProvider: insuranceProvider,
-      coverageType: coverageType,
-      coverageStartDate: coverageStartDate,
-      coverageEndDate: coverageEndDate,
+      plateNum: licensePlate,
+      provider: insuranceProvider,
+      coverage: coverageType,
+      startDate: coverageStartDate,
+      endDate: coverageEndDate,
+      licenseNum: driverLicense,
+      licenseExpDate: licenseExpDate,
+      profilePicData: base64,
     };
-    console.log(obj);
+    console.log("obj", obj);
+    //null means everything good.
+    //error if something went wrong
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      console.log("result", result);
+      if (result === null) {
+        alert.success("Signed Up!");
+      }
+      setIsLoading(false);
     } catch (e) {
-      console.log(e);
+      setRegisterError(e.message);
+      setIsLoading(false);
     }
     //direct the user to the login screen.
   };
@@ -211,6 +355,49 @@ const SignupPage = () => {
         <div className="left">
           <h1>Welcome to karpool!</h1>
           <form>
+            <h1>Upload a profile picture</h1>
+            <div className="img-wrap">
+              {preview ? (
+                <img
+                  id="preview"
+                  alt="profile-pic"
+                  src={preview}
+                  style={{ objectFit: "cover" }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    photoRef.current.click();
+                  }}
+                />
+              ) : (
+                <input
+                  id="img-uploader"
+                  type="button"
+                  name="button"
+                  value="Upload Profile Picture"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    photoRef.current.click();
+                  }}
+                />
+              )}
+              <p
+                onClick={(event) => {
+                  event.preventDefault();
+                  photoRef.current.click();
+                }}
+                className="img-text"
+              >
+                Pick Profile Picture
+              </p>
+            </div>
+            <input
+              style={{ display: "none" }}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              ref={photoRef}
+            />
+            <p className="error">{photoError}</p>
             <div className="i">
               <label>First Name</label>
               <input
@@ -380,31 +567,7 @@ const SignupPage = () => {
               </label>
             </div>
             {!isDriver ? (
-              <>
-                {/* <h2>Sign-up as a Rider!</h2>
-                <Elements stripe={stripePromise}>
-                  <CreditCardForm
-                    firstName={firstName}
-                    setFirstNameError={setFirstNameError}
-                    lastName={lastName}
-                    setLastNameError={setLastNameError}
-                    email={email}
-                    setEmailError={setEmailError}
-                    phone={phone}
-                    setPhoneError={setPhoneError}
-                    dateOfBirth={dateOfBirth}
-                    setDateOfBirthError={setDateOfBirthError}
-                    gender={gender}
-                    setGenderError={setGenderError}
-                    password={password}
-                    setPasswordError={setPasswordError}
-                    confirmPassword={confirmPassword}
-                    setConfirmPasswordError={setConfirmPasswordError}
-                    isDriver={isDriver}
-                    //handleFileUpload={handleFileUpload}
-                  />
-                </Elements> */}
-              </>
+              <></>
             ) : (
               <>
                 <h2>Sign-up as a Driver!</h2>
@@ -422,6 +585,8 @@ const SignupPage = () => {
                   setCarColor={setCarColor}
                   setColorHex={setColorHex}
                   setLicensePlate={setLicensePlate}
+                  setDriverLicense={setDriverLicense}
+                  setLicenseExpDate={setLicenseExpDate}
                   ref={carInfoRef}
                 />
                 <CarInsuranceForm
@@ -435,7 +600,7 @@ const SignupPage = () => {
             )}
             <button
               id="primaryButton"
-              onClick={registerDriver}
+              onClick={isDriver ? registerDriver : registerRider}
               disabled={isLoading}
             >
               {isLoading && (

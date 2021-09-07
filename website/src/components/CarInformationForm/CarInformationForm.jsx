@@ -14,6 +14,7 @@ import {
   checkColor,
   checkCarAge,
   checkLicense,
+  checkDriverLicense,
 } from "../../utils/InputValidators";
 
 const CarInformationForm = forwardRef((props, ref) => {
@@ -30,6 +31,10 @@ const CarInformationForm = forwardRef((props, ref) => {
   const [modelYearError, setModelYearError] = useState("");
   const [plate, setPlate] = useState("");
   const [plateError, setPlateError] = useState("");
+  const [driverLicense, setDriverLicense] = useState("");
+  const [expirationDate, setExprirationDate] = useState("");
+  const [driverLicenseError, setDriverLicenseError] = useState("");
+  const [expirationDateError, setExprirationDateError] = useState("");
 
   useImperativeHandle(ref, () => ({
     setCarInfo(val) {
@@ -95,6 +100,27 @@ const CarInformationForm = forwardRef((props, ref) => {
         return false;
       } else {
         setPlateError("");
+        return true;
+      }
+    },
+    checkDriverLicense() {
+      const obj = checkDriverLicense("FL", driverLicense);
+      if (obj.valid === false) {
+        setDriverLicenseError(obj.msg);
+        return false;
+      } else {
+        setDriverLicenseError("");
+        return true;
+      }
+    },
+    checkDriverLicenseExpDate() {
+      const end = new Date(expirationDate);
+      const day = new Date();
+      if (end.getTime() < day.getTime()) {
+        setExprirationDateError("Your Insurance policy expired!");
+        return false;
+      } else {
+        setExprirationDateError("");
         return true;
       }
     },
@@ -292,6 +318,43 @@ const CarInformationForm = forwardRef((props, ref) => {
           />
         </div>
         <p className="error">{plateError}</p>
+        <div className="i">
+          <label>Driver License</label>
+          <input
+            type="text"
+            placeholder="Driver License"
+            onChange={(event) => {
+              const obj = checkDriverLicense("FL", event.target.value);
+              if (obj.valid === false) setDriverLicenseError(obj.msg);
+              else setDriverLicenseError("");
+
+              setDriverLicense(event.target.value);
+              props.setDriverLicense(event.target.value);
+            }}
+            maxLength="20"
+          />
+        </div>
+        <p className="error">{driverLicenseError}</p>
+        <div className="i">
+          <label>End Date</label>
+          <input
+            required
+            id="date3"
+            type="month"
+            min={today}
+            value={expirationDate}
+            onChange={(event) => {
+              setExprirationDate(event.target.value);
+              props.setLicenseExpDate(event.target.value);
+              const end = new Date(event.target.value);
+              const day = new Date();
+              if (end.getTime() < day.getTime())
+                setExprirationDateError("Your Driver License expired!");
+              else setExprirationDateError("");
+            }}
+          />
+        </div>
+        <p className="error">{expirationDateError}</p>
       </div>
     </div>
   );

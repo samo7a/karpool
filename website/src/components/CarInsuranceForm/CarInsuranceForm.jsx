@@ -73,7 +73,6 @@ const CarInsuranceForm = forwardRef((props, ref) => {
       }
     },
     checkEndDate1() {
-      console.log("enddate", coverageEndDate);
       const end = new Date(coverageEndDate);
       const day = new Date();
       if (end.getTime() < day.getTime()) {

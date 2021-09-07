@@ -7,7 +7,7 @@ import { getCurrentUser } from "../../auth/getCurrentUser";
 import { useAuth } from "../../auth/useAuth";
 
 const Navbar = () => {
-  const { isLoading, user } = useAuth();
+  const { user } = useAuth();
   const [role, setRole] = useState("");
   const history = useHistory();
   useEffect(() => {
