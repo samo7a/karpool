@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:mobile_app/widgets/widgets.dart';
 
 class LoginScreen extends StatelessWidget {
+  static const id = 'loginScreen';
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -22,17 +26,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // Flexible(
-              //   child: Center(
-              //     child: Text(
-              //       'Welcome back to Karpool!',
-              //       style: TextStyle(
-              //           color: Colors.white,
-              //           fontSize: 25,
-              //           fontWeight: FontWeight.bold),
-              //     ),
-              //   ),
-              // ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -49,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                     inputAction: TextInputAction.done,
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, 'ForgotPassword'),
+                    onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
                     child: Text(
                       'Forgot Password',
                       style: kBodyText,
