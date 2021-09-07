@@ -63,7 +63,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),
-            isDriver: false,
+            isDriver: false
         }
     }
 }

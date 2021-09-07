@@ -1,6 +1,5 @@
 
 import Stripe from 'stripe'
-import stripe from 'stripe'
 
 
 export interface PaymentDAOInterface {
@@ -16,7 +15,7 @@ export class PaymentDAO implements PaymentDAOInterface {
     private api: Stripe
 
     constructor(stripePublicKey: string, stripePrivateKey: string) {
-        this.api = new stripe(stripePrivateKey, { apiVersion: '2020-08-27' })
+        this.api = new Stripe(stripePrivateKey, { apiVersion: '2020-08-27' })
     }
 
     createCustomer(): Promise<string> {
