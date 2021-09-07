@@ -61,6 +61,7 @@ const SignupPage = () => {
   const [coverageEndDate, setCoverageEndDate] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [uid, setUid] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const bankInfoRef = useRef();
   const carInfoRef = useRef();
   const carInsuranceRef = useRef();
@@ -72,6 +73,9 @@ const SignupPage = () => {
     var yyyy = day.getFullYear();
     var day2 = yyyy + "-" + mm + "-" + dd;
     setToday(day2);
+  }, []);
+  useEffect(() => {
+    signOut();
   }, []);
 
   const registerDriver = async (event) => {
@@ -154,6 +158,7 @@ const SignupPage = () => {
     //TODO: Check the logic here.
     try {
       const user = await signup(email, password);
+
       if (user !== undefined) {
         setUid(user.user.uid);
         signOut();
@@ -201,7 +206,7 @@ const SignupPage = () => {
   };
   return (
     <div className="content">
-      <Navbar loggedIn="false" />
+      <Navbar />
       <div className="wrapper">
         <div className="left">
           <h1>Welcome to karpool!</h1>
@@ -376,7 +381,7 @@ const SignupPage = () => {
             </div>
             {!isDriver ? (
               <>
-                <h2>Sign-up as a Rider!</h2>
+                {/* <h2>Sign-up as a Rider!</h2>
                 <Elements stripe={stripePromise}>
                   <CreditCardForm
                     firstName={firstName}
@@ -398,7 +403,7 @@ const SignupPage = () => {
                     isDriver={isDriver}
                     //handleFileUpload={handleFileUpload}
                   />
-                </Elements>
+                </Elements> */}
               </>
             ) : (
               <>
@@ -426,12 +431,23 @@ const SignupPage = () => {
                   setCoverageEndDate={setCoverageEndDate}
                   ref={carInsuranceRef}
                 />
-                <button id="primaryButton" onClick={registerDriver}>
-                  Register
-                </button>
-                <p className="error">{registerError}</p>
               </>
             )}
+            <button
+              id="primaryButton"
+              onClick={registerDriver}
+              disabled={isLoading}
+            >
+              {isLoading && (
+                <i
+                  className="fa fa-refresh fa-spin"
+                  style={{ marginRight: "5px" }}
+                />
+              )}
+              {isLoading && <span>Signing up ...</span>}
+              {!isLoading && <span>Register</span>}
+            </button>
+            <p className="error">{registerError}</p>
           </form>
         </div>
         <div className="right">

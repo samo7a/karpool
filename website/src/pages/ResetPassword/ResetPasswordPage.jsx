@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ResetPasswordPage.css";
 import { useHistory } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import firebase from "firebase/app";
+import { signOut } from "../../auth/signout";
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [resetError, setResetError] = useState("");
   const history = useHistory();
 
+  useEffect(() => {
+    signOut();
+  }, []);
   const resetPassword = async (event) => {
     event.preventDefault();
     setResetError("");
@@ -24,7 +28,7 @@ const ResetPasswordPage = () => {
   };
   return (
     <div className="cont">
-      <Navbar loggedIn="false" />
+      <Navbar />
       <div id="int">
         <div className="wrap">
           <h1>Enter your email to reset your password!</h1>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./LoginPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
@@ -8,42 +8,77 @@ import { signOut } from "../../auth/signout";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { useAlert } from "react-alert";
+import firebase from "firebase/app";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isDriver, setIsDriver] = useState("");
+  const [isDriver, setIsDriver] = useState(false);
   const [signinError, setSigninError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const alert = useAlert();
+  useEffect(() => {
+    signOut();
+  }, []);
   const login = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     try {
+      const getUser = firebase.functions().httpsCallable("account-getUser");
       const res = await signIn(email, password);
       console.log("signin res", res);
       if (res !== undefined) {
         if (!res.user.emailVerified) {
           signOut();
+          setIsLoading(false);
           return;
         } else {
-          //getprofile
+          // getprofile
           const uid = res.user.uid;
-          console.log(uid);
-          //call getprofileinfo
-          //compare isDriver with isDriver
-          // direct the user to the right page.
-          alert.success("Successfuly logged in!");
-          history.push("/about-us"); //change this
+          console.log(isDriver, uid);
+          const obj = {
+            uid: uid,
+            driver: isDriver,
+          };
+          const result = await getUser(obj);
+          const riderRole = result.data.roles.Rider;
+          const driverRole = result.data.roles.Driver;
+          console.log("Driver", driverRole);
+          console.log("Rider", riderRole);
+          if (isDriver === true && driverRole !== undefined) {
+            // the user is driver
+            setIsLoading(false);
+            localStorage.setItem("role", "driver");
+            alert.success("Logged in!");
+            history.push("/driver-home"); //change this
+            return;
+          } else if (isDriver === false && riderRole !== undefined) {
+            // the user is a rider
+            setIsLoading(false);
+            localStorage.setItem("role", "rider");
+            alert.success("Logged in!");
+            history.push("/rider-home"); //change this
+            return;
+          } else {
+            // has no roles
+            setIsLoading(false);
+            signOut();
+            setSigninError("Error Signing in!");
+            return;
+          }
         }
       }
     } catch (e) {
       setSigninError(e.message);
       signOut();
+      setIsLoading(false);
+      return;
     }
   };
   return (
     <div className="content">
-      <Navbar loggedIn="false" />
+      <Navbar />
       <div className="wrapper">
         <div className="left">
           <h1>Welcome back to karpool!</h1>
@@ -87,8 +122,15 @@ const LoginPage = () => {
                 <span className="slider round"></span>
               </label>
             </div>
-            <button id="primaryButton" onClick={login}>
-              Register
+            <button id="primaryButton" onClick={login} disabled={isLoading}>
+              {isLoading && (
+                <i
+                  className="fa fa-refresh fa-spin"
+                  style={{ marginRight: "5px" }}
+                />
+              )}
+              {isLoading && <span>Signing in ...</span>}
+              {!isLoading && <span>Sign in</span>}
             </button>
             <p className="error">{signinError}</p>
           </form>

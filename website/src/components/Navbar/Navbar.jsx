@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import logo from "../../assets/logo.png";
 import { Link, useHistory } from "react-router-dom";
 import { signOut } from "../../auth/signout";
+import { getCurrentUser } from "../../auth/getCurrentUser";
+import { useAuth } from "../../auth/useAuth";
 
-const Navbar = (props) => {
+const Navbar = () => {
+  const { isLoading, user } = useAuth();
+  const [role, setRole] = useState("");
   const history = useHistory();
-  let isLoggedIn = props.isLoggedIn;
+  useEffect(() => {
+    const getRole = () => {
+      const currentUser = getCurrentUser();
+      if (currentUser !== null) {
+        setRole(localStorage.getItem("role"));
+      }
+    };
+    getRole();
+  }, []);
   const SmartLink = ({ link, title }) => {
     var path = window.location.pathname;
     if (path === link) {
@@ -40,15 +52,32 @@ const Navbar = (props) => {
     <div id="body">
       <nav id="navbar">
         <div className="logo">
-          <Link to="/">
-            <img id="logo" src={logo} alt="logo" />
-          </Link>
+          {!!user && role === "driver" ? (
+            <Link to="/driver-home">
+              <img id="logo" src={logo} alt="logo" />
+            </Link>
+          ) : !!user && role === "rider" ? (
+            <Link to="/rider-home">
+              <img id="logo" src={logo} alt="logo" />
+            </Link>
+          ) : (
+            <Link to="/">
+              <img id="logo" src={logo} alt="logo" />
+            </Link>
+          )}
         </div>
-        {isLoggedIn ? (
+        {!!user ? (
           <div id="navbar-links">
             <ul>
-              {/* getProfile rider-home driver-home */}
-              <SmartLink link="/rider-home" title="Home" />
+              {
+                /* getProfile rider-home driver-home */
+                role === "driver" ? (
+                  <SmartLink link="/driver-home" title="Home" />
+                ) : (
+                  <SmartLink link="/rider-home" title="Home" />
+                )
+              }
+              {/* <SmartLink link="/rider-home" title="Home" /> */}
               <SmartLink link="/account" title="Account" />
               <SmartLink link="/about-us" title="About Us" />
             </ul>
@@ -56,7 +85,7 @@ const Navbar = (props) => {
         ) : (
           <></>
         )}
-        {isLoggedIn ? (
+        {!!user ? (
           <div className="navbar-buttons">
             <button id="primaryButton" onClick={logout}>
               Logout

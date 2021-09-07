@@ -4,11 +4,10 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
 const RiderHomePage = () => {
-  const isLoggedIn = true;
   return (
     <>
       <div className="content">
-        <Navbar isLoggedIn={isLoggedIn} />
+        <Navbar />
         <div className="content">
           <div className="wrapper">
             <h1> RiderHomePage</h1>

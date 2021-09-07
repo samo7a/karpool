@@ -21,7 +21,7 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 const CreditCardForm = (props) => {
   const [creditCardError, setCreditCardError] = useState("");
   const [registerError, setRegisterError] = useState("");
-  const [uid, setUid] = useState("");
+  //const [uid, setUid] = useState("");
 
   const stripe = useStripe();
   const elements = useElements();
@@ -60,6 +60,7 @@ const CreditCardForm = (props) => {
       confirmPassword,
       isDriver
     );
+
     if (!isValid) {
       setRegisterError(
         "Please fill all the required data or fix the format of the input!"
@@ -77,62 +78,79 @@ const CreditCardForm = (props) => {
       return;
     } else setRegisterError("");
 
-    const cardElement = elements.getElement(CardElement);
-    console.log(cardElement);
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-    });
-    if (error) {
-      setCreditCardError(error.message);
-      setRegisterError(
-        "Please fill all the required data or fix the format of the input!"
-      );
-      return;
-    } else {
-      console.log("[PaymentMethod]", paymentMethod);
-      setCreditCardError("");
-      setRegisterError("");
-    }
-    //TODO: Check the logic here.
-    try {
-      const user = await signup(email, password);
-      if (user !== undefined) {
-        setUid(user.user.uid);
-        signOut();
-        console.log(uid);
-      } else {
-        getCurrentUser().delete();
-        return;
-      }
-    } catch (e) {
-      setRegisterError(e.message);
-      return;
-    }
-    //TODO: add credit card to obj
+    var id;
+
+    // const cardElement = elements.getElement(CardElement);
+    // const result = await stripe.confirmCardSetup('{{CLIENT_SECRET}}', {
+    //   payment_method: {
+    //     card: cardElement,
+    //     billing_details: {
+    //       name: 'Jenny Rosen',
+    //     },
+    //   }
+    // });
+
+    //   if (result.error) {
+    //     // Display result.error.message in your UI.
+    //   } else {
+    // //     // The setup has succeeded. Display a success message and send
+    // //     // result.setupIntent.payment_method to your server to save the
+    // //     // card to a Customer
+    // //   }
+    // // // };
+
+    // const { error, paymentMethod } = await stripe.createPaymentMethod({
+    //   type: "card",
+    //   card: cardElement,
+    // });
+    // if (error) {
+    //   setCreditCardError(error.message);
+    //   setRegisterError(
+    //     "Please fill all the required data or fix the format of the input!"
+    //   );
+    //   return;
+    // } else {
+    //   console.log("[PaymentMethod]", paymentMethod);
+
+    //   setCreditCardError("");
+    //   setRegisterError("");
+    // }
+    //return;
+
+    // // TODO: Check the logic here.
+    // try {
+    //   const user = await signup(email, password);
+    //   // const user = await signup("samo7a98@mail.com", "password1234");
+    //   id = user.user.uid;
+    // } catch (e) {
+    //   setRegisterError(e.message);
+    //   return;
+    // }
+
+    // TODO: add profilePicData: based64Image(),
     const obj = {
-      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
-      phoneNumber: phone,
-      dateOfBirth: dob,
-      gender: gender,
       password: password,
+      phone: phone,
+      dob: dob,
+      gender: gender,
       isDriver: isDriver,
+      profilePicData: "profile picture change it later",
     };
-    console.log(obj);
+
+    //null means everything good.
+    //error if something went wrong
+
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      console.log("result", result);
+      console.log("result", result); // should be null
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
-
-    
-    console.log(obj);
-    return "yeah or nuh";
+    // direct the user to the login page.
   };
 
   return (
@@ -140,7 +158,6 @@ const CreditCardForm = (props) => {
       <div id="credit-card-form">
         <h4>Credit Card Information</h4>
         <CardElement
-          // onChange={handleSomething}
           id="card-element"
           options={{
             style: {
