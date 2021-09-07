@@ -5,11 +5,10 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
 const AboutUsPage = () => {
-  const isLoggedIn = true;
   return (
     <>
       <div className="content">
-        <Navbar isLoggedIn={isLoggedIn} />
+        <Navbar />
         <h1> Meet Our Team</h1>
         <div id="team-members">
           <TeamMember

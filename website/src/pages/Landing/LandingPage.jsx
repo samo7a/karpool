@@ -7,7 +7,6 @@ import { signOut } from "../../auth/signout";
 import { useHistory } from "react-router-dom";
 
 const LandingPage = () => {
-  let isLoggedIn = false;
   const history = useHistory();
   useEffect(() => {
     signOut();
@@ -15,7 +14,7 @@ const LandingPage = () => {
   return (
     <>
       <div className="content">
-        <Navbar isLoggedIn={isLoggedIn} />
+        <Navbar />
         <div className="wrapper">
           <div className="left">
             <article className="post">

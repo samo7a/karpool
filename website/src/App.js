@@ -41,22 +41,22 @@ function App() {
               <SignupPage />
             </Route>
             {/*for authenticated users only*/}
-            <ProtectedRoute
+            <ProtectedHome
               isAuthed={!!user}
               isLoading={isLoading}
               exact
               path="/driver-home"
             >
               <DriverHomePage />
-            </ProtectedRoute>
-            <ProtectedRoute
+            </ProtectedHome>
+            <ProtectedHome
               isAuthed={!!user}
               isLoading={isLoading}
               exact
               path="/rider-home"
             >
               <RiderHomePage />
-            </ProtectedRoute>
+            </ProtectedHome>
             <ProtectedRoute
               isAuthed={!!user}
               isLoading={isLoading}

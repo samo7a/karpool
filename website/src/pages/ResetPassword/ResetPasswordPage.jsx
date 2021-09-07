@@ -1,22 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ResetPasswordPage.css";
 import { useHistory } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import firebase from "firebase/app";
+import { signOut } from "../../auth/signout";
+import { useAlert } from "react-alert";
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [resetError, setResetError] = useState("");
   const history = useHistory();
+  const alert = useAlert();
 
+  useEffect(() => {
+    signOut();
+  }, []);
   const resetPassword = async (event) => {
     event.preventDefault();
     setResetError("");
     try {
       const res = await firebase.auth().sendPasswordResetEmail(email);
       console.log(res);
-      alert("Succes");
+      alert.success("Email has been sent!");
       history.push("/login");
     } catch (e) {
       setResetError(e.message);
@@ -24,7 +30,7 @@ const ResetPasswordPage = () => {
   };
   return (
     <div className="cont">
-      <Navbar loggedIn="false" />
+      <Navbar />
       <div id="int">
         <div className="wrap">
           <h1>Enter your email to reset your password!</h1>
