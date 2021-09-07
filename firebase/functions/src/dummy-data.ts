@@ -39,10 +39,6 @@ export const riderRegisterDummy = (): UserRegistrationData => {
         password: autoID(),
         dob: '1998-05-23',
         phone: '1234567890',
-        cardNum: 10101010,
-        cardExpDate: '2022-09-08',
-        cardCVC: 1234,
-        stripeToken: 'someStripeToken',
         profilePicData: based64Image(),
         isDriver: false
     }

@@ -7,6 +7,7 @@ import { UserFieldsExternal, UserRegistrationData } from './types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { PaymentDAO } from "../../data-access/payment-dao/dao";
 
 export class AccountService {
 
@@ -20,16 +21,20 @@ export class AccountService {
 
     private vehicleDAO: VehicleDAOInterface
 
+    private paymentDAO: PaymentDAO
+
     constructor(
         userDAO: UserDAOInterface,
         authDAO: AuthenticationDAOInterface,
         storageDAO: CloudStorageDAOInterface,
         vehicleDAO: VehicleDAOInterface,
+        paymentDAO: PaymentDAO
     ) {
         this.userDAO = userDAO
         this.authDAO = authDAO
         this.cloudStorageDAO = storageDAO
         this.vehicleDAO = vehicleDAO
+        this.paymentDAO = paymentDAO
     }
 
 
@@ -37,6 +42,12 @@ export class AccountService {
         await this.authDAO.registerAccount(data.email, data.password).then(async uid => {
 
             const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', data.profilePicData, 'base64', true)
+
+            //Create credit card document if applicable.
+            let stripeCustomerID: string = ''
+            if (!data.isDriver) {
+                stripeCustomerID = await this.paymentDAO.createCustomer()
+            }
 
             const driverInfo: DriverInfoSchema = {
                 rating: 0,
@@ -50,7 +61,7 @@ export class AccountService {
             const riderInfo: RiderInfoSchema = {
                 rating: 0,
                 ratingCount: 0,
-                stripeToken: data.stripeToken!
+                stripeCustomerID: stripeCustomerID
             }
 
             //Create user document
@@ -81,16 +92,6 @@ export class AccountService {
                     licensePlateNum: data.plateNum!,
                     make: data.make!,
                     year: data.year!,
-                    uid: uid
-                })
-            }
-
-            //Create credit card document if applicable.
-            if (!data.isDriver) {
-                await this.userDAO.createCreditCard({
-                    cardNum: data.cardNum!,
-                    cvc: data.cardCVC!,
-                    expDate: data.cardExpDate!,
                     uid: uid
                 })
             }

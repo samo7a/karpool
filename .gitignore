@@ -66,6 +66,10 @@ firebase/.yarn-integrity
 # dotenv environment variables file
 firebase/.env
 
+# Firebase env configuration keys
+firebase/functions/.runtimeconfig.json
+
+
 
 # ---------------------
 # Flutter Project

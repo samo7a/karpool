@@ -15,6 +15,8 @@ import 'reflect-metadata';
 import { AccountService } from "./features/account-management/account-service";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
 import { VehicleDAO } from "./data-access/vehicle/dao";
+import { PaymentDAO } from "./data-access/payment-dao/dao";
+import { getEnv } from "./env-config";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -40,14 +42,21 @@ export function newVehicleDAO(): VehicleDAO {
     return new VehicleDAO(admin.firestore())
 }
 
+export function newPaymentDAO(): PaymentDAO {
+    const stripe = getEnv().stripe
+    return new PaymentDAO(stripe.public_key, stripe.private_key)
+}
+
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
         newAuthDAO(),
         newCloudStorageDAO(),
-        newVehicleDAO()
+        newVehicleDAO(),
+        newPaymentDAO()
     )
 }
+
 
 //MARK: Exposed cloud function endpoints
 

@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema, CreditCardSchema } from './schema'
+import { UserSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
@@ -43,13 +43,6 @@ export interface UserDAOInterface {
      * @param uid The user's id.
      */
     deleteAccountData(uid: string): Promise<void>
-
-
-    /**
-     * Creates a credit card document related to the user.
-     * @param data Object containing fields required to create a credit card.
-     */
-    createCreditCard(data: CreditCardSchema): Promise<void>
 
 }
 
@@ -98,14 +91,6 @@ export class UserDAO implements UserDAOInterface {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
         await userRef.delete()
     }
-
-
-    //MARK: Credit Card Methods
-    async createCreditCard(data: CreditCardSchema): Promise<void> {
-        const ref = this.db.collection(FirestoreKey.creditCards).doc()
-        await ref.create(fireEncode(data))
-    }
-
 
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.

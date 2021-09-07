@@ -92,11 +92,11 @@ export interface DriverInfoSchema {
     /**
      * Driver's Bank Account number. 
      */
-     accountNum: string
+    accountNum: string
 
-     /**
-     * Driver's Bank routing number. 
-     */
+    /**
+    * Driver's Bank routing number. 
+    */
     routingNum: string
 
 }
@@ -118,7 +118,7 @@ export interface RiderInfoSchema {
     /**
      * 
      */
-    stripeToken: string
+    stripeCustomerID: string
 }
 
 

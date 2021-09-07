@@ -42,30 +42,6 @@ export interface UserRegistrationData {
      */
     phone: string
 
-
-    /**
-     * The first credit card number used for user registration
-     * Last 4 digits
-     * (Rider)
-     */
-    cardNum?: number
-
-    /**
-     * The credit card exp date (Rider)
-     */
-    cardExpDate?: string
-
-    /**
-     * The card cvc code (Rider)
-     */
-    cardCVC?: number
-
-    /**
-     * The customer stripe token used to make payments from rider
-     * (Rider)
-     */
-    stripeToken?: string
-
     /**
      * Base 64 encoded (Driver&Rider)
      */
