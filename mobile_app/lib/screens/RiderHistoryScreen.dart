@@ -16,14 +16,12 @@ class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
       home: Scaffold(
         body: SafeArea(
           child: Center(
-            child: Container(
-              child: Text(
-                'Rider History',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
-                ),
-              )
+            child: Text(
+              'Rider History',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
         ),

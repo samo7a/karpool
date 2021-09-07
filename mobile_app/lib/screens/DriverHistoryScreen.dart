@@ -16,14 +16,12 @@ class _DriverHistoryScreenState extends State<DriverHistoryScreen> {
       home: Scaffold(
         body: SafeArea(
           child: Center(
-            child: Container(
-              child: Text(
-                'Driver History',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
-                ),
-              )
+            child: Text(
+              'Driver History',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
         ),

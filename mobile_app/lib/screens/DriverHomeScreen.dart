@@ -14,16 +14,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SafeArea(
+      home: Scaffold(
+        body: SafeArea(
           child: Center(
-            child: Container(
-              child: Text(
-                'Driver Home',
-                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+            child: Text(
+              'Driver Home',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),
         ),
+      ),
     );
   }
 }

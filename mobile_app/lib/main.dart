@@ -7,13 +7,13 @@ import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
 import './screens/RegisterScreen.dart';
 import './screens/LoginScreen.dart';
-import './screens/ResetPassword.dart';
-import './screens/ResetCode.dart';
 import 'screens/DriverHomeScreen.dart';
 import 'screens/DriverHistoryScreen.dart';
 import 'screens/RiderHomeScreen.dart';
 import 'screens/RiderHistoryScreen.dart';
 import 'screens/DriverDashboardScreen.dart';
+import 'screens/RiderDashboardScreen.dart';
+import 'screens/ForgotPassword.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +24,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   // final Future<FirebaseApp> _firebaseApp = Firebase.initializeApp();
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -45,13 +46,13 @@ class MyApp extends StatelessWidget {
           MainScreen.id: (context) => MainScreen(),
           LoginScreen.id: (context) => LoginScreen(),
           RegisterScreen.id: (context) => RegisterScreen(),
-          ResetPassword.id: (context) => ResetPassword(),
-          ResetCode.id: (context) => ResetCode(),
+          ForgotPassword.id: (context) => ForgotPassword(),
           DriverHomeScreen.id: (context) => DriverHomeScreen(),
           DriverHistoryScreen.id: (context) => DriverHistoryScreen(),
           RiderHomeScreen.id: (context) => RiderHomeScreen(),
           RiderHistoryScreen.id: (context) => RiderHistoryScreen(),
           DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
+          RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
         },
       ),
     );

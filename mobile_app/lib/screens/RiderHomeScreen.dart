@@ -16,14 +16,12 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       home: Scaffold(
         body: SafeArea(
           child: Center(
-            child: Container(
-              child: Text(
-                'Rider Home',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
-                ),
-              )
+            child: Text(
+              'Rider Home',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
         ),

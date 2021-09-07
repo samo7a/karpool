@@ -11,11 +11,15 @@ const TextStyle kBodyText =
 // Login, SignUp, Register, NewUser, ... buttons:
 const Color kButtonColor = Color(0xFF0466CB);
 
-// Initial Screens Only: 
+// Initial Screens Only:
 // Login, SignUp, NewUser, ... background color:
 const Color kBackgroundColor = Color(0xFF9DA9C1);
 
+// Drawer Color
+const Color kDrawerColor = Color(0xFF001845);
+
+// Stars color -> gold/yellow
+const Color kStarsColor = Color(0xFFFFD700);
+
 const Color kWhite = Colors.white;
 const Color kBlue = Colors.blue;
-
-
