@@ -14,12 +14,13 @@ const Color kButtonColor = Color(0xFF0466CB);
 // Initial Screens Only:
 // Login, SignUp, NewUser, ... background color:
 const Color kBackgroundColor = Color(0xFF9DA9C1);
+const Color kIconColor = Color(0xFF33415C); // Icon color on Register Page
 
 const Color kWhite = Colors.white;
+const Color kBlack = Colors.black;
 const Color kBlue = Colors.blue;
 const Color kRed = Colors.redAccent;
 const Color kGreen = Colors.greenAccent;
-const Color kBlack = Colors.black;
 
 // Hint Text in Form Field Color:
-const Color kHintText = Colors.black26;
+const Color kHintText = Color(0xFF7d8dab);
