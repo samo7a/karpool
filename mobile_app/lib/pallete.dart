@@ -20,6 +20,13 @@ const Color kDrawerColor = Color(0xFF001845);
 
 // Stars color -> gold/yellow
 const Color kStarsColor = Color(0xFFFFD700);
+const Color kIconColor = Color(0xFF33415C); // Icon color on Register Page
 
 const Color kWhite = Colors.white;
+const Color kBlack = Colors.black;
 const Color kBlue = Colors.blue;
+const Color kRed = Colors.redAccent;
+const Color kGreen = Colors.greenAccent;
+
+// Hint Text in Form Field Color:
+const Color kHintText = Color(0xFF7d8dab);

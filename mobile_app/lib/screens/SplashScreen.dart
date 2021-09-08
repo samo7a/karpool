@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  static const id = 'splachScreen';
+  static const id = 'splashScreen';
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }

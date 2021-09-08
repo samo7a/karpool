@@ -6,7 +6,7 @@ import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:mobile_app/widgets/text-input-field.dart';
 
 class ForgotPassword extends StatelessWidget {
-  static const id = 'forgitPassword';
+  static const id = 'forgotPassword';
   const ForgotPassword({Key? key}) : super(key: key);
 
   @override

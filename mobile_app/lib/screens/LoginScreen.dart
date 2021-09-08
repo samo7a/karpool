@@ -42,7 +42,8 @@ class LoginScreen extends StatelessWidget {
                     inputAction: TextInputAction.done,
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
+                    onTap: () =>
+                        Navigator.pushNamed(context, ForgotPassword.id),
                     child: Text(
                       'Forgot Password',
                       style: kBodyText,
