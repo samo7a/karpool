@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/pallete.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const id = 'registerScreen';
@@ -180,6 +181,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         child: Column(
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 25.0),
+              child: FormBuilderDateTimePicker(
+                name: 'date',
+                onChanged: (value) => setState(() => dob = value.toString()),
+                inputType: InputType.date,
+                decoration: InputDecoration(
+                  labelText: 'Appointment Time',
+                ),
+                initialTime: TimeOfDay(hour: 8, minute: 0),
+                // initialValue: DateTime.now(),
+                // enabled: true,
+              ),
+            ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
@@ -914,52 +929,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textInputAction: TextInputAction.next,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: InkWell(
-                onTap: () {
-                  print("User tapped Date of Birth field");
-                  _selectBirthDate(context);
-                },
-                child: Container(
-                  child: IgnorePointer(
-                    child: TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                            fillColor: kWhite.withOpacity(0.4),
-                            filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.birthdayCake,
-                                color: kIconColor),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            focusedErrorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            hintStyle: TextStyle(color: kHintText),
-                            hintText: "Date of Birth"),
-                        validator: MultiValidator([
-                          RequiredValidator(
-                              errorText: "Date of Birth is Required!"),
-                          //PatternValidator("^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$", errorText: "errorText"),
-                        ]),
-                        onChanged: (value) => setState(() => dob = value),
-                        textInputAction: TextInputAction.done,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 25.0),
+            //   child: InkWell(
+            //     onTap: () {
+            //       print("User tapped Date of Birth field");
+            //       _selectBirthDate(context);
+            //     },
+            //     child: Container(
+            //       child: IgnorePointer(
+            //         child: TextFormField(
+            //             controller: _dateController,
+            //             decoration: InputDecoration(
+            //                 fillColor: kWhite.withOpacity(0.4),
+            //                 filled: true,
+            //                 prefixIcon: Icon(FontAwesomeIcons.birthdayCake,
+            //                     color: kIconColor),
+            //                 enabledBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 errorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 focusedBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 focusedErrorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 hintStyle: TextStyle(color: kHintText),
+            //                 hintText: "Date of Birth"),
+            //             validator: MultiValidator([
+            //               RequiredValidator(
+            //                   errorText: "Date of Birth is Required!"),
+            //               //PatternValidator("^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$", errorText: "errorText"),
+            //             ]),
+            //             onChanged: (value) => setState(() => dob = value),
+            //             textInputAction: TextInputAction.done,
+            //             style: TextStyle(fontWeight: FontWeight.bold)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: DropdownButtonFormField(
