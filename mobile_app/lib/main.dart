@@ -8,12 +8,12 @@ import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
 import './screens/RegisterScreen.dart';
 import './screens/LoginScreen.dart';
-import 'screens/DriverHomeScreen.dart';
-import 'screens/DriverHistoryScreen.dart';
-import 'screens/RiderHomeScreen.dart';
-import 'screens/RiderHistoryScreen.dart';
-import 'screens/DriverDashboardScreen.dart';
-import 'screens/RiderDashboardScreen.dart';
+import 'screens/driver/DriverHomeScreen.dart';
+import 'screens/driver/DriverHistoryScreen.dart';
+import 'screens/rider/RiderHomeScreen.dart';
+import 'screens/rider/RiderHistoryScreen.dart';
+import 'screens/driver/DriverDashboardScreen.dart';
+import 'screens/rider/RiderDashboardScreen.dart';
 import 'screens/ForgotPassword.dart';
 
 Future<void> main() async {
@@ -40,7 +40,6 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
         initialRoute: RegisterScreen.id,
         routes: {
           SplashScreen.id: (context) => SplashScreen(),

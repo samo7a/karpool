@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/screens/DriverHistoryScreen.dart';
+import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'DriverHomeScreen.dart';
 import 'DriverHistoryScreen.dart';
 import 'package:mobile_app/pallete.dart';
