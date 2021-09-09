@@ -1,6 +1,6 @@
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class TopDrawer extends StatelessWidget {

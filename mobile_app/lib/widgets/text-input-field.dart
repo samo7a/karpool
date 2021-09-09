@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
+import '../util/Size.dart';
 
 class TextInputField extends StatelessWidget {
   const TextInputField({
@@ -19,37 +20,36 @@ class TextInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        height: size.height * 0.06,
-        width: size.width * 0.8,
-        decoration: BoxDecoration(
-          color: Colors.grey[500]!.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: TextFormField(
-            maxLength: 50,
-            controller: controller,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: kWhite,
-                ),
-              ),
-              hintText: hint,
-              hintStyle: kBodyText,
+    Size size = new Size(Context: context);
+    return Container(
+      height: size.BLOCK_HEIGHT * 8,
+      width: size.BLOCK_WIDTH * 80,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 10),
+      ),
+      child: Center(
+        child: TextFormField(
+          maxLength: 50,
+          controller: controller,
+          decoration: InputDecoration(
+            counterText: "",
+            //contentPadding: EdgeInsets.zero,
+            border: InputBorder.none,
+            prefixIcon: Icon(
+              icon,
+              size: size.FONT_SIZE * 25,
+              color: kWhite,
             ),
-            style: kBodyText,
-            keyboardType: inputType,
-            textInputAction: inputAction,
+            hintText: hint,
+            hintStyle: TextStyle(
+              fontSize: size.FONT_SIZE * 18,
+              color: Colors.white,
+              textBaseline: TextBaseline.alphabetic,
+            ),
           ),
+          keyboardType: inputType,
+          textInputAction: inputAction,
         ),
       ),
     );

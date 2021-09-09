@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 
 class RoundedButton extends StatelessWidget {
@@ -16,11 +16,11 @@ class RoundedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
     return Container(
-      height: size.BLOCK_HEIGHT * 10,
-      width: size.BLOCK_WIDTH * 80,
+      height: size.BLOCK_HEIGHT * 7,
+      width: size.BLOCK_WIDTH * 70,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: kBlue,
+        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
+        color: kButtonColor,
       ),
       child: TextButton(
         onPressed: () {

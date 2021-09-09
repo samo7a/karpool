@@ -20,7 +20,9 @@ const LoginPage = () => {
   const alert = useAlert();
   useEffect(() => {
     signOut();
+    localStorage.setItem("role", "norole");
   }, []);
+
   const login = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -28,7 +30,7 @@ const LoginPage = () => {
       const getUser = firebase.functions().httpsCallable("account-getUser");
       const res = await signIn(email, password);
       if (res !== undefined) {
-        if (!res.user.emailVerified) {
+        if (res.user.emailVerified) {
           signOut();
           setIsLoading(false);
           alert.error("Unverified user");

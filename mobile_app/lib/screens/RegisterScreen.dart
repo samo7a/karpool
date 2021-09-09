@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
