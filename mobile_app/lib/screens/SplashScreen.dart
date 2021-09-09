@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
 import '../util/Size.dart';
 import 'dart:async';
@@ -13,6 +14,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  FirebaseFunctions functions = FirebaseFunctions.instance;
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   route() {
-    final firebaseUser = Provider.of<User?>(context, listen: false);
-    if (firebaseUser != null) {
+    final user = Provider.of<User?>(context, listen: false);
+    
+    if (user != null) {
       //TODO: figure out the type of user
       //call the getProfile function from firebase
       //if(driver) return driverHomePage()

@@ -7,8 +7,8 @@ import 'package:mobile_app/widgets/text-input-field.dart';
 
 class ForgotPassword extends StatelessWidget {
   static const id = 'forgotPassword';
-  const ForgotPassword({Key? key}) : super(key: key);
-
+  ForgotPassword({Key? key}) : super(key: key);
+  final emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -53,6 +53,7 @@ class ForgotPassword extends StatelessWidget {
                       height: 20,
                     ),
                     TextInputField(
+                      controller: emailController,
                       icon: FontAwesomeIcons.envelope,
                       hint: 'Email',
                       inputType: TextInputType.emailAddress,
@@ -61,7 +62,10 @@ class ForgotPassword extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
-                    RoundedButton(buttonName: 'Send')
+                    RoundedButton(
+                      buttonName: 'Send',
+                      onClick: () {},
+                    )
                   ],
                 ),
               )
