@@ -212,3 +212,86 @@ export interface UserFieldsExternal {
 
 
 
+
+
+/**
+ * Information required for adding the Driver role after an account has been created.
+ */
+export interface DriverAddRoleInfo {
+
+    /**
+     * Bank account number (Driver)
+     */
+    accountNum: string
+
+    /**
+     * Bank account routing number (Driver)
+     */
+    routingNum: string
+
+    /**
+     * Driver's license number. (Driver)
+     */
+    licenseNum: string
+
+    /**
+     * Driver's license expiration date (yyyy-mm-dd).
+     * (Driver)
+     */
+    licenseExpDate: string
+
+    /**
+     * The car's make.
+     * (Driver)
+     */
+    make: string
+
+    /**
+     * The vehicle's color.
+     * (Driver)
+     */
+    color: string
+
+
+    /**
+     * Flag for determining if the user is registering as a rider or driver.
+     * (Driver = true; Rider = false)
+     */
+    isDriver: boolean
+
+    /**
+     * The vehicle's year.
+     * (Driver)
+     */
+    year: string
+
+    /**
+     * The vehicle's license plate number.
+     * (Driver)
+     */
+    plateNum: string
+
+    /**
+     * The vehicle's insurance provider.
+     * (Driver)
+     */
+    provider: string
+
+    /**
+     * The vehicle's insurance coverage.
+     * (Driver)
+     */
+    coverage: string
+
+    /**
+     * The insurance coverage start date as (yyyy-mm-dd)
+     * (Driver)
+     */
+    startDate: string
+
+    /**
+     * The insurance coverage end date as (yyyy-mm-dd)
+     * (Driver)
+     */
+    endDate: string
+}

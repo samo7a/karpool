@@ -5,6 +5,8 @@ import { newAccountService } from '../../index'
 import { validateRegistrationData } from './validation'
 import { validateBool, validateString } from '../../utils/validation'
 import { validateAuthorization } from '../../auth/utils'
+import { HttpsError } from 'firebase-functions/lib/providers/https'
+
 
 
 
@@ -15,9 +17,29 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 
     const registrationData = validateRegistrationData(data)
 
-    return newAccountService().registerUser(registrationData)
+    return newAccountService().registerUser(registrationData).catch(err => {
+        throw new HttpsError('internal', err.message)
+    })
 
 })
+
+
+/**
+ * Adds a role to the user's account after they have register
+ * Params: 
+ * {
+ *  driverInfo: DriverInfoRoleData
+ *  role: string ('Driver' | 'Rider')
+ * }
+ */
+export const addRole = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
+
+    return newAccountService().addRole(uid, data.driverInfo as any, data.role)
+
+})
+
 
 /**
  * Function Name: account-registerUser

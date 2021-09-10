@@ -1,3 +1,4 @@
+import { Role } from "./types";
 
 
 /**
@@ -44,7 +45,7 @@ export interface UserSchema {
     /**
      * A map to allow query of users by role. (Rider or Driver)
      */
-    roles: Partial<Record<string, boolean>>
+    roles: Partial<Record<Role, boolean>>
 
     /**
      * Information specific to a user who is a driver.

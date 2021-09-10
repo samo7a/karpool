@@ -2,11 +2,12 @@
 
 import { UserDAOInterface } from '../../data-access/user/dao'
 import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
-import { UserFieldsExternal, UserRegistrationData } from './types'
+import { UserFieldsExternal, UserRegistrationData, DriverAddRoleInfo } from './types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 import { PaymentDAO } from "../../data-access/payment-dao/dao";
+import { Role } from '../../data-access/user/types';
 
 export class AccountService {
 
@@ -32,6 +33,59 @@ export class AccountService {
         this.paymentDAO = paymentDAO
     }
 
+    async addRole(uid: string, driverInfo: DriverAddRoleInfo, role: Role): Promise<void> {
+        const roles = {
+            'Driver': true,
+            'Rider': true
+        }
+        if (role === 'Driver') {
+
+            const updateAccountPromise = this.userDAO.updateAccountData(uid, {
+                roles: roles,
+                driverInfo: {
+                    rating: 0,
+                    ratingCount: 0,
+                    licenseExpDate: driverInfo.licenseExpDate,
+                    licenseNum: driverInfo.licenseNum,
+                    accountNum: driverInfo.accountNum,
+                    routingNum: driverInfo.routingNum
+                }
+            })
+
+            const createVehiclePromise = this.vehicleDAO.createVehicle({
+                color: driverInfo.color,
+                insurance: {
+                    provider: driverInfo.provider,
+                    coverageType: driverInfo.coverage,
+                    startDate: new Date(driverInfo.startDate),
+                    endDate: new Date(driverInfo.endDate)
+                },
+                licensePlateNum: driverInfo.plateNum,
+                make: driverInfo.make,
+                year: driverInfo.year,
+                uid: uid
+            })
+
+            await Promise.all([updateAccountPromise, createVehiclePromise])
+
+
+        } else if (role === 'Rider') {
+
+            const stripeCustomerID = await this.paymentDAO.createCustomer()
+
+            await this.userDAO.updateAccountData(uid, {
+                roles: roles,
+                riderInfo: {
+                    rating: 0,
+                    ratingCount: 0,
+                    stripeCustomerID: stripeCustomerID
+                }
+            })
+
+        } else {
+            throw new Error(`Invalid role ${role}.`)
+        }
+    }
 
     async registerUser(data: UserRegistrationData): Promise<void> {
 
