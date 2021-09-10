@@ -50,6 +50,7 @@ export function newPaymentDAO(): PaymentDAO {
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
+        newAuthDAO(),
         newCloudStorageDAO(),
         newVehicleDAO(),
         newPaymentDAO()

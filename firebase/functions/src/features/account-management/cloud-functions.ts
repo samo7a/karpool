@@ -6,6 +6,7 @@ import { validateRegistrationData } from './validation'
 import { validateBool, validateString } from '../../utils/validation'
 import { validateAuthorization } from '../../auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
+import { driverRegisterDummy } from '../../dummy-data'
 
 
 
@@ -15,7 +16,7 @@ import { HttpsError } from 'firebase-functions/lib/providers/https'
  */
 export const registerUser = functions.https.onCall(async (data, context) => {
 
-    const registrationData = validateRegistrationData(data)
+    const registrationData = validateRegistrationData(driverRegisterDummy())
 
     return newAccountService().registerUser(registrationData).catch(err => {
         throw new HttpsError('internal', err.message)

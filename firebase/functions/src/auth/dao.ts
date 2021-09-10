@@ -18,6 +18,11 @@ export interface AuthenticationDAOInterface {
     getUserID(email: string): Promise<string>
 
 
+    /**
+     * 
+     * @param uid The id associated with the 
+     */
+    deleteAccount(uid: string): Promise<void>
 
 }
 
@@ -47,5 +52,9 @@ export class AuthenticationDAO implements AuthenticationDAOInterface {
         return this.auth.getUserByEmail(email).then(record => {
             return record.uid
         })
+    }
+
+    deleteAccount(uid: string): Promise<void> {
+        return this.auth.deleteUser(uid)
     }
 }
