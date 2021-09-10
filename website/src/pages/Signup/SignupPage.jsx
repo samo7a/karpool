@@ -223,7 +223,7 @@ const SignupPage = () => {
         setIsLoading(false);
       } else {
         user.user.delete();
-        alert.error("Error Signing ");
+        alert.error("Error Signing up!");
         setIsLoading(false);
       }
     } catch (e) {
@@ -379,7 +379,7 @@ const SignupPage = () => {
         return;
       } else {
         user.user.delete();
-        alert.error("Error Signing ");
+        alert.error("Error Signing up!");
         setIsLoading(false);
         return;
       }
