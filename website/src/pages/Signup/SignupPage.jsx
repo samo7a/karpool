@@ -93,7 +93,6 @@ const SignupPage = () => {
       setPhotoError("Please pick a profile picture");
       return;
     }
-    console.log(file);
     if (file && file.type.substr(0, 5) === "image") {
       setPhoto(file);
       setPhotoError("");
