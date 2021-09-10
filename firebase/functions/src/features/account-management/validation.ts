@@ -2,6 +2,7 @@
 import { validateBool, validateString } from "../../utils/validation"
 import { UserRegistrationData } from "./types";
 
+
 /*
 {
     firstName: string
@@ -21,6 +22,7 @@ import { UserRegistrationData } from "./types";
 }
 */
 
+
 /**
  * Validates the 
  * @param data Data received from the client.
@@ -36,7 +38,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             lastName: validateString(data.lastName),
             gender: validateString(data.gender),
             email: validateString(data.email),
-            password: validateString(data.password),
+            uid: validateString(data.uid),
             dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),
@@ -59,7 +61,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             lastName: validateString(data.lastName),
             gender: validateString(data.gender),
             email: validateString(data.email),
-            password: validateString(data.password),
+            uid: validateString(data.uid),
             dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),

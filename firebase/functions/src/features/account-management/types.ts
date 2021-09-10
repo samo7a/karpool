@@ -28,9 +28,9 @@ export interface UserRegistrationData {
     email: string
 
     /**
-     * The user's account password. (Driver&Rider)
+     * The id associated with the created user account.
      */
-    password: string
+    uid: string
 
     /**
      * The user's date of birth. (Driver&Rider)

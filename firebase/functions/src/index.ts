@@ -50,7 +50,6 @@ export function newPaymentDAO(): PaymentDAO {
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
-        newAuthDAO(),
         newCloudStorageDAO(),
         newVehicleDAO(),
         newPaymentDAO()
@@ -93,7 +92,6 @@ export const test = functions.https.onCall((data, context) => {
     // })
     return Promise.resolve({
         firstname: "Taoufik"
-
     })
 })
 

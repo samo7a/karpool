@@ -1,6 +1,5 @@
 
 
-import { AuthenticationDAOInterface } from "../../auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
 import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
 import { UserFieldsExternal, UserRegistrationData } from './types'
@@ -15,8 +14,6 @@ export class AccountService {
 
     private userDAO: UserDAOInterface
 
-    private authDAO: AuthenticationDAOInterface
-
     private cloudStorageDAO: CloudStorageDAOInterface
 
     private vehicleDAO: VehicleDAOInterface
@@ -25,13 +22,11 @@ export class AccountService {
 
     constructor(
         userDAO: UserDAOInterface,
-        authDAO: AuthenticationDAOInterface,
         storageDAO: CloudStorageDAOInterface,
         vehicleDAO: VehicleDAOInterface,
         paymentDAO: PaymentDAO
     ) {
         this.userDAO = userDAO
-        this.authDAO = authDAO
         this.cloudStorageDAO = storageDAO
         this.vehicleDAO = vehicleDAO
         this.paymentDAO = paymentDAO
@@ -39,66 +34,61 @@ export class AccountService {
 
 
     async registerUser(data: UserRegistrationData): Promise<void> {
-        await this.authDAO.registerAccount(data.email, data.password).then(async uid => {
 
-            const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', data.profilePicData, 'base64', true)
+        const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
 
-            //Create credit card document if applicable.
-            let stripeCustomerID: string = ''
-            if (!data.isDriver) {
-                stripeCustomerID = await this.paymentDAO.createCustomer()
-            }
+        //Create credit card document if applicable.
+        let stripeCustomerID: string = ''
+        if (!data.isDriver) {
+            stripeCustomerID = await this.paymentDAO.createCustomer()
+        }
 
-            const driverInfo: DriverInfoSchema = {
-                rating: 0,
-                ratingCount: 0,
-                licenseExpDate: data.licenseExpDate!,
-                licenseNum: data.licenseNum!,
-                accountNum: data.accountNum!,
-                routingNum: data.routingNum!
-            }
+        const driverInfo: DriverInfoSchema = {
+            rating: 0,
+            ratingCount: 0,
+            licenseExpDate: data.licenseExpDate!,
+            licenseNum: data.licenseNum!,
+            accountNum: data.accountNum!,
+            routingNum: data.routingNum!
+        }
 
-            const riderInfo: RiderInfoSchema = {
-                rating: 0,
-                ratingCount: 0,
-                stripeCustomerID: stripeCustomerID
-            }
+        const riderInfo: RiderInfoSchema = {
+            rating: 0,
+            ratingCount: 0,
+            stripeCustomerID: stripeCustomerID
+        }
 
-            //Create user document
-            await this.userDAO.createAccountData(uid, {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                phone: data.phone,
-                email: data.email,
-                gender: data.gender,
-                dob: data.dob,
-                joinDate: new Date(),
-                roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
-                driverInfo: data.isDriver ? driverInfo : undefined,
-                riderInfo: data.isDriver ? undefined : riderInfo,
-                profileURL: downloadURL
-            })
-
-            //Create vehicle document if applicable
-            if (data.isDriver) {
-                await this.vehicleDAO.createVehicle({
-                    color: data.color!,
-                    insurance: {
-                        provider: data.provider!,
-                        coverageType: data.coverage!,
-                        startDate: new Date(data.startDate!),
-                        endDate: new Date(data.endDate!)
-                    },
-                    licensePlateNum: data.plateNum!,
-                    make: data.make!,
-                    year: data.year!,
-                    uid: uid
-                })
-            }
-
-        }).catch(err => {
-            throw new HttpsError('internal', err.message)
+        //Create user document
+        await this.userDAO.createAccountData(data.uid, {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone,
+            email: data.email,
+            gender: data.gender,
+            dob: data.dob,
+            joinDate: new Date(),
+            roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
+            driverInfo: data.isDriver ? driverInfo : undefined,
+            riderInfo: data.isDriver ? undefined : riderInfo,
+            profileURL: downloadURL
         })
+
+        //Create vehicle document if applicable
+        if (data.isDriver) {
+            await this.vehicleDAO.createVehicle({
+                color: data.color!,
+                insurance: {
+                    provider: data.provider!,
+                    coverageType: data.coverage!,
+                    startDate: new Date(data.startDate!),
+                    endDate: new Date(data.endDate!)
+                },
+                licensePlateNum: data.plateNum!,
+                make: data.make!,
+                year: data.year!,
+                uid: data.uid
+            })
+        }
     }
 
 
@@ -184,10 +174,6 @@ export class AccountService {
          */
         return Promise.reject(new Error('Unimplemented.'))
     }
-
-
-
-
 
 
 }

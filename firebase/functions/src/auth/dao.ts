@@ -9,7 +9,7 @@ export interface AuthenticationDAOInterface {
      * @param email The user account email address.
      * @param password The user account password.
      */
-    registerAccount(email: string, password: string): Promise<string>
+    // registerAccount(email: string, password: string): Promise<string>
 
     /**
      * Gets the userID given an email address associated with the user account.
@@ -29,16 +29,19 @@ export class AuthenticationDAO implements AuthenticationDAOInterface {
         this.auth = auth
     }
 
-
-    registerAccount(email: string, password: string): Promise<string> {
-        return this.auth.createUser({
-            email: email,
-            password: password
-        }).then(record => {
-            return record.uid
-        })
-
-    }
+    // registerAccount(email: string, password: string): Promise<string> {
+    //     return this.auth.createUser({
+    //         email: email,
+    //         password: password
+    //     }).then(async record => {
+    // await this.auth.generateEmailVerificationLink(email).then((link) => {
+    //     console.log('LINKE', link)
+    // }).catch(err => {
+    //     console.log('ERR', err.message)
+    // })
+    //         return record.uid
+    //     })
+    // }
 
     getUserID(email: string): Promise<string> {
         return this.auth.getUserByEmail(email).then(record => {
