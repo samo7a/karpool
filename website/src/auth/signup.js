@@ -10,6 +10,6 @@ export const signup = async (email, password) => {
     await getCurrentUser().sendEmailVerification();
     return user;
   } catch (e) {
-    throw new Error(e.message);
+    throw new Error(e.message); 
   }
 };
