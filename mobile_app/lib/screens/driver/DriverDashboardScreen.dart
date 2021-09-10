@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'DriverHomeScreen.dart';
 import 'DriverHistoryScreen.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverDrawer.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
 

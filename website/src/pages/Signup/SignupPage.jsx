@@ -24,6 +24,8 @@ import { signOut } from "../../auth/signout";
 import firebase from "firebase";
 import pic from "../../assets/ahmed.jpg";
 import { useAlert } from "react-alert";
+import { signup } from "../../auth/signup";
+import { useHistory } from "react-router";
 
 const SignupPage = () => {
   //text input variables
@@ -69,7 +71,9 @@ const SignupPage = () => {
   const [preview, setPreview] = useState();
   const photoRef = useRef();
   const [photoError, setPhotoError] = useState("");
+
   const alert = useAlert();
+  const history = useHistory();
   useEffect(() => {
     if (photo) {
       // console.log(photo);
@@ -89,7 +93,6 @@ const SignupPage = () => {
       setPhotoError("Please pick a profile picture");
       return;
     }
-    console.log(file);
     if (file && file.type.substr(0, 5) === "image") {
       setPhoto(file);
       setPhotoError("");
@@ -184,35 +187,55 @@ const SignupPage = () => {
       setIsLoading(false);
       return;
     }
-    console.log("base64", photo);
+    var user;
+    var uid;
+    try {
+      user = await signup(email, password);
+      if (user) {
+        uid = user.user.uid;
+      }
+    } catch (e) {
+      alert.error(e.message);
+      setRegisterError(e.message);
+      setIsLoading(false);
+      return;
+    }
     const obj = {
+      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
-      password: password,
       phone: phone,
       dob: dateOfBirth,
       gender: gender,
       isDriver: isDriver,
       profilePicData: base64,
     };
-    console.log("obj", obj);
     //null means everything good.
     //error if something went wrong
-
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
       if (result === null) {
         alert.success("Signed Up!");
+        signOut();
+        history.push("/login");
+        setIsLoading(false);
+      } else {
+        user.user.delete();
+        alert.error("Error Signing ");
+        setIsLoading(false);
       }
-      setIsLoading(false);
     } catch (e) {
-      console.log(e.message);
+      try {
+        signOut();
+      } catch (er) {
+        setRegisterError(er.message);
+        setIsLoading(false);
+      }
       setRegisterError(e.message);
       setIsLoading(false);
     }
-    // direct the user to the login page.
   };
   const registerDriver = async (event) => {
     event.preventDefault();
@@ -302,19 +325,30 @@ const SignupPage = () => {
     const base64 = await toBase64(photo).catch((e) => Error(e));
     if (base64 instanceof Error) {
       setPhotoError(base64.message);
-      console.log("Error: ", base64.message);
       setIsLoading(false);
       return;
     }
-    console.log("base64", photo);
+    var user;
+    var uid;
+    try {
+      user = await signup(email, password);
+      if (user) {
+        uid = user.user.uid;
+      }
+    } catch (e) {
+      alert.error(e.message);
+      setRegisterError(e.message);
+      setIsLoading(false);
+      return;
+    }
     const obj = {
+      uid: uid,
       firstName: firstName,
       lastName: lastName,
       email: email,
       phone: phone,
       dob: dateOfBirth,
       gender: gender,
-      password: password,
       routingNum: routingNumber,
       accountNum: accountNumber,
       make: carBrand,
@@ -332,7 +366,6 @@ const SignupPage = () => {
       licenseExpDate: licenseExpDate,
       profilePicData: base64,
     };
-    console.log("obj", obj);
     //null means everything good.
     //error if something went wrong
     const register = firebase.functions().httpsCallable("account-registerUser");
@@ -340,13 +373,26 @@ const SignupPage = () => {
       const result = await register(obj);
       if (result === null) {
         alert.success("Signed Up!");
+        signOut();
+        history.push("/login");
+        setIsLoading(false);
+        return;
+      } else {
+        user.user.delete();
+        alert.error("Error Signing ");
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
     } catch (e) {
+      try {
+        signOut();
+      } catch (er) {
+        setRegisterError(er.message);
+        setIsLoading(false);
+      }
       setRegisterError(e.message);
       setIsLoading(false);
     }
-    //direct the user to the login screen.
   };
   return (
     <div className="content">

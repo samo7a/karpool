@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/widgets/RiderDrawer.dart';
 import 'RiderHomeScreen.dart';
 import 'RiderHistoryScreen.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
 
 class RiderDashboardScreen extends StatefulWidget {

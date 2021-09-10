@@ -20,23 +20,25 @@ const LoginPage = () => {
   const alert = useAlert();
   useEffect(() => {
     signOut();
+    localStorage.setItem("role", "norole");
   }, []);
+
   const login = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     try {
       const getUser = firebase.functions().httpsCallable("account-getUser");
       const res = await signIn(email, password);
-      console.log("signin res", res);
       if (res !== undefined) {
-        if (!res.user.emailVerified) {
+        if (res.user.emailVerified) {
           signOut();
           setIsLoading(false);
+          alert.error("Unverified user");
+          setSigninError("Unverified user");
           return;
         } else {
           // getprofile
           const uid = res.user.uid;
-          console.log(isDriver, uid);
           const obj = {
             uid: uid,
             driver: isDriver,
@@ -44,8 +46,6 @@ const LoginPage = () => {
           const result = await getUser(obj);
           const riderRole = result.data.roles.Rider;
           const driverRole = result.data.roles.Driver;
-          console.log("Driver", driverRole);
-          console.log("Rider", riderRole);
           if (isDriver === true && driverRole !== undefined) {
             // the user is driver
             setIsLoading(false);
@@ -64,10 +64,15 @@ const LoginPage = () => {
             // has no roles
             setIsLoading(false);
             signOut();
+            alert.error("Error Signing in!");
             setSigninError("Error Signing in!");
             return;
           }
         }
+      } else {
+        setIsLoading(false);
+        setSigninError("Incorrect email/password!");
+        return;
       }
     } catch (e) {
       setSigninError(e.message);

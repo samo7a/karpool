@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/LoginScreen.dart';
 import 'package:mobile_app/screens/RegisterScreen.dart';
 import '../util/Size.dart';
-import 'package:mobile_app/pallete.dart';
+import 'package:mobile_app/util/constants.dart';
 
 class MainScreen extends StatelessWidget {
   static const id = 'mainScreen';
@@ -26,36 +26,38 @@ class MainScreen extends StatelessWidget {
                   'Kärpōōl',
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 60,
+                    fontSize: size.FONT_SIZE * 50,
                   ),
                 ),
                 SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  'Ensuring mobility in a mobile world.',
-                  style: TextStyle(
-                    fontFamily: 'Glory',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 27,
-                  ),
-                ),
-                SizedBox(
-                  height: 175,
+                  height: size.BLOCK_HEIGHT * 4,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(5.0),
+                  padding: EdgeInsets.symmetric(horizontal: size.BLOCK_WIDTH * 8),
+                  child: Text(
+                    'Ensuring mobility in a mobile world.',
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 25,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: size.BLOCK_HEIGHT * 20,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
                   // ignore: deprecated_member_use
                   child: FlatButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     minWidth: size.BLOCK_WIDTH * 70,
                     height: size.BLOCK_HEIGHT * 7,
                     color: kButtonColor,
                     child: Text('Login',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30,
+                          fontSize: size.FONT_SIZE * 28,
                         )),
                     onPressed: () {
                       Navigator.pushNamed(context, LoginScreen.id);
@@ -63,16 +65,20 @@ class MainScreen extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
                   // ignore: deprecated_member_use
                   child: FlatButton(
                     minWidth: size.BLOCK_WIDTH * 70,
                     height: size.BLOCK_HEIGHT * 7,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     color: kButtonColor,
-                    child: Text('Sign Up',
-                        style: TextStyle(color: Colors.white, fontSize: 30)),
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: size.FONT_SIZE * 28,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.pushNamed(context, RegisterScreen.id);
                     },
