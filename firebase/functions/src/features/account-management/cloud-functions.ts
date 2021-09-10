@@ -36,7 +36,7 @@ export const addRole = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)
 
-    return newAccountService().addRole(uid, data.driverInfo as any, data.role)
+    return newAccountService().addRole(uid, data.driverInfo, data.role)
 
 })
 
