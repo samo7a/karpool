@@ -1,5 +1,5 @@
 
-import { validateBool, validateNumber, validateString } from "../../utils/validation"
+import { validateBool, validateString } from "../../utils/validation"
 import { UserRegistrationData } from "./types";
 
 /*
@@ -63,11 +63,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             dob: validateString(data.dob),
             phone: validateString(data.phone),
             profilePicData: validateString(data.profilePicData),
-            cardNum: validateNumber(data.cardNum),
-            cardExpDate: validateString(data.cardExpDate),
-            cardCVC: validateNumber(data.cardCVC),
-            isDriver: false,
-            stripeToken: validateString(data.stripeToken)
+            isDriver: false
         }
     }
 }

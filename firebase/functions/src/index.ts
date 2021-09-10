@@ -1,6 +1,5 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
-
 import { AuthenticationDAO } from "./auth/dao";
 import { UserDAO } from "./data-access/user/dao";
 
@@ -11,10 +10,12 @@ import { UserDAO } from "./data-access/user/dao";
  * Required at global scope to use class-transformer decorators in classes.
  * https://github.com/typestack/class-transformer
  */
-import 'reflect-metadata';
-import { AccountService } from "./features/account-management/account-service";
-import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
-import { VehicleDAO } from "./data-access/vehicle/dao";
+ import 'reflect-metadata';
+ import { AccountService } from "./features/account-management/account-service";
+ import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
+ import { VehicleDAO } from "./data-access/vehicle/dao";
+import { TripDAO } from "./data-access/trip/dao";
+import { TripService } from "./features/trip/trip-service";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -40,6 +41,10 @@ export function newVehicleDAO(): VehicleDAO {
     return new VehicleDAO(admin.firestore())
 }
 
+export function newTripDAO(): TripDAO{
+    return new TripDAO(admin.firestore())
+}
+
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
@@ -49,6 +54,13 @@ export function newAccountService(): AccountService {
     )
 }
 
+export function newTripService(): TripService {
+    return new TripService(
+        newTripDAO()
+    )
+}
+
+
 //MARK: Exposed cloud function endpoints
 
 
@@ -57,6 +69,7 @@ export function newAccountService(): AccountService {
 
 
 exports.account = require('./features/account-management/cloud-functions')
+exports.trip = require('./features/trip/cloud-functions')
 
 
 

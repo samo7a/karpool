@@ -20,7 +20,7 @@ export interface CreatedTripSchema {
     /**
      * 
      */
-    startLocation: firestore.GeoPoint
+    startLocation: string
 
     /**
      * Status list of riders who have interacted with the trip.

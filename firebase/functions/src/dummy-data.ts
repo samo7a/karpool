@@ -1,7 +1,16 @@
 import { autoID } from "./data-access/utils/misc";
 import { UserRegistrationData } from "./features/account-management/types";
+import { TripCreationData } from "./features/trip/types";
 
+export const addTripDatadummy = (): TripCreationData =>{
 
+    return{
+        startAddress : "Kissimee Florida",
+        endAddress : "South Carolina",
+        startTime: "2021-09-10T03:24:39.292Z",
+        seatCount: 3   
+    }
+}
 
 export const driverRegisterDummy = (): UserRegistrationData => {
     return {
