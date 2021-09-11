@@ -193,7 +193,9 @@ const SignupPage = () => {
       user = await signup(email, password);
       if (user) {
         uid = user.user.uid;
-        console.log("uid", uid);
+      } else {
+        setIsLoading(false);
+        return;
       }
     } catch (e) {
       alert.error(e.message);
@@ -212,27 +214,19 @@ const SignupPage = () => {
       isDriver: isDriver,
       profilePicData: base64,
     };
-    console.log(obj);
     //null means everything good.
     //error if something went wrong
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      console.log(result);
       if (result.data === null) {
         alert.success("Signed Up!");
-        // signOut();
-        history.push("/login");
+        signOut();
         setIsLoading(false);
-      } 
-      // else {
-      //   //user.user.delete();
-      //   alert.error("Error Signing up!");
-      //   setIsLoading(false);
-      // }
-      signOut();
+        history.push("/login");
+        return;
+      }
     } catch (e) {
-      console.log(e.message);
       setRegisterError(e.message);
       alert.error(e.message);
       setIsLoading(false);
@@ -335,6 +329,9 @@ const SignupPage = () => {
       user = await signup(email, password);
       if (user) {
         uid = user.user.uid;
+      } else {
+        setIsLoading(false);
+        return;
       }
     } catch (e) {
       alert.error(e.message);
@@ -342,7 +339,6 @@ const SignupPage = () => {
       setIsLoading(false);
       return;
     }
-    console.log("uid", uid);
     const obj = {
       uid: uid,
       firstName: firstName,
@@ -368,39 +364,21 @@ const SignupPage = () => {
       licenseExpDate: licenseExpDate,
       profilePicData: base64,
     };
-    console.log(obj);
     //null means everything good.
     //error if something went wrong
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
-      console.log("before calling the funcion");
       const result = await register(obj);
-      console.log("after calling the func");
-      console.log(result);
-      setIsLoading(false);
-
-      if (result === null) {
+      if (result.data === null) {
         alert.success("Signed Up!");
         signOut();
+        setIsLoading(false);
         history.push("/login");
-        setIsLoading(false);
-        return;
-      } else {
-        user.user.delete();
-        alert.error("Error Signing up!");
-        setIsLoading(false);
         return;
       }
     } catch (e) {
-      console.log(e.message);
-      try {
-        signOut();
-      } catch (er) {
-        setRegisterError(er.message);
-        setIsLoading(false);
-      }
-      console.log(e.message);
       setRegisterError(e.message);
+      alert.error(e.message);
       setIsLoading(false);
     }
   };
