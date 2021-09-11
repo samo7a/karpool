@@ -72,6 +72,7 @@ const LoginPage = () => {
         }
       } else {
         setIsLoading(false);
+        signOut();
         setSigninError("Incorrect email/password!");
         return;
       }
@@ -79,7 +80,6 @@ const LoginPage = () => {
       setSigninError(e.message);
       signOut();
       setIsLoading(false);
-      return;
     }
   };
   return (

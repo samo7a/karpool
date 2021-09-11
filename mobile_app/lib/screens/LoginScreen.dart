@@ -37,7 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
       HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final res = await context.read<Auth>().signIn(email, password);
       if (res["msg"].toString().isEmpty) {
-        if (res["data"].user.emailVerified) {
+        if (!res["data"].user.emailVerified) {
+          res['data'].user.sendEmailVerification();
           context.read<Auth>().signOut();
           EasyLoading.dismiss();
           EasyLoading.showInfo("Unverified user");
@@ -55,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
             //the user is driver
             prefs.setString("role", "driver");
             EasyLoading.dismiss();
+            EasyLoading.showSuccess("Logged in!");
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => DriverDashboardScreen()),
@@ -64,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // the user is a rider
             prefs.setString("role", "rider");
             EasyLoading.dismiss();
+            EasyLoading.showSuccess("Logged in!");
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => RiderDashboardScreen()),
@@ -74,14 +77,15 @@ class _LoginScreenState extends State<LoginScreen> {
             EasyLoading.dismiss();
             context.read<Auth>().signOut();
             EasyLoading.showError("Signing in failed, please try agin!");
+            return;
           }
         }
       } else {
         EasyLoading.dismiss();
+        context.read<Auth>().signOut();
         EasyLoading.showInfo(res['msg']);
         return;
       }
-      //final results = await getUser();
     } catch (e) {
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
