@@ -30,7 +30,8 @@ const LoginPage = () => {
       const getUser = firebase.functions().httpsCallable("account-getUser");
       const res = await signIn(email, password);
       if (res !== undefined) {
-        if (res.user.emailVerified) {
+        if (!res.user.emailVerified) {
+          res.user.sendEmailVerification();
           signOut();
           setIsLoading(false);
           alert.error("Unverified user");
