@@ -4,29 +4,25 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class TopDrawer extends StatelessWidget {
-  const TopDrawer({
-    Key? key,
-    required this.size,
-    required this.profilePic,
-    required this.fullName,
-    required this.starRating
-  }) : super(key: key);
+  const TopDrawer(
+      {Key? key, required this.profilePic, required this.fullName, required this.starRating})
+      : super(key: key);
 
-  final Size size;
   final String profilePic;
   final String fullName;
-  final double starRating;
+  final int starRating; //change to double later
 
   @override
   Widget build(BuildContext context) {
+    Size size = new Size(Context: context);
     return DrawerHeader(
       decoration: BoxDecoration(
         color: kDrawerColor,
       ),
       margin: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Center(
             child: Text(
@@ -34,16 +30,15 @@ class TopDrawer extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Poppins',
                 letterSpacing: 0.5,
-                fontSize: 22,
+                fontSize: size.FONT_SIZE * 15,
                 color: kWhite,
               ),
             ),
           ),
-          //SizedBox(height: size.BLOCK_HEIGHT * 2),
           Center(
             child: Container(
               width: size.BLOCK_WIDTH * 30,
-              height: size.BLOCK_HEIGHT * 18,
+              height: size.BLOCK_HEIGHT * 15,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
@@ -55,7 +50,6 @@ class TopDrawer extends StatelessWidget {
               ),
             ),
           ),
-          //SizedBox(width: size.BLOCK_WIDTH * 8),
           Column(
             children: [
               Center(
@@ -63,19 +57,18 @@ class TopDrawer extends StatelessWidget {
                   fullName,
                   style: TextStyle(
                     fontFamily: 'Glory',
-                    fontSize: 30,
+                    fontSize: size.FONT_SIZE * 20,
                     fontWeight: FontWeight.bold,
                     color: kWhite,
                   ),
                 ),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: size.BLOCK_HEIGHT * 1),
             ],
           ),
-          // SizedBox(height: size.BLOCK_HEIGHT * 2),
           Center(
             child: RatingBarIndicator(
-              rating: starRating,
+              rating: starRating.ceilToDouble(), // remove the ceil function later
               itemCount: 5,
               itemSize: size.BLOCK_WIDTH * 12,
               direction: Axis.horizontal,

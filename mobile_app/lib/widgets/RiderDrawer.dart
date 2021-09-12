@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/screens/EditProfileScreen.dart';
+import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
+import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
+import 'package:provider/provider.dart';
 import 'TopDrawer.dart';
 
 class RiderDrawer extends StatelessWidget {
   const RiderDrawer({
+    required this.user,
     Key? key,
   }) : super(key: key);
-
-  final double rating = 3.6;
-  final String uName = 'John Doe';
-  final String imageLink = 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg';
+  final User user;
 
   @override
   Widget build(BuildContext context) {
+    final int rating = user.rating; //change to double later
+    final String uName = user.firstName + " " + user.lastName;
+    final String imageLink = user.profileURL;
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -22,10 +29,9 @@ class RiderDrawer extends StatelessWidget {
           Container(
             height: size.BLOCK_HEIGHT * 45,
             child: TopDrawer(
-              size: size,
               starRating: rating,
               fullName: uName,
-              profilePic: imageLink
+              profilePic: imageLink,
             ),
           ),
           Container(
@@ -55,8 +61,7 @@ class RiderDrawer extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                // TODO: Navigate to profile.
-                Navigator.pop(context);
+                Navigator.pushNamed(context, EditProfilScreen.id, arguments: user);
               },
             ),
           ),
@@ -86,10 +91,7 @@ class RiderDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () {
-                // TODO: Navigate to bank info
-                Navigator.pop(context);
-              },
+              onTap: () {},
             ),
           ),
           Container(
@@ -118,9 +120,15 @@ class RiderDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () {
-                // TODO: Logout functionality
-                Navigator.pop(context);
+              onTap: () async {
+                await context.read<Auth>().signOut();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           ),
@@ -151,8 +159,25 @@ class RiderDrawer extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                // TODO: Alert deletion, then delete or cancel
-                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  //fix the buttons here functions
+                  //not final
+                  builder: (_) => ConfirmationAlert(
+                    title: "You are about to delete your account!",
+                    msg: "Are you sure you want to delete your account?",
+                    textColor: 0xffffff,
+                    backgroundColor: 0x000000,
+                    rightButtonText: "Yes, delete my account",
+                    leftButtonText: "No, take me back",
+                    leftButtonColor: 0x933933,
+                    rightButtonColor: 0x1919191,
+                    rightButtonAction: () =>
+                        print("delete function"), //TODO: call the firebase delete function
+                    leftButtonAction: () => Navigator.pop(context),
+                  ),
+                  barrierDismissible: false,
+                );
               },
             ),
           ),

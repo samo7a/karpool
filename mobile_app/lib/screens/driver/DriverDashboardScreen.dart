@@ -1,46 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'DriverHomeScreen.dart';
 import 'DriverHistoryScreen.dart';
-import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverDrawer.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
 
 class DriverDashboardScreen extends StatefulWidget {
-  static const id = 'driverDashboardScreen';
-  const DriverDashboardScreen({Key? key}) : super(key: key);
+  static const String id = 'driverDashboardScreen';
 
   @override
   _DriverDashboardScreenState createState() => _DriverDashboardScreenState();
 }
 
 class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
+  String title = "Home";
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(''), 
-          backgroundColor: kButtonColor,
-        ),
-        drawer: DriverDrawer(), 
-        body: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            bottomNavigationBar: TabHandler(),
-            body: TabBarView(
-              children: [
-                DriverHomeScreen(),
-                DriverHistoryScreen(),
-              ],
-            ),
-          ),
+    final user = ModalRoute.of(context)!.settings.arguments as User;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("$title"),
+        backgroundColor: Color(0xff33415C),
+        centerTitle: true,
+      ),
+      drawer: DriverDrawer(
+        user: user,
+      ),
+      body: DefaultTabController(
+        length: 2,
+        child: Builder(
+          builder: (BuildContext context) {
+            final TabController tabController = DefaultTabController.of(context)!;
+            tabController.addListener(() {
+              if (!tabController.indexIsChanging) {
+                if (tabController.index == 0)
+                  setState(() {
+                    title = "Home";
+                  });
+                else
+                  setState(() {
+                    title = "History";
+                  });
+              }
+            });
+            return Scaffold(
+              bottomNavigationBar: TabHandler(),
+              body: TabBarView(
+                controller: tabController,
+                children: [
+                  DriverHomeScreen(),
+                  DriverHistoryScreen(),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
-
-
-

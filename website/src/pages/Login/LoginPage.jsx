@@ -30,7 +30,8 @@ const LoginPage = () => {
       const getUser = firebase.functions().httpsCallable("account-getUser");
       const res = await signIn(email, password);
       if (res !== undefined) {
-        if (res.user.emailVerified) {
+        if (!res.user.emailVerified) {
+          res.user.sendEmailVerification();
           signOut();
           setIsLoading(false);
           alert.error("Unverified user");
@@ -71,6 +72,7 @@ const LoginPage = () => {
         }
       } else {
         setIsLoading(false);
+        signOut();
         setSigninError("Incorrect email/password!");
         return;
       }
@@ -78,7 +80,6 @@ const LoginPage = () => {
       setSigninError(e.message);
       signOut();
       setIsLoading(false);
-      return;
     }
   };
   return (

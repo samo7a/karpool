@@ -8,7 +8,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class RegisterScreen extends StatefulWidget {
-  static const id = 'registerScreen';
+  static const String id = 'registerScreen';
   const RegisterScreen({Key? key}) : super(key: key);
 
   @override

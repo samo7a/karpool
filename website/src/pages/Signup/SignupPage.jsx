@@ -193,6 +193,9 @@ const SignupPage = () => {
       user = await signup(email, password);
       if (user) {
         uid = user.user.uid;
+      } else {
+        setIsLoading(false);
+        return;
       }
     } catch (e) {
       alert.error(e.message);
@@ -216,24 +219,16 @@ const SignupPage = () => {
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      if (result === null) {
+      if (result.data === null) {
         alert.success("Signed Up!");
         signOut();
+        setIsLoading(false);
         history.push("/login");
-        setIsLoading(false);
-      } else {
-        user.user.delete();
-        alert.error("Error Signing up!");
-        setIsLoading(false);
+        return;
       }
     } catch (e) {
-      try {
-        signOut();
-      } catch (er) {
-        setRegisterError(er.message);
-        setIsLoading(false);
-      }
       setRegisterError(e.message);
+      alert.error(e.message);
       setIsLoading(false);
     }
   };
@@ -334,6 +329,9 @@ const SignupPage = () => {
       user = await signup(email, password);
       if (user) {
         uid = user.user.uid;
+      } else {
+        setIsLoading(false);
+        return;
       }
     } catch (e) {
       alert.error(e.message);
@@ -371,26 +369,16 @@ const SignupPage = () => {
     const register = firebase.functions().httpsCallable("account-registerUser");
     try {
       const result = await register(obj);
-      if (result === null) {
+      if (result.data === null) {
         alert.success("Signed Up!");
         signOut();
+        setIsLoading(false);
         history.push("/login");
-        setIsLoading(false);
-        return;
-      } else {
-        user.user.delete();
-        alert.error("Error Signing up!");
-        setIsLoading(false);
         return;
       }
     } catch (e) {
-      try {
-        signOut();
-      } catch (er) {
-        setRegisterError(er.message);
-        setIsLoading(false);
-      }
       setRegisterError(e.message);
+      alert.error(e.message);
       setIsLoading(false);
     }
   };
