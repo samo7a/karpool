@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class RiderHomeScreen extends StatefulWidget {
-  static const id = 'riderHomeScreen';
   const RiderHomeScreen({Key? key}) : super(key: key);
 
   @override

@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'driver/DriverDashboardScreen.dart';
 
 class SplashScreen extends StatefulWidget {
-  static const id = 'splashScreen';
+  static const String id = 'splashScreen';
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }

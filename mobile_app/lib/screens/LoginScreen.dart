@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'driver/DriverDashboardScreen.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const id = 'loginScreen';
+  static const String id = 'loginScreen';
 
   const LoginScreen({Key? key}) : super(key: key);
 

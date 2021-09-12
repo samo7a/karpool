@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/util/constants.dart';
 
 class DriverHomeScreen extends StatefulWidget {
-  static const id = 'driverHomeScreen';
   const DriverHomeScreen({Key? key}) : super(key: key);
 
   @override

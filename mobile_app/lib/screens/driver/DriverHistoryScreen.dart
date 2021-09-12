@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class DriverHistoryScreen extends StatefulWidget {
-  static const id = 'driverHistoryScreen';
   const DriverHistoryScreen({Key? key}) : super(key: key);
 
   @override
