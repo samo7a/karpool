@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
@@ -9,8 +8,6 @@ import '../util/Size.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 import 'driver/DriverDashboardScreen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,71 +37,51 @@ class _SplashScreenState extends State<SplashScreen> {
 
   route() async {
     try {
-      print("start try");
-      final user = Provider.of<User?>(context, listen: false);
-      // final user = context.read<Auth>().getCurrentUser();
-      // bool v = user.emailVerified;
+      final user = await Provider.of<Auth>(context, listen: false).currentUser();
+      if (user == null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (Route<dynamic> route) => false,
+        );
+        return;
+      }
+      bool verified = user.isVerified;
+      if (!verified) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (Route<dynamic> route) => false,
+        );
+        return;
+      }
       final prefs = await SharedPreferences.getInstance();
-      HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
-      String role = await prefs.getString("role") as String;
-      print("role: " + role);
-      if (role == 'norole')
+      String role = await prefs.getString("role") ?? 'norole';
+      if (role == 'norole') {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
           (Route<dynamic> route) => false,
         );
+        return;
+      }
       bool isDriver = role == 'driver';
-      print(isDriver);
-      if (user != null && !user.emailVerified) {
-        String uid = user.uid;
-        print(uid);
-        final obj = <String, dynamic>{
-          "uid": uid,
-          "driver": isDriver,
-        };
-        final result = await getUser(obj);
-        var riderRole = result.data['roles']['Rider'];
-        var driverRole = result.data["roles"]["Driver"];
-        print(riderRole + driverRole);
-        if (isDriver == true && driverRole != null) {
-          //the user is driver
-          print("i am a driver");
-          prefs.setString("role", "driver");
-          EasyLoading.dismiss();
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => DriverDashboardScreen()),
-            (Route<dynamic> route) => false,
-          );
-        } else if (isDriver == false && riderRole != null) {
-          // the user is a rider
-          print("i am a rider");
-          prefs.setString("role", "rider");
-          EasyLoading.dismiss();
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => RiderDashboardScreen()),
-            (Route<dynamic> route) => false,
-          );
-        } else {
-          print("i am nothing");
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-            (Route<dynamic> route) => false,
-          );
-        }
-      } else {
-        print("end if else");
+      if (isDriver) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => DriverDashboardScreen()),
           (Route<dynamic> route) => false,
         );
+        return;
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => RiderDashboardScreen()),
+          (Route<dynamic> route) => false,
+        );
+        return;
       }
     } catch (e) {
-      print("error");
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MainScreen()),
