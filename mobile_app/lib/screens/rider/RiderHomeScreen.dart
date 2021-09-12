@@ -10,12 +10,14 @@ class RiderHomeScreen extends StatefulWidget {
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'Rider Home',
-            style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+    return Container(
+      color: Color(0xff33415C),
+      child: Center(
+        child: Text(
+          'Rider Home Screen',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 50,
           ),
         ),
       ),

@@ -3,7 +3,7 @@ class User {
   final String firstName;
   final String lastName;
   // final String email;
-  final String phoneNumer;
+  final String phoneNumber;
   // final String dateOfBirth;
   // final String gender;
   final bool isDriver;
@@ -23,6 +23,6 @@ class User {
       required this.rating,
       required this.profileURL,
       // required this.email,
-      required this.phoneNumer});
+      required this.phoneNumber});
 }
 // (Ahmed) I will add the other fields later.

@@ -38,7 +38,7 @@ class Auth {
         uid: user.uid,
         firstName: firstName,
         lastName: lastName,
-        phoneNumer: phone,
+        phoneNumber: phone,
         profileURL: url,
         rating: rating,
         isVerified: user.emailVerified,

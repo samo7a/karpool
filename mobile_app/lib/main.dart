@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_app/screens/EditProfileScreen.dart';
 // import 'package:mobile_app/models/User.dart' as user; //I will need it later
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/screens.dart';
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
               ForgotPassword.id: (context) => ForgotPassword(),
               DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
               RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
+              EditProfilScreen.id: (context) => EditProfilScreen(),
             },
           );
         });

@@ -10,12 +10,14 @@ class RiderHistoryScreen extends StatefulWidget {
 class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Text(
-            'Rider History',
-            style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+    return Container(
+      color: Color(0xff33415C),
+      child: Center(
+        child: Text(
+          'Rider History Screen',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 50,
           ),
         ),
       ),

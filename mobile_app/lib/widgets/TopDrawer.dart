@@ -21,8 +21,8 @@ class TopDrawer extends StatelessWidget {
       ),
       margin: EdgeInsets.zero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Center(
             child: Text(
