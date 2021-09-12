@@ -62,6 +62,11 @@ class Auth {
     return userFromFirebase(credential.user);
   }
 
+  //reset password
+  Future<void> sendResetPasswordEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
   // sign out
   Future<void> signOut() async {
     await _auth.signOut();

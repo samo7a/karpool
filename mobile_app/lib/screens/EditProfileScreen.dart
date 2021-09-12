@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/util/constants.dart';
 
 class EditProfilScreen extends StatefulWidget {
   const EditProfilScreen({Key? key}) : super(key: key);
@@ -23,6 +24,16 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
         backgroundColor: Color(0xff33415C),
         title: Text("Edit"),
         centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: kWhite,
+          ),
+        ),
       ),
       body: Center(
         child: Column(

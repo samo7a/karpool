@@ -117,6 +117,16 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: kBackgroundColor,
           title: Text("SIGN IN"),
           centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: kWhite,
+            ),
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(
