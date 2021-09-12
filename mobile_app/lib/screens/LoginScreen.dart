@@ -100,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
-      EasyLoading.showError("Change your user type.");
+      EasyLoading.showError("Signing in failed, please try agin!");
       // EasyLoading.showError(e.toString());
-      // print(e.toString());
+      print(e.toString());
     }
   }
 
