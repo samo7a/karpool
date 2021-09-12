@@ -1,6 +1,8 @@
 import { CreatedTripSchema } from "./schema";
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
+//import { fireDecode } from "../utils/decode";
+//import { TripService } from "../../features/trip/trip-service";
 
 export interface TripDAOInterface {
 
@@ -12,7 +14,7 @@ export interface TripDAOInterface {
      */
     createAddedTrip(data: CreatedTripSchema): Promise<string>
 
-    getTrips(driverID: string): Promise<CreatedTripSchema[]>
+    getDriverTrips(driverID: string): Promise<CreatedTripSchema[]>
 
 
 
@@ -34,9 +36,10 @@ export class TripDAO implements TripDAOInterface {
     }
 
 
-    
-    getTrips(driverID: string): Promise<CreatedTripSchema[]> {
-        throw new Error("Method not implemented.");
+    //HERE Promise<CreatedTripSchema[]
+    async getDriverTrips(driverID: string): Promise<CreatedTripSchema[]> {
+        const snapshot = await this.db.collection(FirestoreKey.trips).where('driverID','==',driverID).get()
+        return snapshot.docs.map(doc => doc.data()) as CreatedTripSchema[]
     }
-
+ 
 }

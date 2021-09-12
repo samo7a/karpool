@@ -48,9 +48,11 @@ export class TripService {
      * @param driverID 
      * @returns 
      */
-    getTrips(driverID: string): Promise<CreatedTripSchema[]> {
-        return Promise.resolve([])
+    async getDriverTrips(driverID: string): Promise<CreatedTripSchema[]> {
+        //validate
+        const driverTrips = await this.tripDAO.getDriverTrips(driverID)
 
+        return driverTrips
     }
 
 
