@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'DriverHomeScreen.dart';
 import 'DriverHistoryScreen.dart';
@@ -6,25 +7,21 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverDrawer.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
 
-class DriverDashboardScreen extends StatefulWidget {
+class DriverDashboardScreen extends StatelessWidget {
   static const id = 'driverDashboardScreen';
-  const DriverDashboardScreen({Key? key}) : super(key: key);
-
-  @override
-  _DriverDashboardScreenState createState() => _DriverDashboardScreenState();
-}
-
-class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    final user = ModalRoute.of(context)!.settings.arguments as User;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(''), 
+          title: Text(''),
           backgroundColor: kButtonColor,
         ),
-        drawer: DriverDrawer(), 
+        drawer: DriverDrawer(
+          user: user,
+        ),
         body: DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -41,6 +38,3 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
     );
   }
 }
-
-
-

@@ -12,18 +12,12 @@ class DriverHomeScreen extends StatefulWidget {
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Text(
-              'Driver Home',
-              style: TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.bold
-              ),
-            ),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Text(
+            'Driver Home',
+            style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
           ),
         ),
       ),

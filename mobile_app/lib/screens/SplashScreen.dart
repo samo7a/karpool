@@ -69,14 +69,24 @@ class _SplashScreenState extends State<SplashScreen> {
       if (isDriver) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => DriverDashboardScreen()),
+          MaterialPageRoute(
+            builder: (context) => DriverDashboardScreen(),
+            settings: RouteSettings(
+              arguments: user,
+            ),
+          ),
           (Route<dynamic> route) => false,
         );
         return;
       } else {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => RiderDashboardScreen()),
+          MaterialPageRoute(
+            builder: (context) => RiderDashboardScreen(),
+            settings: RouteSettings(
+              arguments: user,
+            ),
+          ),
           (Route<dynamic> route) => false,
         );
         return;

@@ -50,10 +50,9 @@ class MyApp extends StatelessWidget {
           ),
           // ChangeNotifierProvider<>(
           //   create: (context) => user(),
-          // ),
+          // ), // need it later, do not delete it
         ],
         builder: (context, child) {
-          // final user = context.watch<User>();
           return MaterialApp(
             builder: EasyLoading.init(),
             debugShowCheckedModeBanner: false,

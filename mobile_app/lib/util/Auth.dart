@@ -22,10 +22,29 @@ class Auth {
       };
       HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
+      String firstName = result.data['firstName'] ?? "";
+      String lastName = result.data['lastName'] ?? "";
+      String phone = result.data['phone'] ?? "";
+      String url = result.data['profileURL'] ?? "";
+      var rating;
+      if (isDriver)
+        rating = result.data['driverRating'] ?? 0; //change to 0.0
+      else
+        rating = result.data['riderRating'] ?? 0; //change to 0.0
       var riderRole = result.data['roles']['Rider'] ?? false;
       var driverRole = result.data["roles"]["Driver"] ?? false;
+      print(result.data.toString());
       return User(
-          uid: user.uid, isVerified: user.emailVerified, isDriver: driverRole, isRider: riderRole);
+        uid: user.uid,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumer: phone,
+        profileURL: url,
+        rating: rating,
+        isVerified: user.emailVerified,
+        isDriver: driverRole,
+        isRider: riderRole,
+      );
     }
   }
   //How to call these functions?
@@ -34,7 +53,6 @@ class Auth {
   //sign in
   Future<User?> signIn(String email, String password) async {
     final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    print(credential.user);
     return await userFromFirebase(credential.user);
   }
 
@@ -50,8 +68,8 @@ class Auth {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('counter', "norole");
   }
-  // current user
 
+  // current user
   Future<User?> currentUser() async {
     return await userFromFirebase(_auth.currentUser);
   }

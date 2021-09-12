@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'TopDrawer.dart';
 
 class DriverDrawer extends StatelessWidget {
-  const DriverDrawer({
+  DriverDrawer({
+    required this.user,
     Key? key,
   }) : super(key: key);
-
-  final double rating = 3.6;
-  final String uName = 'John Doe';
-  final String imageLink = 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg';
+  final User user;
 
   @override
   Widget build(BuildContext context) {
+    final int rating = user.rating; // change to double later
+    final String uName = user.firstName + " " + user.lastName;
+    final String imageLink = user.profileURL;
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -22,10 +24,9 @@ class DriverDrawer extends StatelessWidget {
           Container(
             height: size.BLOCK_HEIGHT * 45,
             child: TopDrawer(
-              size: size,
               starRating: rating,
               fullName: uName,
-              profilePic: imageLink
+              profilePic: imageLink,
             ),
           ),
           Container(

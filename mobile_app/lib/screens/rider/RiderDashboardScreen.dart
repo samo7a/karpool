@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/widgets/RiderDrawer.dart';
 import 'RiderHomeScreen.dart';
 import 'RiderHistoryScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
 
-class RiderDashboardScreen extends StatefulWidget {
+
+class RiderDashboardScreen extends StatelessWidget {
   static const id = 'riderDashboardScreen';
-  const RiderDashboardScreen({Key? key}) : super(key: key);
-
-  @override
-  _RiderDashboardScreenState createState() => _RiderDashboardScreenState();
-}
-
-class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    final user = ModalRoute.of(context)!.settings.arguments as User;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(''), 
+          title: Text(''),
           backgroundColor: kButtonColor,
         ),
-        drawer: RiderDrawer(), 
+        drawer: RiderDrawer(
+          user: user,
+        ),
         body: DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -40,6 +38,3 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
     );
   }
 }
-
-
-

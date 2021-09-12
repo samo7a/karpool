@@ -2,7 +2,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
@@ -60,7 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
             EasyLoading.showSuccess("Logged in!");
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => DriverDashboardScreen()),
+              MaterialPageRoute(
+                builder: (context) => DriverDashboardScreen(),
+                settings: RouteSettings(
+                  arguments: res,
+                ),
+              ),
               (Route<dynamic> route) => false,
             );
           } else if (!isDriver && riderRole) {
@@ -70,7 +74,12 @@ class _LoginScreenState extends State<LoginScreen> {
             EasyLoading.showSuccess("Logged in!");
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => RiderDashboardScreen()),
+              MaterialPageRoute(
+                builder: (context) => RiderDashboardScreen(),
+                settings: RouteSettings(
+                  arguments: res,
+                ),
+              ),
               (Route<dynamic> route) => false,
             );
           } else {
@@ -91,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
-      // EasyLoading.showError("Change your user type.");
-      EasyLoading.showError(e.toString());
-      print(e.toString());
+      EasyLoading.showError("Change your user type.");
+      // EasyLoading.showError(e.toString());
+      // print(e.toString());
     }
   }
 
