@@ -85,178 +85,232 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
         ),
         elevation: 0.0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 10, top: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Date and Time",
-                  style: TextStyle(
-                    fontFamily: 'Glory',
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.FONT_SIZE * 20,
-                    color: kWhite,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 0, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Date and Time",
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 20,
+                      color: kWhite,
+                    ),
+                    textAlign: TextAlign.start,
                   ),
-                  textAlign: TextAlign.start,
-                ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT,
-                ),
-                Container(
-                  child: TextFormField(
-                    // TODO: Add date & time api for input
-                    onChanged: (value) => setState(() => dateTime = value),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Ex: 01/01/2021 04:30 PM",
-                      hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
-                      contentPadding: EdgeInsets.all(8),
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT,
+                  ),
+                  Container(
+                    child: TextFormField(
+                      // TODO: Add date & time api for input
+                      onChanged: (value) => setState(() => dateTime = value),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Ex: 01/01/2021 04:30 PM",
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
+                    height: size.BLOCK_HEIGHT * 6,
+                    width: size.BLOCK_WIDTH * 65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: kWhite,
                     ),
                   ),
-                  height: size.BLOCK_HEIGHT * 6,
-                  width: size.BLOCK_WIDTH * 65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: kWhite,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: size.BLOCK_HEIGHT * 3),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Start Location",
-                  style: TextStyle(
-                    fontFamily: 'Glory',
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.FONT_SIZE * 20,
-                    color: kWhite,
-                  ),
-                ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT,
-                ),
-                Container(
-                  child: TextFormField(
-                    // TODO: Add address api --> maps/google for input
-                    onChanged: (value) => setState(() => startLoc = value),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Ex: 123 Sesame Street",
-                      hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
-                      contentPadding: EdgeInsets.all(8),
-                    ),
-                  ),
-                  height: size.BLOCK_HEIGHT * 6,
-                  width: size.BLOCK_WIDTH * 65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: kWhite,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: size.BLOCK_HEIGHT * 3,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Destination",
-                  style: TextStyle(
-                    fontFamily: 'Glory',
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.FONT_SIZE * 20,
-                    color: kWhite,
-                  ),
-                ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT,
-                ),
-                Container(
-                  child: TextFormField(
-                    // TODO: Add address api --> maps/google for input
-                    onChanged: (value) => setState(() => destination = value),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Ex: 456 Sesame Street",
-                      hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
-                      contentPadding: EdgeInsets.all(8),
-                    ),
-                  ),
-                  height: size.BLOCK_HEIGHT * 6,
-                  width: size.BLOCK_WIDTH * 65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: kWhite,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: size.BLOCK_HEIGHT * 3,
-            ),
-            // ignore: deprecated_member_use
-            FlatButton(
-              minWidth: size.BLOCK_WIDTH * 40,
-              height: size.BLOCK_HEIGHT * 5,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50)),
-              color: Colors.green,
-              child: Text(
-                'Search Rides',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: size.FONT_SIZE * 22,
-                ),
+                ],
               ),
-              onPressed: () {
-                // TODO: Link search to backend & retrieve trips map/data
-                //Navigator.pushNamed(context, ''.id);
-              },
-            ),
-            SizedBox(
-              height: size.BLOCK_HEIGHT * 5,
-            ),
-            Text(
-              "Search Results:",
-              style: TextStyle(
-                  //fontFamily: 'Glory',
-                  //fontWeight: FontWeight.bold,
-                  color: kWhite,
-                  fontSize: size.FONT_SIZE * 28),
-            ),
-            // TODO: Fix list view, possibly put on another screen...
-            // ListView.builder(
-            //   itemCount: trips.length,
-            //   physics: NeverScrollableScrollPhysics(),
-            //   shrinkWrap: true,
-            //   itemBuilder: (BuildContext context, int index) {
-            //     return Container(
-            //       child: Center(
-            //         child: TripResultContainer(
-            //           date: trips[index]['tripDate'] ?? "",
-            //           time: trips[index]['tripTime'] ?? "",
-            //           fromAddress: trips[index]['from'] ?? "",
-            //           toAddress: trips[index]['to'] ?? "",
-            //           estimatedPrice: trips[index]['price'] ?? "",
-            //           profilePic: trips[index]['imageLink'] ?? "",
-            //           TODO: add button for scheduling ride
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // ),
-          ],
+              SizedBox(height: size.BLOCK_HEIGHT * 3),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Start Location",
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 20,
+                      color: kWhite,
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT,
+                  ),
+                  Container(
+                    child: TextFormField(
+                      // TODO: Add address api --> maps/google for input
+                      onChanged: (value) => setState(() => startLoc = value),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Ex: 123 Sesame Street",
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
+                    height: size.BLOCK_HEIGHT * 6,
+                    width: size.BLOCK_WIDTH * 65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: kWhite,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 3,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Destination",
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 20,
+                      color: kWhite,
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT,
+                  ),
+                  Container(
+                    child: TextFormField(
+                      // TODO: Add address api --> maps/google for input
+                      onChanged: (value) => setState(() => destination = value),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Ex: 456 Sesame Street",
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
+                    height: size.BLOCK_HEIGHT * 6,
+                    width: size.BLOCK_WIDTH * 65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: kWhite,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 3,
+              ),
+              // ignore: deprecated_member_use
+              FlatButton(
+                minWidth: size.BLOCK_WIDTH * 40,
+                height: size.BLOCK_HEIGHT * 5,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50)),
+                color: Colors.green,
+                child: Text(
+                  'Search Rides',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: size.FONT_SIZE * 22,
+                  ),
+                ),
+                onPressed: () {
+                  // TODO: Link search to backend & retrieve trips map/data
+                },
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 5,
+              ),
+              Text(
+                "Search Results:",
+                style: TextStyle(
+                    color: kWhite,
+                    fontSize: size.FONT_SIZE * 28,
+                  ),
+              ),
+              ListView.builder(
+                itemCount: trips.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Confirm Ride Scheduling"),
+                                  content: Text(
+                                    "Are you sure you wish to schedule this ride?",
+                                    style: TextStyle(
+                                      fontFamily: 'Glory',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: size.FONT_SIZE * 22,
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    // ignore: deprecated_member_use
+                                    FlatButton(
+                                      onPressed: () {
+                                        // TODO: Add ride to trip list
+                                        // TODO: Register Scheduling in backend
+                                        print("Chose Yes");
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: const Text(
+                                        "YES",
+                                        style: TextStyle(
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20, // size object not working here,       
+                                        ),
+                                      ),
+                                    ),
+                                    // ignore: deprecated_member_use
+                                    FlatButton(
+                                      onPressed: () {
+                                        print("Chose No");
+                                        Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text(
+                                        "NO",
+                                        style: TextStyle(
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20, // size object not working here,         
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  backgroundColor: kWhite,
+                                );
+                              },
+                            );
+                        },
+                        child: TripResultContainer(
+                          date: trips[index]['tripDate'] ?? "",
+                          time: trips[index]['tripTime'] ?? "",
+                          fromAddress: trips[index]['from'] ?? "",
+                          toAddress: trips[index]['to'] ?? "",
+                          estimatedPrice: trips[index]['price'] ?? "",
+                          profilePic: trips[index]['imageLink'] ?? "",
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

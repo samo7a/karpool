@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/rider/SearchRidesScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
+// import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
 import 'package:mobile_app/widgets/RideContainer.dart';
 
 class RiderHomeScreen extends StatefulWidget {
@@ -65,7 +65,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                 direction: DismissDirection.endToStart,
                 key: Key(trip["tripID"] ?? ""),
                 onDismissed: (direction) {
-                  // TODO: API call to delete ride scheduling
+                  // TODO: API call to delete scheduled ride
                   trips.removeAt(index);
                 },
                 confirmDismiss: (direction) async {

@@ -11,6 +11,7 @@ class TripResultContainer extends StatelessWidget {
     required this.toAddress,
     required this.profilePic,
     required this.estimatedPrice,
+    // required this.onPress,
   }) : super(key: key);
 
   final String date;
@@ -19,6 +20,7 @@ class TripResultContainer extends StatelessWidget {
   final String toAddress;
   final String profilePic;
   final String estimatedPrice;
+  // final Function onPress;
 
   // TODO: add button for scheduling rides
 
