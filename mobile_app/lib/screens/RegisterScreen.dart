@@ -1,7 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_app/util/InsuranceProviders.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -114,8 +114,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String driverLicense = '';
   String licenseEnd = '';
 
+  List<String> insuranceProviders = providers;
 // Driver Car Insurance Info Strings
-  String insProvider = '';
+  String insProvider = "";
   String insType = '';
   String insStartDate = '';
   String insEndDate = '';
@@ -164,7 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           centerTitle: true,
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           child: Column(
             children: [
               Center(child: _getUserWidget(size, context)),
@@ -201,8 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Bank Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -211,8 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt,
-                          color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -233,10 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Routing Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Routing Number is Required!"),
-                    MinLengthValidator(9,
-                        errorText: "Please enter a valid Routing Number!"),
-                    MaxLengthValidator(9,
-                        errorText: "Please enter a valid Routing Number!")
+                    MinLengthValidator(9, errorText: "Please enter a valid Routing Number!"),
+                    MaxLengthValidator(9, errorText: "Please enter a valid Routing Number!")
                   ]),
                   onChanged: (value) => setState(() => routingNum = value),
                   textInputAction: TextInputAction.next,
@@ -249,8 +246,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -271,10 +267,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Account Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Account Number is Required!"),
-                    MinLengthValidator(9,
-                        errorText: "Please enter a valid Account Number!"),
-                    MaxLengthValidator(12,
-                        errorText: "Please enter a valid Account Number!")
+                    MinLengthValidator(9, errorText: "Please enter a valid Account Number!"),
+                    MaxLengthValidator(12, errorText: "Please enter a valid Account Number!")
                   ]),
                   onChanged: (value) => setState(() => accountNum = value),
                   textInputAction: TextInputAction.next,
@@ -285,8 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Car Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -312,8 +305,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Car Brand"),
                 value: carBrand,
                 items: <String>[
@@ -326,14 +318,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator:
-                    RequiredValidator(errorText: "Car Brand is Required!"),
+                validator: RequiredValidator(errorText: "Car Brand is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     carBrand = value!;
@@ -347,8 +337,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.palette, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -365,8 +354,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Car Color"),
                 value: carColor,
                 items: <String>[
@@ -379,14 +367,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator:
-                    RequiredValidator(errorText: "Car Color is Required!"),
+                validator: RequiredValidator(errorText: "Car Color is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     carColor = value!;
@@ -400,8 +386,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.calendar, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.calendar, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -420,8 +405,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Year of Manufacture"),
-                  validator: RequiredValidator(
-                      errorText: "Year of Manufacture is Required!"),
+                  validator: RequiredValidator(errorText: "Year of Manufacture is Required!"),
                   onChanged: (value) => setState(() => carYear = value),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -433,8 +417,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(Icons.crop_7_5_rounded, color: kIconColor),
+                      prefixIcon: Icon(Icons.crop_7_5_rounded, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -453,8 +436,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "License Plate Number"),
-                  validator: RequiredValidator(
-                      errorText: "License Plate Number is Required!"),
+                  validator: RequiredValidator(errorText: "License Plate Number is Required!"),
                   onChanged: (value) => setState(() => carPlate = value),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -466,8 +448,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.idBadge, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.idBadge, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -486,8 +467,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Driver License Number"),
-                  validator: RequiredValidator(
-                      errorText: "Driver License Number is Required!"),
+                  validator: RequiredValidator(errorText: "Driver License Number is Required!"),
                   onChanged: (value) => setState(() => driverLicense = value),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -507,8 +487,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: InputDecoration(
                             fillColor: kWhite.withOpacity(0.4),
                             filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarTimes,
-                                color: kIconColor),
+                            prefixIcon: Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
                             enabledBorder: UnderlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: kGreen, width: 5),
@@ -528,11 +507,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hintStyle: TextStyle(color: kHintText),
                             hintText: "License End Date"),
                         validator: MultiValidator([
-                          RequiredValidator(
-                              errorText: "License End Date is Required!"),
+                          RequiredValidator(errorText: "License End Date is Required!"),
                         ]),
-                        onChanged: (value) =>
-                            setState(() => licenseEnd = value),
+                        onChanged: (value) => setState(() => licenseEnd = value),
                         textInputAction: TextInputAction.next,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
@@ -543,8 +520,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Car Insurance Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -553,8 +529,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.carCrash, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.carCrash, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -571,28 +546,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Insurance Provider"),
                 value: insProvider,
-                items: <String>[
-                  '',
-                  'Allstate',
-                  'State Farm',
-                  'Geico',
-                ].map<DropdownMenuItem<String>>((String value) {
+                items: insuranceProviders.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(
-                    errorText: "Insurance Provider is Required!"),
+                validator: RequiredValidator(errorText: "Insurance Provider is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insProvider = value!;
@@ -606,8 +573,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.stream, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -624,8 +590,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Coverage Type"),
                 value: insType,
                 items: <String>[
@@ -637,14 +602,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator:
-                    RequiredValidator(errorText: "Coverage Type is Required!"),
+                validator: RequiredValidator(errorText: "Coverage Type is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insType = value!;
@@ -666,8 +629,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: InputDecoration(
                             fillColor: kWhite.withOpacity(0.4),
                             filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarPlus,
-                                color: kIconColor),
+                            prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
                             enabledBorder: UnderlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: kGreen, width: 5),
@@ -687,11 +649,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hintStyle: TextStyle(color: kHintText),
                             hintText: "Insurance Start Date"),
                         validator: MultiValidator([
-                          RequiredValidator(
-                              errorText: "Insurance Start Date is Required!"),
+                          RequiredValidator(errorText: "Insurance Start Date is Required!"),
                         ]),
-                        onChanged: (value) =>
-                            setState(() => insStartDate = value),
+                        onChanged: (value) => setState(() => insStartDate = value),
                         textInputAction: TextInputAction.next,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
@@ -712,8 +672,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: InputDecoration(
                             fillColor: kWhite.withOpacity(0.4),
                             filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarMinus,
-                                color: kIconColor),
+                            prefixIcon: Icon(FontAwesomeIcons.calendarMinus, color: kIconColor),
                             enabledBorder: UnderlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: kGreen, width: 5),
@@ -733,11 +692,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hintStyle: TextStyle(color: kHintText),
                             hintText: "Insurance End Date"),
                         validator: MultiValidator([
-                          RequiredValidator(
-                              errorText: "Insurance Start End is Required!"),
+                          RequiredValidator(errorText: "Insurance Start End is Required!"),
                         ]),
-                        onChanged: (value) =>
-                            setState(() => insEndDate = value),
+                        onChanged: (value) => setState(() => insEndDate = value),
                         textInputAction: TextInputAction.next,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
@@ -775,8 +732,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -798,11 +754,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "First Name is Required!"),
                     MinLengthValidator(2,
-                        errorText:
-                            "First name should be at least 2 characters long!"),
+                        errorText: "First name should be at least 2 characters long!"),
                     MaxLengthValidator(50,
-                        errorText:
-                            "First name should not exceed 50 characters!"),
+                        errorText: "First name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -817,8 +771,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -840,11 +793,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Last Name is Required!"),
                     MinLengthValidator(2,
-                        errorText:
-                            "Last name should be at least 2 characters long!"),
-                    MaxLengthValidator(50,
-                        errorText:
-                            "Last name should not exceed 50 characters!"),
+                        errorText: "Last name should be at least 2 characters long!"),
+                    MaxLengthValidator(50, errorText: "Last name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -859,8 +809,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.envelope, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.envelope, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -882,8 +831,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),
-                    MaxLengthValidator(50,
-                        errorText: "Email should not exceed 50 characters!"),
+                    MaxLengthValidator(50, errorText: "Email should not exceed 50 characters!"),
                   ]),
                   onChanged: (value) => setState(() => email = value),
                   keyboardType: TextInputType.emailAddress,
@@ -896,8 +844,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -918,11 +865,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Phone Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Phone Number is Required!"),
-                    MaxLengthValidator(10,
-                        errorText: "Phone Number should not exceed 10 digits!"),
+                    MaxLengthValidator(10, errorText: "Phone Number should not exceed 10 digits!"),
                     MinLengthValidator(10,
-                        errorText:
-                            "Phone Number should not be less than 10 digits!"),
+                        errorText: "Phone Number should not be less than 10 digits!"),
                     PatternValidator(r"^[0-9]{10}$",
                         errorText: "Please enter a valid phone number!"),
                   ]),
@@ -983,8 +928,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.venusMars, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.venusMars, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -1001,8 +945,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Gender"),
                 value: gender,
                 items: <String>[
@@ -1015,8 +958,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
@@ -1037,8 +979,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -1065,11 +1006,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     // MinLengthValidator(6,
                     //     errorText:
                     //         'Password must be at least 8 digits long!'),
-                    PatternValidator(
-                        r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,50}$",
+                    PatternValidator(r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,50}$",
                         // ^(?=.[0-9])(?=.[a-zA-Z])(?=\S+$).{6,50}$ // Updated one not working...
-                        errorText:
-                            'Password must contain one symbol and number!')
+                        errorText: 'Password must contain one symbol and number!')
                   ]),
                   onChanged: (value) => setState(() => password = value),
                   textInputAction: TextInputAction.next,
@@ -1083,8 +1022,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -1115,8 +1053,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Are you driving?',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
