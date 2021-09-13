@@ -30,15 +30,15 @@ class TopDrawer extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Poppins',
                 letterSpacing: 0.5,
-                fontSize: size.FONT_SIZE * 15,
+                fontSize: size.FONT_SIZE * 20,
                 color: kWhite,
               ),
             ),
           ),
           Center(
             child: Container(
-              width: size.BLOCK_WIDTH * 30,
-              height: size.BLOCK_HEIGHT * 15,
+              width: size.BLOCK_WIDTH * 32,
+              height: size.BLOCK_HEIGHT * 16,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
@@ -57,7 +57,7 @@ class TopDrawer extends StatelessWidget {
                   fullName,
                   style: TextStyle(
                     fontFamily: 'Glory',
-                    fontSize: size.FONT_SIZE * 20,
+                    fontSize: size.FONT_SIZE * 24,
                     fontWeight: FontWeight.bold,
                     color: kWhite,
                   ),

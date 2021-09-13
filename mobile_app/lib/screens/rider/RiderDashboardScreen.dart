@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RiderDrawer.dart';
 import 'RiderHomeScreen.dart';
 import 'RiderHistoryScreen.dart';
@@ -13,14 +14,14 @@ class RiderDashboardScreen extends StatefulWidget {
 }
 
 class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
-  String title = "Home";
+  String title = "Dashboard";
   @override
   Widget build(BuildContext context) {
     final user = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
       appBar: AppBar(
         title: Text('$title'),
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         centerTitle: true,
       ),
       drawer: RiderDrawer(
@@ -35,7 +36,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
               if (!tabController.indexIsChanging) {
                 if (tabController.index == 0)
                   setState(() {
-                    title = "Home";
+                    title = "Dashboard";
                   });
                 else
                   setState(() {

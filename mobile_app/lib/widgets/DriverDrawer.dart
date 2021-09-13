@@ -46,14 +46,14 @@ class DriverDrawer extends StatelessWidget {
                   Icon(
                     Icons.account_circle,
                     color: kWhite,
-                    size: 40,
+                    size: 38,
                   ),
                   SizedBox(width: 25),
                   Text(
                     'Edit Profile',
                     style: TextStyle(
                       fontFamily: 'Glory',
-                      fontSize: 25,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                       color: kWhite,
                     ),
@@ -77,14 +77,14 @@ class DriverDrawer extends StatelessWidget {
                   Icon(
                     Icons.emoji_transportation,
                     color: kWhite,
-                    size: 40,
+                    size: 38,
                   ),
                   SizedBox(width: 25),
                   Text(
                     'Vehicle Information',
                     style: TextStyle(
                       fontFamily: 'Glory',
-                      fontSize: 25,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                       color: kWhite,
                     ),
@@ -110,14 +110,14 @@ class DriverDrawer extends StatelessWidget {
                   Icon(
                     Icons.credit_card_outlined,
                     color: kWhite,
-                    size: 40,
+                    size: 38,
                   ),
                   SizedBox(width: 25),
                   Text(
                     'Bank Information',
                     style: TextStyle(
                       fontFamily: 'Glory',
-                      fontSize: 25,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                       color: kWhite,
                     ),
@@ -142,14 +142,14 @@ class DriverDrawer extends StatelessWidget {
                   Icon(
                     Icons.logout,
                     color: kWhite,
-                    size: 40,
+                    size: 38,
                   ),
                   SizedBox(width: 25),
                   Text(
                     'Logout',
                     style: TextStyle(
                       fontFamily: 'Glory',
-                      fontSize: 25,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                       color: kWhite,
                     ),
@@ -181,14 +181,14 @@ class DriverDrawer extends StatelessWidget {
                   Icon(
                     Icons.delete_forever,
                     color: Colors.red,
-                    size: 40,
+                    size: 38,
                   ),
                   SizedBox(width: 25),
                   Text(
                     'Delete Account',
                     style: TextStyle(
                       fontFamily: 'Glory',
-                      fontSize: 25,
+                      fontSize: 23,
                       fontWeight: FontWeight.bold,
                       color: Colors.red,
                     ),
@@ -203,12 +203,12 @@ class DriverDrawer extends StatelessWidget {
                   builder: (_) => ConfirmationAlert(
                     title: "You are about to delete your account!",
                     msg: "Are you sure you want to delete your account?",
-                    textColor: 0xffffff,
-                    backgroundColor: 0x000000,
+                    textColor: Color(0xffffff),
+                    backgroundColor: Color(0x000000),
                     rightButtonText: "Yes, delete my account",
                     leftButtonText: "No, take me back",
-                    leftButtonColor: 0x933933,
-                    rightButtonColor: 0x1919191,
+                    leftButtonColor: Color(0x933933),
+                    rightButtonColor: Color(0x1919191),
                     rightButtonAction: () =>
                         print("delete function"), //TODO: call the firebase delete function
                     leftButtonAction: () => Navigator.pop(context),

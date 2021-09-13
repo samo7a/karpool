@@ -17,27 +17,28 @@ class ConfirmationAlert extends StatelessWidget {
   }) : super(key: key);
   final String title;
   final String msg;
-  final int backgroundColor;
-  final int textColor;
+  final Color backgroundColor;
+  final Color textColor;
   final String rightButtonText;
   final String leftButtonText;
-  final int rightButtonColor;
-  final int leftButtonColor;
+  final Color rightButtonColor;
+  final Color leftButtonColor;
   final Function rightButtonAction;
   final Function leftButtonAction;
+ 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
         "$title",
         style: TextStyle(
-          color: Color(textColor),
+          color: textColor,
         ),
       ),
       content: Text(
         "$msg",
         style: TextStyle(
-          color: Color(textColor),
+          color: textColor,
         ),
       ),
       actions: [
@@ -46,7 +47,7 @@ class ConfirmationAlert extends StatelessWidget {
           child: Text(
             "$leftButtonText",
             style: TextStyle(
-              color: Color(textColor),
+              color: textColor,
             ),
           ),
         ),
@@ -55,12 +56,12 @@ class ConfirmationAlert extends StatelessWidget {
           child: Text(
             "$rightButtonText",
             style: TextStyle(
-              color: Color(textColor),
+              color: textColor,
             ),
           ),
         ),
       ],
-      backgroundColor: Color(backgroundColor),
+      backgroundColor: backgroundColor,
     );
   }
 }

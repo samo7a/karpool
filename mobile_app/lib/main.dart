@@ -10,14 +10,11 @@ import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
 import './screens/RegisterScreen.dart';
 import './screens/LoginScreen.dart';
-import 'screens/driver/DriverHomeScreen.dart';
-import 'screens/driver/DriverHistoryScreen.dart';
-import 'screens/rider/RiderHomeScreen.dart';
-import 'screens/rider/RiderHistoryScreen.dart';
 import 'screens/driver/DriverDashboardScreen.dart';
 import 'screens/rider/RiderDashboardScreen.dart';
 import 'screens/ForgotPassword.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'screens/rider/SearchRidesScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +64,7 @@ class MyApp extends StatelessWidget {
               DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
               RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
               EditProfilScreen.id: (context) => EditProfilScreen(),
+              SearchRidesScreen.id: (context) => SearchRidesScreen(),
             },
           );
         });
