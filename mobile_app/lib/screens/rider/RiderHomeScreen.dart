@@ -3,7 +3,7 @@ import 'package:mobile_app/screens/rider/SearchRidesScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
-import 'package:mobile_app/widgets/TripContainer.dart';
+import 'package:mobile_app/widgets/RideContainer.dart';
 
 class RiderHomeScreen extends StatefulWidget {
   const RiderHomeScreen({Key? key}) : super(key: key);
@@ -19,6 +19,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   final String to = 'Address 2';
 
   // static scheduled rides list
+  // TODO: API call to get scheduled rides map/...
   List<Map<String, String>> trips = [
     {
       "tripID": "1",
@@ -128,7 +129,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                 ),
                 child: Container(
                   child: Center(
-                    child: TripContainer(
+                    child: RideContainer(
                       date: trips[index]['tripDate'] ?? "",
                       time: trips[index]['tripTime'] ?? "",
                       fromAddress: trips[index]['from'] ?? "",
@@ -152,27 +153,3 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
     );
   }
 }
-
-
-/* ConfirmationAlert(
-                        backgroundColor: kDrawerColor,
-                        leftButtonText: "Yes",
-                        rightButtonText: "Cancel",
-                        leftButtonColor: kGreen,
-                        rightButtonColor: kRed,
-                        textColor: kWhite,
-                        title: "Trip Deletion",
-                        msg: "Are you sure you want cancel this trip?",
-                        leftButtonAction: () {
-                          // TODO: call function for api call to delete trip if yes.
-                          Navigator.of(context).pop(true);
-                          trips.removeAt(index);
-                          Scaffold.of(context)
-                              // ignore: deprecated_member_use
-                              .showSnackBar(
-                                  SnackBar(content: Text("Trip Deleted")));
-                        },
-                        rightButtonAction: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      );*/

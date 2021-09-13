@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
-class TripContainer extends StatelessWidget {
-  const TripContainer({
+class RideContainer extends StatelessWidget {
+  const RideContainer({
     Key? key,
     required this.date,
     required this.time,
