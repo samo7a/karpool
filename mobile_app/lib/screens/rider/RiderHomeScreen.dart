@@ -18,7 +18,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   final String from = 'Address 1';
   final String to = 'Address 2';
 
-  // static scheduled trips list
+  // static scheduled rides list
   List<Map<String, String>> trips = [
     {
       "tripID": "1",
@@ -64,6 +64,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                 direction: DismissDirection.endToStart,
                 key: Key(trip["tripID"] ?? ""),
                 onDismissed: (direction) {
+                  // TODO: API call to delete ride scheduling
                   trips.removeAt(index);
                 },
                 confirmDismiss: (direction) async {
