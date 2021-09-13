@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 // import 'package:mobile_app/models/User.dart' as user; //I will need it later
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/driver/DriverScheduleScreen.dart';
 import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import './screens/SplashScreen.dart';
@@ -16,6 +17,7 @@ import 'screens/rider/RiderHomeScreen.dart';
 import 'screens/rider/RiderHistoryScreen.dart';
 import 'screens/driver/DriverDashboardScreen.dart';
 import 'screens/rider/RiderDashboardScreen.dart';
+import 'screens/driver/DriverScheduleScreen.dart';
 import 'screens/ForgotPassword.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             builder: EasyLoading.init(),
             debugShowCheckedModeBanner: false,
-            initialRoute: SplashScreen.id,
+            initialRoute: ScheduleScreen.id,
             routes: {
               SplashScreen.id: (context) => SplashScreen(),
               MainScreen.id: (context) => MainScreen(),
@@ -67,6 +69,7 @@ class MyApp extends StatelessWidget {
               DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
               RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
               EditProfilScreen.id: (context) => EditProfilScreen(),
+              ScheduleScreen.id: (context) => ScheduleScreen(),
             },
           );
         });
