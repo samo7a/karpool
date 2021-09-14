@@ -349,7 +349,7 @@ const CarInformationForm = forwardRef((props, ref) => {
               const end = new Date(event.target.value);
               const day = new Date();
               if (end.getTime() < day.getTime())
-                setExprirationDateError("Your Driver License expired!");
+                setExprirationDateError("Your Driver License is expired!");
               else setExprirationDateError("");
             }}
           />
