@@ -7,7 +7,7 @@ import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
 import { fireEncode } from '../utils/encode'
-
+import { CreditCardSchema } from './schema'
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
  * for unit testing.
@@ -93,8 +93,6 @@ export class UserDAO implements UserDAOInterface {
     }
 
 
-<<<<<<< HEAD
-=======
     //MARK: Credit Card Methods
     async createCreditCard(data: CreditCardSchema): Promise<void> {
         const ref = this.db.collection(FirestoreKey.creditCards).doc()
@@ -118,7 +116,6 @@ export class UserDAO implements UserDAOInterface {
 
 
 
->>>>>>> trips
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {
 

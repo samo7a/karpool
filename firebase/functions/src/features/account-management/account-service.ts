@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-
-
-=======
 import { AuthenticationDAOInterface } from "../../auth/dao";
->>>>>>> trips
 import { UserDAOInterface } from '../../data-access/user/dao'
 import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
 import { UserFieldsExternal, UserRegistrationData, DriverAddRoleInfo } from './types'
@@ -12,7 +7,6 @@ import { HttpsError } from "firebase-functions/lib/providers/https";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 import { PaymentDAO } from "../../data-access/payment-dao/dao";
 import { Role } from '../../data-access/user/types';
-import { AuthenticationDAOInterface } from '../../auth/dao';
 
 export class AccountService {
 

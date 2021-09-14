@@ -10,21 +10,15 @@ import { UserDAO } from "./data-access/user/dao";
  * Required at global scope to use class-transformer decorators in classes.
  * https://github.com/typestack/class-transformer
  */
-<<<<<<< HEAD
+import 'reflect-metadata';
+import { PaymentDAO } from "./data-access/payment-dao/dao";
+import { getEnv } from "./env-config";
 import 'reflect-metadata';
 import { AccountService } from "./features/account-management/account-service";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
 import { VehicleDAO } from "./data-access/vehicle/dao";
-import { PaymentDAO } from "./data-access/payment-dao/dao";
-import { getEnv } from "./env-config";
-=======
- import 'reflect-metadata';
- import { AccountService } from "./features/account-management/account-service";
- import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
- import { VehicleDAO } from "./data-access/vehicle/dao";
 import { TripDAO } from "./data-access/trip/dao";
 import { TripService } from "./features/trip/trip-service";
->>>>>>> trips
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -50,14 +44,14 @@ export function newVehicleDAO(): VehicleDAO {
     return new VehicleDAO(admin.firestore())
 }
 
-<<<<<<< HEAD
 export function newPaymentDAO(): PaymentDAO {
     const stripe = getEnv().stripe
     return new PaymentDAO(stripe.public_key, stripe.private_key)
-=======
-export function newTripDAO(): TripDAO{
+}
+
+
+export function newTripDAO(): TripDAO {
     return new TripDAO(admin.firestore())
->>>>>>> trips
 }
 
 export function newAccountService(): AccountService {
@@ -70,16 +64,13 @@ export function newAccountService(): AccountService {
     )
 }
 
-<<<<<<< HEAD
-=======
 export function newTripService(): TripService {
     return new TripService(
         newTripDAO()
-        
+
     )
 }
 
->>>>>>> trips
 
 //MARK: Exposed cloud function endpoints
 
