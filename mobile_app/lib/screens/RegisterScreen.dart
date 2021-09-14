@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registerScreen';
@@ -23,10 +25,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   TextEditingController _pass = TextEditingController();
   TextEditingController _confirmPass = TextEditingController();
-  TextEditingController _dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
 // User Strings
+  //var _pickedImage = File("file.txt");
+  File _pickedImage;
+  final ImagePicker picker = ImagePicker();
   String firstName = '';
   String lastName = '';
   String email = '';
@@ -40,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String accountNum = '';
 
 // Driver Car Info Strings
-  String carBrand = "";
+  String carBrand = '';
   String carColor = '';
   String carYear = '';
   String carPlate = '';
@@ -59,12 +63,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
 // Driver Car Insurance Info Strings
-  String insProvider = "";
+  String insProvider = '';
   String insType = '';
   String insStartDate = '';
   String insEndDate = '';
 
   bool showMultiPane = false;
+
+  void _pickImageCamera() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.camera);
+    final pickedImageFile = File(pickedImage!.path);
+    setState(() {
+      _pickedImage = pickedImageFile;
+    });
+    Navigator.pop(context);
+  }
+
+  void _pickImageGallery() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    final pickedImageFile = File(pickedImage!.path);
+    setState(() {
+      _pickedImage = pickedImageFile;
+    });
+    Navigator.pop(context);
+  }
+
+  void _remove() {
+    setState(() {
+      _pickedImage = new File("file.txt");
+    });
+    Navigator.pop(context);
+  }
 
   void userValidate() {
     if (userFormkey.currentState!.validate()) {
@@ -134,7 +165,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Bank Information',
-                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -143,7 +175,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt,
+                          color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -164,8 +197,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Routing Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Routing Number is Required!"),
-                    MinLengthValidator(9, errorText: "Please enter a valid Routing Number!"),
-                    MaxLengthValidator(9, errorText: "Please enter a valid Routing Number!")
+                    MinLengthValidator(9,
+                        errorText: "Please enter a valid Routing Number!"),
+                    MaxLengthValidator(9,
+                        errorText: "Please enter a valid Routing Number!")
                   ]),
                   onChanged: (value) => setState(() => routingNum = value),
                   textInputAction: TextInputAction.next,
@@ -178,7 +213,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -199,31 +235,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Account Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Account Number is Required!"),
-                    MinLengthValidator(9, errorText: "Please enter a valid Account Number!"),
-                    MaxLengthValidator(12, errorText: "Please enter a valid Account Number!")
+                    MinLengthValidator(9,
+                        errorText: "Please enter a valid Account Number!"),
+                    MaxLengthValidator(12,
+                        errorText: "Please enter a valid Account Number!")
                   ]),
                   onChanged: (value) => setState(() => accountNum = value),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Car Information',
-                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
-
             Padding(
-              padding: EdgeInsets.only(top: 25.0, bottom: 25),
+              padding: EdgeInsets.only(top: 10.0),
               child: DropdownSearch<String>(
                   autoValidateMode: AutovalidateMode.always,
                   // validator: (value) {},
                   mode: Mode.BOTTOM_SHEET,
                   showSearchBox: true,
-                  validator: RequiredValidator(errorText: "Car Brand is required!"),
+                  validator:
+                      RequiredValidator(errorText: "Car Brand is required!"),
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
@@ -256,11 +294,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   autoValidateMode: AutovalidateMode.always,
                   mode: Mode.BOTTOM_SHEET,
                   showSearchBox: true,
-                  validator: RequiredValidator(errorText: "Car Color is required!"),
+                  validator:
+                      RequiredValidator(errorText: "Car Color is required!"),
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.palette, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -293,7 +333,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.calendar, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.calendar, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -343,7 +384,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(Icons.crop_7_5_rounded, color: kIconColor),
+                      prefixIcon:
+                          Icon(Icons.crop_7_5_rounded, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -363,7 +405,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "License Plate Number"),
                   validator: MultiValidator([
-                    RequiredValidator(errorText: "License Plate Number is Required!"),
+                    RequiredValidator(
+                        errorText: "License Plate Number is Required!"),
                     PatternValidator(r"^[0-9a-zA-Z]{6}$",
                         errorText: "Please enter a valid license plate!"),
                   ]),
@@ -378,7 +421,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.idBadge, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.idCard, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -398,7 +442,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Driver License Number"),
                   validator: MultiValidator([
-                    RequiredValidator(errorText: "Driver License Number is Required!"),
+                    RequiredValidator(
+                        errorText: "Driver License Number is Required!"),
                     PatternValidator(r"^(.*[A-Za-z]){1}.[0-9]{11}$",
                         errorText:
                             "Please enter a valid driver river license number!"), // 11 but should be 12 numbers
@@ -427,7 +472,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                   String yyyy = value.year.toString();
                   String givenDate = yyyy + '-' + mm;
-                  setState(() => dob = givenDate);
+                  setState(() => licenseEnd = givenDate);
                 },
                 validator: (value) {
                   var age;
@@ -467,7 +512,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.idBadge, color: kIconColor),
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.idCard, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -484,19 +530,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'License Expiration Date'),
                 //initialTime: TimeOfDay(hour: 8, minute: 0),
                 // initialValue: DateTime.now(),
                 // enabled:! true,
               ),
             ),
-
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Car Insurance Information',
-                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -505,7 +552,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.carCrash, color: kIconColor),
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.carCrash, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -522,20 +570,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Insurance Provider"),
                 value: insProvider,
-                items: insuranceProviders.map<DropdownMenuItem<String>>((String value) {
+                items: insuranceProviders
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
-                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(errorText: "Insurance Provider is Required!"),
+                validator: RequiredValidator(
+                    errorText: "Insurance Provider is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insProvider = value!;
@@ -543,14 +595,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
             ),
-
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.stream, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -567,7 +619,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Coverage Type"),
                 value: insType,
                 items: <String>[
@@ -579,12 +632,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(errorText: "Coverage Type is Required!"),
+                validator:
+                    RequiredValidator(errorText: "Coverage Type is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insType = value!;
@@ -592,92 +647,176 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 25.0),
-            //   child: InkWell(
-            //     onTap: () {
-            //       print("User tapped Insurance Start Date field");
-            //       _selectInsStartDate(context);
-            //     },
-            //     child: Container(
-            //       child: IgnorePointer(
-            //         child: TextFormField(
-            //             controller: _dateController,
-            //             decoration: InputDecoration(
-            //                 fillColor: kWhite.withOpacity(0.4),
-            //                 filled: true,
-            //                 prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
-            //                 enabledBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 errorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 focusedBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 focusedErrorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 hintStyle: TextStyle(color: kHintText),
-            //                 hintText: "Insurance Start Date"),
-            //             validator: MultiValidator([
-            //               RequiredValidator(errorText: "Insurance Start Date is Required!"),
-            //             ]),
-            //             onChanged: (value) => setState(() => insStartDate = value),
-            //             textInputAction: TextInputAction.next,
-            //             style: TextStyle(fontWeight: FontWeight.bold)),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 25.0),
-            //   child: InkWell(
-            //     onTap: () {
-            //       print("User tapped Insurance End Date field");
-            //       _selectInsEndDate(context);
-            //     },
-            //     child: Container(
-            //       child: IgnorePointer(
-            //         child: TextFormField(
-            //             controller: _dateController,
-            //             decoration: InputDecoration(
-            //                 fillColor: kWhite.withOpacity(0.4),
-            //                 filled: true,
-            //                 prefixIcon: Icon(FontAwesomeIcons.calendarMinus, color: kIconColor),
-            //                 enabledBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 errorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 focusedBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 focusedErrorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 hintStyle: TextStyle(color: kHintText),
-            //                 hintText: "Insurance End Date"),
-            //             validator: MultiValidator([
-            //               RequiredValidator(errorText: "Insurance Start End is Required!"),
-            //             ]),
-            //             onChanged: (value) => setState(() => insEndDate = value),
-            //             textInputAction: TextInputAction.next,
-            //             style: TextStyle(fontWeight: FontWeight.bold)),
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Padding(
+              padding: EdgeInsets.only(top: 25.0),
+              child: FormBuilderDateTimePicker(
+                name: 'insuranceStartDate',
+                onChanged: (value) {
+                  // String dd;
+                  // if (value!.day < 10) {
+                  //   dd = "0" + value.day.toString();
+                  // } else {
+                  //   dd = value.day.toString();
+                  // }
+                  String mm;
+                  if (value!.month < 10) {
+                    mm = "0" + value.month.toString();
+                  } else {
+                    mm = value.month.toString();
+                  }
+                  String yyyy = value.year.toString();
+                  String givenDate = yyyy + '-' + mm;
+                  setState(() => insStartDate = givenDate);
+                },
+                validator: (value) {
+                  var age;
+                  if (value != null) {
+                    String dd;
+                    if (value.day < 10) {
+                      dd = "0" + value.day.toString();
+                    } else {
+                      dd = value.day.toString();
+                    }
+                    String mm;
+                    if (value.month < 10) {
+                      mm = "0" + value.month.toString();
+                    } else {
+                      mm = value.month.toString();
+                    }
+                    String yyyy = value.year.toString();
+                    String givenDate = yyyy + '-' + mm + '-' + dd;
+                    // var now = new DateTime();
+                    print(givenDate);
+                    var dateNow = new DateTime.now();
+                    print(dateNow);
+                    //var givenDate = "1969-07-20";
+                    var givenDateFormat = DateTime.parse(givenDate);
+                    var diff = dateNow.difference(givenDateFormat);
+                    age = ((diff.inDays) / 31).round();
+                    print("age = $age");
+                  } else {
+                    age = 0;
+                  }
+                  if (age < 0)
+                    return null;
+                  else
+                    return ('Your Insurance policy cannot start in the future!');
+                },
+                inputType: InputType.date,
+                decoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    focusedErrorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelText: 'Insurance Start Date'),
+                //initialTime: TimeOfDay(hour: 8, minute: 0),
+                // initialValue: DateTime.now(),
+                // enabled:! true,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 25.0),
+              child: FormBuilderDateTimePicker(
+                name: 'insuranceEndDate',
+                onChanged: (value) {
+                  // String dd;
+                  // if (value!.day < 10) {
+                  //   dd = "0" + value.day.toString();
+                  // } else {
+                  //   dd = value.day.toString();
+                  // }
+                  String mm;
+                  if (value!.month < 10) {
+                    mm = "0" + value.month.toString();
+                  } else {
+                    mm = value.month.toString();
+                  }
+                  String yyyy = value.year.toString();
+                  String givenDate = yyyy + '-' + mm;
+                  setState(() => insEndDate = givenDate);
+                },
+                validator: (value) {
+                  var age;
+                  if (value != null) {
+                    String dd;
+                    if (value.day < 10) {
+                      dd = "0" + value.day.toString();
+                    } else {
+                      dd = value.day.toString();
+                    }
+                    String mm;
+                    if (value.month < 10) {
+                      mm = "0" + value.month.toString();
+                    } else {
+                      mm = value.month.toString();
+                    }
+                    String yyyy = value.year.toString();
+                    String givenDate = yyyy + '-' + mm + '-' + dd;
+                    // var now = new DateTime();
+                    print(givenDate);
+                    var dateNow = new DateTime.now();
+                    print(dateNow);
+                    //var givenDate = "1969-07-20";
+                    var givenDateFormat = DateTime.parse(givenDate);
+                    var diff = dateNow.difference(givenDateFormat);
+                    age = ((diff.inDays) / 31).round();
+                    print("age = $age");
+                  } else {
+                    age = 0;
+                  }
+                  if (age < 0)
+                    return null;
+                  else
+                    return ('Your Insurance policy expired!');
+                },
+                inputType: InputType.date,
+                decoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    focusedErrorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelText: 'Insurance End Date'),
+                //initialTime: TimeOfDay(hour: 8, minute: 0),
+                // initialValue: DateTime.now(),
+                // enabled:! true,
+              ),
+            ),
           ],
         ),
       ),
@@ -692,24 +831,154 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 0),
-              child: CircleAvatar(
-                radius: size.width * 0.14,
-                backgroundColor: Colors.transparent,
-                child: Image(
-                  image: AssetImage('images/splashIcon.png'),
-                  color: kWhite,
+            Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                  child: CircleAvatar(
+                    radius: 71,
+                    backgroundColor: kBlack.withOpacity(.5),
+                    child: CircleAvatar(
+                      radius: 65,
+                      backgroundColor: kBlack.withOpacity(.5),
+                      backgroundImage:
+                          _pickedImage == null ? null : FileImage(_pickedImage),
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                    top: 120,
+                    left: 110,
+                    child: RawMaterialButton(
+                      elevation: 10,
+                      fillColor: kBlack.withOpacity(.5),
+                      child: Icon(Icons.add_a_photo),
+                      padding: EdgeInsets.all(15.0),
+                      shape: CircleBorder(),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Choose option',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: kBlack.withOpacity(.5)),
+                                ),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: [
+                                      InkWell(
+                                        onTap: _pickImageCamera,
+                                        splashColor: Colors.purpleAccent,
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Icon(
+                                                Icons.camera,
+                                                color: Colors.purpleAccent,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Camera',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500,
+                                                  color:
+                                                      kBlack.withOpacity(.5)),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: _pickImageGallery,
+                                        splashColor: Colors.purpleAccent,
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Icon(
+                                                Icons.image,
+                                                color: Colors.purpleAccent,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Gallery',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500,
+                                                  color:
+                                                      kBlack.withOpacity(.5)),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: _remove,
+                                        splashColor: Colors.purpleAccent,
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Icon(
+                                                Icons.remove_circle,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Remove',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.red),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                    ))
+              ],
             ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 25.0),
+            //   child: FormBuilder(
+            //     child: Column(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: <Widget>[
+            //         FormBuilderImagePicker(
+            //           name: 'photos',
+            //           decoration:
+            //               const InputDecoration(labelText: 'Pick Photos'),
+            //           maxImages: 1,
+            //         ),
+            //         const SizedBox(height: 15),
+            //         RaisedButton(onPressed: () {
+            //           if (_formKey.currentState.saveAndValidate()) {
+            //             print(_formKey.currentState.value);
+            //           }
+            //         })
+            //       ],
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: EdgeInsets.only(top: 40.0),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -731,9 +1000,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "First Name is Required!"),
                     MinLengthValidator(2,
-                        errorText: "First name should be at least 2 characters long!"),
+                        errorText:
+                            "First name should be at least 2 characters long!"),
                     MaxLengthValidator(50,
-                        errorText: "First name should not exceed 50 characters!"),
+                        errorText:
+                            "First name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -748,7 +1019,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -770,8 +1042,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Last Name is Required!"),
                     MinLengthValidator(2,
-                        errorText: "Last name should be at least 2 characters long!"),
-                    MaxLengthValidator(50, errorText: "Last name should not exceed 50 characters!"),
+                        errorText:
+                            "Last name should be at least 2 characters long!"),
+                    MaxLengthValidator(50,
+                        errorText:
+                            "Last name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -786,7 +1061,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.envelope, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.envelope, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -808,7 +1084,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),
-                    MaxLengthValidator(50, errorText: "Email should not exceed 50 characters!"),
+                    MaxLengthValidator(50,
+                        errorText: "Email should not exceed 50 characters!"),
                   ]),
                   onChanged: (value) => setState(() => email = value),
                   keyboardType: TextInputType.emailAddress,
@@ -821,7 +1098,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -842,9 +1120,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Phone Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Phone Number is Required!"),
-                    MaxLengthValidator(10, errorText: "Phone Number should not exceed 10 digits!"),
+                    MaxLengthValidator(10,
+                        errorText: "Phone Number should not exceed 10 digits!"),
                     MinLengthValidator(10,
-                        errorText: "Phone Number should not be less than 10 digits!"),
+                        errorText:
+                            "Phone Number should not be less than 10 digits!"),
                     PatternValidator(r"^[0-9]{10}$",
                         errorText: "Please enter a valid phone number!"),
                   ]),
@@ -912,7 +1192,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.venusMars, color: kIconColor),
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.birthdayCake, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -929,7 +1210,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'Date of Birth'),
 
                 //initialTime: TimeOfDay(hour: 8, minute: 0),
@@ -943,7 +1225,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.venusMars, color: kIconColor),
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.venusMars, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -960,7 +1243,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kRed, width: 5),
                     ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(
+                        color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Gender"),
                 value: gender,
                 items: <String>[
@@ -973,7 +1257,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
@@ -994,7 +1279,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -1015,15 +1301,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Password"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Password is Required!"),
-                    // MaxLengthValidator(50,
-                    //     errorText:
-                    //         "Password should not exceed 50 characters!"),
-                    // MinLengthValidator(6,
-                    //     errorText:
-                    //         'Password must be at least 8 digits long!'),
-                    PatternValidator(r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,50}$",
-                        // ^(?=.[0-9])(?=.[a-zA-Z])(?=\S+$).{6,50}$ // Updated one not working...
-                        errorText: 'Password must contain one symbol and number!')
+                    PatternValidator(
+                        r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,50}$",
+                        errorText:
+                            'Password must contain one symbol and number!')
                   ]),
                   onChanged: (value) => setState(() => password = value),
                   textInputAction: TextInputAction.next,
@@ -1037,7 +1318,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -1068,7 +1350,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
                 'Are you driving?',
-                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
