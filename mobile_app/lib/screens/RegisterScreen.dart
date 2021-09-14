@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registerScreen';
@@ -24,75 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  // _selectBirthDate(BuildContext context) async {
-  //   print('Show Popup Calendar');
-  //   final DateTime? picked = await showDatePicker(
-  //       context: context,
-  //       initialDate: selectedDate,
-  //       firstDate: DateTime(1900, 1),
-  //       lastDate: DateTime(2022));
-  //   if (picked != null && picked != selectedDate)
-  //     setState(() {
-  //       selectedDate = picked;
-  //       String dob =
-  //           "${picked.toLocal().month}/${picked.toLocal().day}/${picked.toLocal().year}"; //MM/DD/YYY
-  //       _dateController.text = dob;
-  //       print(dob);
-  //       print(_dateController.text);
-  //     });
-  // }
-
-  _selectLicenseEndDate(BuildContext context) async {
-    print('Show Popup Calendar');
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(1900, 1),
-        lastDate: DateTime(2022));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        String licenseEnd =
-            "${picked.toLocal().month}/${picked.toLocal().day}/${picked.toLocal().year}"; //MM/DD/YYY
-        _dateController.text = licenseEnd;
-        print(licenseEnd);
-      });
-  }
-
-  _selectInsStartDate(BuildContext context) async {
-    print('Show Popup Calendar');
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(1900, 1),
-        lastDate: DateTime(2022));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        String insStartDate =
-            "${picked.toLocal().month}/${picked.toLocal().day}/${picked.toLocal().year}"; //MM/DD/YYY
-        _dateController.text = insStartDate;
-        print(insStartDate);
-      });
-  }
-
-  _selectInsEndDate(BuildContext context) async {
-    print('Show Popup Calendar');
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(1900, 1),
-        lastDate: DateTime(2022));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        String insEndDate =
-            "${picked.toLocal().month}/${picked.toLocal().day}/${picked.toLocal().year}"; //MM/DD/YYY
-        _dateController.text = insEndDate;
-        print(insEndDate);
-      });
-  }
-
 // User Strings
   String firstName = '';
   String lastName = '';
@@ -107,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String accountNum = '';
 
 // Driver Car Info Strings
-  String carBrand = '';
+  String carBrand = "";
   String carColor = '';
   String carYear = '';
   String carPlate = '';
@@ -115,6 +48,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String licenseEnd = '';
 
   List<String> insuranceProviders = providers;
+  List<String> carModels = cars;
+  List<String> colors = [];
+
+  initState() {
+    super.initState();
+    for (int i = 0; i < carColors.length; i++) {
+      colors.add(carColors[i]['label']);
+    }
+  }
+
 // Driver Car Insurance Info Strings
   String insProvider = "";
   String insType = '';
@@ -144,36 +87,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-        backgroundColor: kBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: kWhite,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+          backgroundColor: kBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: kWhite,
+              ),
             ),
+            title: Text(
+              'Register',
+              style: kBodyText,
+            ),
+            centerTitle: true,
           ),
-          title: Text(
-            'Register',
-            style: kBodyText,
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          child: Column(
-            children: [
-              Center(child: _getUserWidget(size, context)),
-              showMultiPane ? _getDriverWidget(size, context) : Container(),
-              Center(child: _getRegisterButtonWidget(size, context)),
-            ],
-          ),
-        ));
+          body: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            child: Column(
+              children: [
+                Center(child: _getUserWidget(size, context)),
+                showMultiPane ? _getDriverWidget(size, context) : Container(),
+                Center(child: _getRegisterButtonWidget(size, context)),
+              ],
+            ),
+          )),
+    );
   }
 
   _getDriverWidget(Size size, BuildContext context) {
@@ -184,20 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: FormBuilderDateTimePicker(
-                name: 'date',
-                onChanged: (value) => setState(() => dob = value.toString()),
-                inputType: InputType.date,
-                decoration: InputDecoration(
-                  labelText: 'Appointment Time',
-                ),
-                initialTime: TimeOfDay(hour: 8, minute: 0),
-                // initialValue: DateTime.now(),
-                // enabled: true,
-              ),
-            ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
@@ -275,6 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.number,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
+
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
@@ -282,103 +215,77 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
+
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: DropdownButtonFormField(
-                decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
-                    enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    errorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    focusedErrorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
-                    labelText: "Car Brand"),
-                value: carBrand,
-                items: <String>[
-                  '',
-                  'Nissan',
-                  'Jeep',
-                  'Ford',
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
-                    ),
-                  );
-                }).toList(),
-                dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(errorText: "Car Brand is Required!"),
-                onChanged: (String? value) {
-                  setState(() {
-                    carBrand = value!;
-                  });
-                },
-              ),
+              padding: EdgeInsets.only(top: 25.0, bottom: 25),
+              child: DropdownSearch<String>(
+                  autoValidateMode: AutovalidateMode.always,
+                  // validator: (value) {},
+                  mode: Mode.BOTTOM_SHEET,
+                  showSearchBox: true,
+                  validator: RequiredValidator(errorText: "Car Brand is required!"),
+                  dropdownSearchDecoration: InputDecoration(
+                      fillColor: kWhite.withOpacity(0.4),
+                      filled: true,
+                      prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
+                      enabledBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kGreen, width: 5),
+                      ),
+                      errorBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kRed, width: 5),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kGreen, width: 5),
+                      ),
+                      focusedErrorBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kRed, width: 5),
+                      ),
+                      labelStyle: TextStyle(color: kHintText),
+                      labelText: "Car Brand"),
+                  items: carModels,
+                  onChanged: (value) => setState(() => carBrand = value!),
+                  selectedItem: ""),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: DropdownButtonFormField(
-                decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
-                    enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    errorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    focusedErrorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
-                    labelText: "Car Color"),
-                value: carColor,
-                items: <String>[
-                  '',
-                  'Red',
-                  'Green',
-                  'Blue',
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
-                    ),
-                  );
-                }).toList(),
-                dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(errorText: "Car Color is Required!"),
-                onChanged: (String? value) {
-                  setState(() {
-                    carColor = value!;
-                  });
-                },
-              ),
+              padding: EdgeInsets.only(top: 25.0, bottom: 25),
+              child: DropdownSearch<String>(
+                  autoValidateMode: AutovalidateMode.always,
+                  mode: Mode.BOTTOM_SHEET,
+                  showSearchBox: true,
+                  validator: RequiredValidator(errorText: "Car Color is required!"),
+                  dropdownSearchDecoration: InputDecoration(
+                      fillColor: kWhite.withOpacity(0.4),
+                      filled: true,
+                      prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
+                      enabledBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kGreen, width: 5),
+                      ),
+                      errorBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kRed, width: 5),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kGreen, width: 5),
+                      ),
+                      focusedErrorBorder: UnderlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: kRed, width: 5),
+                      ),
+                      labelStyle: TextStyle(color: kHintText),
+                      labelText: "Car Color"),
+                  items: colors,
+                  onChanged: (value) {
+                    setState(() {
+                      carColor = value!;
+                    });
+                  },
+                  selectedItem: ""),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
@@ -405,7 +312,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Year of Manufacture"),
-                  validator: RequiredValidator(errorText: "Year of Manufacture is Required!"),
+                  validator: (value) {
+                    int diff;
+                    if (value != null) {
+                      int currentYear = DateTime.now().year;
+                      int val;
+                      try {
+                        val = int.parse(value);
+                      } catch (e) {
+                        print("error from the catch: $e");
+                        val = 0;
+                      }
+                      diff = currentYear - val;
+                    } else
+                      diff = 16;
+
+                    if (diff > 15 || diff < 0)
+                      return "The car should not be more than 15 years old!";
+                    else
+                      return null;
+                  },
                   onChanged: (value) => setState(() => carYear = value),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -436,10 +362,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "License Plate Number"),
-                  validator: RequiredValidator(errorText: "License Plate Number is Required!"),
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: "License Plate Number is Required!"),
+                    PatternValidator(r"^[0-9a-zA-Z]{6}$",
+                        errorText: "Please enter a valid license plate!"),
+                  ]),
                   onChanged: (value) => setState(() => carPlate = value),
                   textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
@@ -467,55 +397,101 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Driver License Number"),
-                  validator: RequiredValidator(errorText: "Driver License Number is Required!"),
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: "Driver License Number is Required!"),
+                    PatternValidator(r"^(.*[A-Za-z]){1}.[0-9]{11}$",
+                        errorText:
+                            "Please enter a valid driver river license number!"), // 11 but should be 12 numbers
+                  ]),
                   onChanged: (value) => setState(() => driverLicense = value),
                   textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
-              child: InkWell(
-                onTap: () {
-                  print("User tapped License End Date field");
-                  _selectLicenseEndDate(context);
+              child: FormBuilderDateTimePicker(
+                name: 'licenseEnd',
+                onChanged: (value) {
+                  // String dd;
+                  // if (value!.day < 10) {
+                  //   dd = "0" + value.day.toString();
+                  // } else {
+                  //   dd = value.day.toString();
+                  // }
+                  String mm;
+                  if (value!.month < 10) {
+                    mm = "0" + value.month.toString();
+                  } else {
+                    mm = value.month.toString();
+                  }
+                  String yyyy = value.year.toString();
+                  String givenDate = yyyy + '-' + mm;
+                  setState(() => dob = givenDate);
                 },
-                child: Container(
-                  child: IgnorePointer(
-                    child: TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                            fillColor: kWhite.withOpacity(0.4),
-                            filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            focusedErrorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            hintStyle: TextStyle(color: kHintText),
-                            hintText: "License End Date"),
-                        validator: MultiValidator([
-                          RequiredValidator(errorText: "License End Date is Required!"),
-                        ]),
-                        onChanged: (value) => setState(() => licenseEnd = value),
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
+                validator: (value) {
+                  var age;
+                  if (value != null) {
+                    String dd;
+                    if (value.day < 10) {
+                      dd = "0" + value.day.toString();
+                    } else {
+                      dd = value.day.toString();
+                    }
+                    String mm;
+                    if (value.month < 10) {
+                      mm = "0" + value.month.toString();
+                    } else {
+                      mm = value.month.toString();
+                    }
+                    String yyyy = value.year.toString();
+                    String givenDate = yyyy + '-' + mm + '-' + dd;
+                    // var now = new DateTime();
+                    print(givenDate);
+                    var dateNow = new DateTime.now();
+                    print(dateNow);
+                    //var givenDate = "1969-07-20";
+                    var givenDateFormat = DateTime.parse(givenDate);
+                    var diff = dateNow.difference(givenDateFormat);
+                    age = ((diff.inDays) / 31).round();
+                    print("age = $age");
+                  } else {
+                    age = 0;
+                  }
+                  if (age < 0)
+                    return null;
+                  else
+                    return ('Your Driver License is expired!');
+                },
+                inputType: InputType.date,
+                decoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon: Icon(FontAwesomeIcons.idBadge, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    focusedErrorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelText: 'License Expiration Date'),
+                //initialTime: TimeOfDay(hour: 8, minute: 0),
+                // initialValue: DateTime.now(),
+                // enabled:! true,
               ),
             ),
+
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
@@ -567,6 +543,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
             ),
+
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: DropdownButtonFormField(
@@ -615,92 +592,92 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: InkWell(
-                onTap: () {
-                  print("User tapped Insurance Start Date field");
-                  _selectInsStartDate(context);
-                },
-                child: Container(
-                  child: IgnorePointer(
-                    child: TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                            fillColor: kWhite.withOpacity(0.4),
-                            filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            focusedErrorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            hintStyle: TextStyle(color: kHintText),
-                            hintText: "Insurance Start Date"),
-                        validator: MultiValidator([
-                          RequiredValidator(errorText: "Insurance Start Date is Required!"),
-                        ]),
-                        onChanged: (value) => setState(() => insStartDate = value),
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: InkWell(
-                onTap: () {
-                  print("User tapped Insurance End Date field");
-                  _selectInsEndDate(context);
-                },
-                child: Container(
-                  child: IgnorePointer(
-                    child: TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                            fillColor: kWhite.withOpacity(0.4),
-                            filled: true,
-                            prefixIcon: Icon(FontAwesomeIcons.calendarMinus, color: kIconColor),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kGreen, width: 5),
-                            ),
-                            focusedErrorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: kRed, width: 5),
-                            ),
-                            hintStyle: TextStyle(color: kHintText),
-                            hintText: "Insurance End Date"),
-                        validator: MultiValidator([
-                          RequiredValidator(errorText: "Insurance Start End is Required!"),
-                        ]),
-                        onChanged: (value) => setState(() => insEndDate = value),
-                        textInputAction: TextInputAction.next,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 25.0),
+            //   child: InkWell(
+            //     onTap: () {
+            //       print("User tapped Insurance Start Date field");
+            //       _selectInsStartDate(context);
+            //     },
+            //     child: Container(
+            //       child: IgnorePointer(
+            //         child: TextFormField(
+            //             controller: _dateController,
+            //             decoration: InputDecoration(
+            //                 fillColor: kWhite.withOpacity(0.4),
+            //                 filled: true,
+            //                 prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
+            //                 enabledBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 errorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 focusedBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 focusedErrorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 hintStyle: TextStyle(color: kHintText),
+            //                 hintText: "Insurance Start Date"),
+            //             validator: MultiValidator([
+            //               RequiredValidator(errorText: "Insurance Start Date is Required!"),
+            //             ]),
+            //             onChanged: (value) => setState(() => insStartDate = value),
+            //             textInputAction: TextInputAction.next,
+            //             style: TextStyle(fontWeight: FontWeight.bold)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: EdgeInsets.only(top: 25.0),
+            //   child: InkWell(
+            //     onTap: () {
+            //       print("User tapped Insurance End Date field");
+            //       _selectInsEndDate(context);
+            //     },
+            //     child: Container(
+            //       child: IgnorePointer(
+            //         child: TextFormField(
+            //             controller: _dateController,
+            //             decoration: InputDecoration(
+            //                 fillColor: kWhite.withOpacity(0.4),
+            //                 filled: true,
+            //                 prefixIcon: Icon(FontAwesomeIcons.calendarMinus, color: kIconColor),
+            //                 enabledBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 errorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 focusedBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kGreen, width: 5),
+            //                 ),
+            //                 focusedErrorBorder: UnderlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(10),
+            //                   borderSide: BorderSide(color: kRed, width: 5),
+            //                 ),
+            //                 hintStyle: TextStyle(color: kHintText),
+            //                 hintText: "Insurance End Date"),
+            //             validator: MultiValidator([
+            //               RequiredValidator(errorText: "Insurance Start End is Required!"),
+            //             ]),
+            //             onChanged: (value) => setState(() => insEndDate = value),
+            //             textInputAction: TextInputAction.next,
+            //             style: TextStyle(fontWeight: FontWeight.bold)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -876,52 +853,90 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textInputAction: TextInputAction.next,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 25.0),
-            //   child: InkWell(
-            //     onTap: () {
-            //       print("User tapped Date of Birth field");
-            //       _selectBirthDate(context);
-            //     },
-            //     child: Container(
-            //       child: IgnorePointer(
-            //         child: TextFormField(
-            //             controller: _dateController,
-            //             decoration: InputDecoration(
-            //                 fillColor: kWhite.withOpacity(0.4),
-            //                 filled: true,
-            //                 prefixIcon: Icon(FontAwesomeIcons.birthdayCake,
-            //                     color: kIconColor),
-            //                 enabledBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 errorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 focusedBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kGreen, width: 5),
-            //                 ),
-            //                 focusedErrorBorder: UnderlineInputBorder(
-            //                   borderRadius: BorderRadius.circular(10),
-            //                   borderSide: BorderSide(color: kRed, width: 5),
-            //                 ),
-            //                 hintStyle: TextStyle(color: kHintText),
-            //                 hintText: "Date of Birth"),
-            //             validator: MultiValidator([
-            //               RequiredValidator(
-            //                   errorText: "Date of Birth is Required!"),
-            //               //PatternValidator("^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$", errorText: "errorText"),
-            //             ]),
-            //             onChanged: (value) => setState(() => dob = value),
-            //             textInputAction: TextInputAction.done,
-            //             style: TextStyle(fontWeight: FontWeight.bold)),
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Padding(
+              padding: EdgeInsets.only(top: 25.0),
+              child: FormBuilderDateTimePicker(
+                name: 'dob',
+                onChanged: (value) {
+                  String dd;
+                  if (value!.day < 10) {
+                    dd = "0" + value.day.toString();
+                  } else {
+                    dd = value.day.toString();
+                  }
+                  String mm;
+                  if (value.month < 10) {
+                    mm = "0" + value.month.toString();
+                  } else {
+                    mm = value.month.toString();
+                  }
+                  String yyyy = value.year.toString();
+                  String givenDate = yyyy + '-' + mm + '-' + dd;
+                  setState(() => dob = givenDate);
+                },
+                validator: (value) {
+                  var age;
+                  if (value != null) {
+                    String dd;
+                    if (value.day < 10) {
+                      dd = "0" + value.day.toString();
+                    } else {
+                      dd = value.day.toString();
+                    }
+                    String mm;
+                    if (value.month < 10) {
+                      mm = "0" + value.month.toString();
+                    } else {
+                      mm = value.month.toString();
+                    }
+                    String yyyy = value.year.toString();
+                    String givenDate = yyyy + '-' + mm + '-' + dd;
+                    // var now = new DateTime();
+                    print(givenDate);
+                    var dateNow = new DateTime.now();
+                    print(dateNow);
+                    //var givenDate = "1969-07-20";
+                    var givenDateFormat = DateTime.parse(givenDate);
+                    var diff = dateNow.difference(givenDateFormat);
+                    age = ((diff.inDays) / 365).round();
+                    print("age = $age");
+                  } else {
+                    age = 0;
+                  }
+                  if (age > 18)
+                    return null;
+                  else
+                    return ('Age should be over 18 years old');
+                },
+                inputType: InputType.date,
+                decoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon: Icon(FontAwesomeIcons.venusMars, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    focusedErrorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
+                    labelText: 'Date of Birth'),
+
+                //initialTime: TimeOfDay(hour: 8, minute: 0),
+                // initialValue: DateTime.now(),
+                // enabled: true,
+              ),
+            ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: DropdownButtonFormField(
