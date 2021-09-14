@@ -57,6 +57,7 @@ export function validateRegistrationData(data: any): UserRegistrationData {
         }
     } else {
         return {
+<<<<<<< HEAD
             firstName: validateString(data.firstName, 'First Name'),
             lastName: validateString(data.lastName, 'Last Name'),
             gender: validateString(data.gender, 'Gender'),
@@ -65,6 +66,16 @@ export function validateRegistrationData(data: any): UserRegistrationData {
             dob: validateString(data.dob, 'Date of birth'),
             phone: validateString(data.phone, 'Phone'),
             profilePicData: validateString(data.profilePicData, 'Profile Picture Data'),
+=======
+            firstName: validateString(data.firstName),
+            lastName: validateString(data.lastName),
+            gender: validateString(data.gender),
+            email: validateString(data.email),
+            password: validateString(data.password),
+            dob: validateString(data.dob),
+            phone: validateString(data.phone),
+            profilePicData: validateString(data.profilePicData),
+>>>>>>> trips
             isDriver: false
         }
     }

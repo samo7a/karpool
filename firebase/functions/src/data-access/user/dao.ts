@@ -93,6 +93,32 @@ export class UserDAO implements UserDAOInterface {
     }
 
 
+<<<<<<< HEAD
+=======
+    //MARK: Credit Card Methods
+    async createCreditCard(data: CreditCardSchema): Promise<void> {
+        const ref = this.db.collection(FirestoreKey.creditCards).doc()
+        await ref.create(fireEncode(data))
+    }
+
+    async updateUserAccount(uid: string, info: UserSchema): Promise<void> {
+        const roles: Partial<Record<Role, boolean>> = {}
+
+        if (info.driverInfo) {
+            roles['Driver'] = true
+        }
+        if (info.riderInfo) {
+            roles['Rider'] = true
+        }
+
+        const userRef = this.db.collection(FirestoreKey.users).doc(uid)
+
+        await userRef.update(info)
+    }
+
+
+
+>>>>>>> trips
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {
 
