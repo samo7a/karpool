@@ -1,8 +1,19 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
+
 import { AuthenticationDAO } from "./auth/dao";
 import { UserDAO } from "./data-access/user/dao";
+import { PaymentDAO } from "./data-access/payment-dao/dao";
+import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
+import { VehicleDAO } from "./data-access/vehicle/dao";
+import { TripDAO } from "./data-access/trip/dao";
+import { DirectionsDAOMock } from "./data-access/directions/dao-mock";
 
+
+import { AccountService } from "./features/account-management/account-service";
+import { TripService } from "./features/trip/trip-service";
+
+import { getEnv } from "./env-config";
 
 //MARK: Setup
 
@@ -11,14 +22,7 @@ import { UserDAO } from "./data-access/user/dao";
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
-import { PaymentDAO } from "./data-access/payment-dao/dao";
-import { getEnv } from "./env-config";
-import 'reflect-metadata';
-import { AccountService } from "./features/account-management/account-service";
-import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
-import { VehicleDAO } from "./data-access/vehicle/dao";
-import { TripDAO } from "./data-access/trip/dao";
-import { TripService } from "./features/trip/trip-service";
+import { DirectionsDAOInterface } from "./data-access/directions/dao";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -54,6 +58,10 @@ export function newTripDAO(): TripDAO {
     return new TripDAO(admin.firestore())
 }
 
+export function newDirectionsDAO(): DirectionsDAOInterface {
+    return new DirectionsDAOMock()
+}
+
 export function newAccountService(): AccountService {
     return new AccountService(
         newUserDao(),
@@ -66,71 +74,44 @@ export function newAccountService(): AccountService {
 
 export function newTripService(): TripService {
     return new TripService(
-        newTripDAO()
-
+        newTripDAO(),
+        newDirectionsDAO()
     )
 }
 
 
 //MARK: Exposed cloud function endpoints
 
-
-// { 'firstName': 'Chris', 'lastName': 'Foreman', 'gender': 'Male', 'email': 'Chris1134@gmail.com', 'password': 'Somepassword', 'dob': new Date(), 'phone': '12341234123412', 'cardNum': '0101', 'cardExpDate': '9/22', 'cardCVC': '123', 'stripeToken': 'asldkfja;lfkja;sldfkjads;lfjkasd', 'profilePicData': 'asdfadsf', 'isDriver': false }
-
-
-
 exports.account = require('./features/account-management/cloud-functions')
 exports.trip = require('./features/trip/cloud-functions')
 
 
 
-//MARK: Experimental: Delete later.
+import * as geohash from 'ngeohash'
 
-export const test2 = functions.https.onCall(async (data, context) => {
+//Test with mock only.
+export const createRoute = functions.https.onCall(async (data, context) => {
 
-    console.log('Client Data', data)
+    const mock = new DirectionsDAOMock()
 
-    const res = await admin.firestore().collection('what ever the fuck you want').doc().set({
-        firstName: 'Chris',
-        age: 23
+    const arg: any = `The arguments don't matter for the mock since its static`
+
+    const route = await mock.createRoute(arg, arg, arg)
+
+    const allPoints: { x: number, y: number }[] = []
+
+    route.legs.forEach(leg => {
+        leg.steps.forEach(step => {
+            allPoints.push(step.startPoint)
+            allPoints.push(step.endPoint)
+        })
     })
 
-    return res
+    const hashes: string[] = [...new Set(route.legs.map(l => l.steps.map(s => geohash.encode(s.startPoint.y, s.startPoint.x, 5))).flatMap(arr => arr))]
+
+    return {
+        points: allPoints.length,
+        hashes: hashes
+    }
+
 })
-
-export const test = functions.https.onCall((data, context) => {
-
-    // return admin.firestore().collection('test').doc('test').get().then(doc => fireDecode(TestClass, doc)).then(c => {
-    // console.log(c.name)
-    // console.log(c.date.toISOString())
-    // console.log(c.bool)
-    // console.log(c.num)
-    // })
-    return Promise.resolve({
-        firstname: "Taoufik"
-    })
-})
-
-
-// class TestClass {
-
-//     @IsString()
-//     name: string
-
-//     @IsDate()
-//     date: Date
-
-//     @IsBoolean()
-//     bool: boolean
-
-//     @IsNumber()
-//     num: number
-
-//     constructor(name: string, date: Date, bool: boolean, num: number) {
-//         this.name = name
-//         this.date = date
-//         this.bool = bool
-//         this.num = num
-//     }
-
-// }

@@ -2,17 +2,21 @@ import { CreatedTripSchema } from "../../data-access/trip/schema";
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
+import { DirectionsDAOInterface } from "../../data-access/directions/dao";
 
 
 export class TripService {
+
     private tripDAO: TripDAOInterface
 
-
+    private directionsDAO: DirectionsDAOInterface
 
     constructor(
         tripDAO: TripDAOInterface,
-        ) {
-            this.tripDAO = tripDAO
+        directionsDAO: DirectionsDAOInterface
+    ) {
+        this.tripDAO = tripDAO
+        this.directionsDAO = directionsDAO
     }
 
     /**
@@ -21,7 +25,10 @@ export class TripService {
      * @returns The id of the trip document.
      */
     async createAddedTrip(uid: string, data: TripCreationData): Promise<string> {
-        
+
+        //TODO: Call the directionsDAO and store the route in the database.
+        console.log(this.directionsDAO === undefined)
+
         return this.tripDAO.createAddedTrip({
             driverID: uid,
 
@@ -40,7 +47,7 @@ export class TripService {
             seatCount: data.seatCount
 
         })
-       // return Promise.resolve('')
+
     }
 
     /**
