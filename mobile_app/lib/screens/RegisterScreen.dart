@@ -1349,7 +1349,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               EasyLoading.dismiss();
               EasyLoading.showSuccess("Signed Up!");
               await context.read<Auth>().signOut();
-              Navigator.pushNamed(context, LoginScreen.id);
+              Navigator.popAndPushNamed(context, LoginScreen.id);
               return;
             }
           } catch (e) {
