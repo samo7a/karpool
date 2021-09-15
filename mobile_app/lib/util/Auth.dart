@@ -20,7 +20,7 @@ class Auth {
         "uid": user.uid,
         "driver": isDriver,
       };
-      HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+      HttpsCallable getUser = await FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
       String firstName = result.data['firstName'] ?? "";
       String lastName = result.data['lastName'] ?? "";
@@ -57,9 +57,10 @@ class Auth {
   }
 
   //register
-  Future<User?> signup(String email, String password) async {
+  Future<String?> signup(String email, String password) async {
     final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-    return userFromFirebase(credential.user);
+    await credential.user!.sendEmailVerification();
+    return await credential.user!.uid;
   }
 
   //reset password

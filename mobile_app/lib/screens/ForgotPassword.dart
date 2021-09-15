@@ -13,6 +13,7 @@ class ForgotPassword extends StatelessWidget {
   static const String id = 'forgotPassword';
   ForgotPassword({Key? key}) : super(key: key);
   final emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);

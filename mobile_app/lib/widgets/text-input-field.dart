@@ -30,6 +30,7 @@ class TextInputField extends StatelessWidget {
       ),
       child: Center(
         child: TextFormField(
+          
           maxLength: 50,
           controller: controller,
           decoration: InputDecoration(

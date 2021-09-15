@@ -27,6 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   bool isDriver = false;
 
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   void login() async {
     final user = await Provider.of<User?>(context, listen: false);
     String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
@@ -180,8 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
                 child: FlutterSwitch(
-                  height: size.BLOCK_HEIGHT * 7,
-                  width: size.BLOCK_WIDTH * 29,
+                  height: size.BLOCK_HEIGHT * 6,
+                  width: size.BLOCK_WIDTH * 26,
                   toggleSize: 35.0,
                   value: isDriver,
                   borderRadius: 30.0,

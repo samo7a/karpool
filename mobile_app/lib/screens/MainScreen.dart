@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/LoginScreen.dart';
 import 'package:mobile_app/screens/RegisterScreen.dart';
+import 'package:mobile_app/widgets/widgets.dart';
 import '../util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
@@ -34,6 +35,7 @@ class MainScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: size.BLOCK_WIDTH * 8),
                 child: Text(
                   'Ensuring mobility in a mobile world.',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Glory',
                     fontWeight: FontWeight.bold,
@@ -44,44 +46,18 @@ class MainScreen extends StatelessWidget {
               SizedBox(
                 height: size.BLOCK_HEIGHT * 20,
               ),
-              Padding(
-                padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
-                // ignore: deprecated_member_use
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                  minWidth: size.BLOCK_WIDTH * 70,
-                  height: size.BLOCK_HEIGHT * 7,
-                  color: kButtonColor,
-                  child: Text('Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: size.FONT_SIZE * 28,
-                      )),
-                  onPressed: () {
-                    Navigator.pushNamed(context, LoginScreen.id);
-                  },
-                ),
+              RoundedButton(
+                buttonName: 'Login',
+                onClick: () {
+                  Navigator.pushNamed(context, LoginScreen.id);
+                },
               ),
-              Padding(
-                padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
-                // ignore: deprecated_member_use
-                child: FlatButton(
-                  minWidth: size.BLOCK_WIDTH * 70,
-                  height: size.BLOCK_HEIGHT * 7,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                  color: kButtonColor,
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: size.FONT_SIZE * 28,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, RegisterScreen.id);
-                  },
-                ),
-              )
+              RoundedButton(
+                buttonName: 'Sign Up',
+                onClick: () {
+                  Navigator.pushNamed(context, RegisterScreen.id);
+                },
+              ),
             ],
           ),
         ),

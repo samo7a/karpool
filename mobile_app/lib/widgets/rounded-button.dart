@@ -15,20 +15,23 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
-    return Container(
-      height: size.BLOCK_HEIGHT * 7,
-      width: size.BLOCK_WIDTH * 70,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
-        color: kButtonColor,
-      ),
-      child: TextButton(
-        onPressed: () {
-          onClick();
-        },
-        child: Text(
-          buttonName,
-          style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
+    return Padding(
+      padding: EdgeInsets.all(size.BLOCK_HEIGHT * 2),
+      child: Container(
+        height: size.BLOCK_HEIGHT * 7,
+        width: size.BLOCK_WIDTH * 40,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
+          color: kButtonColor,
+        ),
+        child: TextButton(
+          onPressed: () {
+            onClick();
+          },
+          child: Text(
+            buttonName,
+            style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
+          ),
         ),
       ),
     );

@@ -11,7 +11,7 @@ import {
   checkFirstName,
   checkLastName,
   checkEmail,
-  checkPhoneNumber,
+  checkPhoneNumber, 
   checkAge,
   checkPassword,
   checkConfirmPassword,

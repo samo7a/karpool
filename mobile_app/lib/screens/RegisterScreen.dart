@@ -1,15 +1,24 @@
-import 'dart:io';
+import 'dart:io' as Io;
+import 'dart:convert';
 import 'dart:ui';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/screens/screens.dart';
+import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
+import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registerScreen';
@@ -27,10 +36,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _confirmPass = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
+  // photo vars
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
+
+  Widget bottomSheet() {
+    return Container(
+      height: 100,
+      // width: ,
+      margin: EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Choose profile photo",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextButton.icon(
+                onPressed: () async {
+                  takePhoto(ImageSource.camera);
+                },
+                icon: Icon(Icons.camera),
+                label: Text("Camera"),
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  takePhoto(ImageSource.gallery);
+                },
+                icon: Icon(Icons.image),
+                label: Text("Gallery"),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void takePhoto(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(
+      source: source,
+    );
+    setState(() {
+      _imageFile = pickedFile;
+    });
+  }
+
 // User Strings
-  //var _pickedImage = File("file.txt");
-  File _pickedImage;
-  final ImagePicker picker = ImagePicker();
   String firstName = '';
   String lastName = '';
   String email = '';
@@ -57,6 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   initState() {
     super.initState();
+    _imageFile = null;
     for (int i = 0; i < carColors.length; i++) {
       colors.add(carColors[i]['label']);
     }
@@ -68,56 +128,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String insStartDate = '';
   String insEndDate = '';
 
-  bool showMultiPane = false;
+  bool isDriver = false;
 
-  void _pickImageCamera() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.camera);
-    final pickedImageFile = File(pickedImage!.path);
-    setState(() {
-      _pickedImage = pickedImageFile;
-    });
-    Navigator.pop(context);
+  bool userValidate() {
+    if (userFormkey.currentState!.validate())
+      return true;
+    else
+      return false;
   }
 
-  void _pickImageGallery() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    final pickedImageFile = File(pickedImage!.path);
-    setState(() {
-      _pickedImage = pickedImageFile;
-    });
-    Navigator.pop(context);
-  }
-
-  void _remove() {
-    setState(() {
-      _pickedImage = new File("file.txt");
-    });
-    Navigator.pop(context);
-  }
-
-  void userValidate() {
-    if (userFormkey.currentState!.validate()) {
-      print(
-          "'First Name: $firstName\nLast Name: $lastName\nEmail: $email\nPhone Number: $phone\nDate of Birth: $dob\nGender: $gender\nPassword: $password\nRouting Number: $routingNum\nAccount Number: $accountNum\nCar Brand: $carBrand\nCar Color: $carColor\nCar Year: $carYear\nCar Plate: $carPlate\nDriver License: $driverLicense\nLicense End: $licenseEnd\nInsurance Provider: $insProvider\nInsurance Type: $insType\nInsurance Start Date: $insStartDate\nInsurance End Date: $insEndDate';");
-    } else {
-      print("User Not Validated");
-    }
-  }
-
-  void driverValidate() {
-    if (driverFormkey.currentState!.validate()) {
-      print(
-          "'First Name: $firstName\nLast Name: $lastName\nEmail: $email\nPhone Number: $phone\nDate of Birth: $dob\nPassword: $password';");
-    } else {
-      print("Driver Not Validated");
-    }
+  bool driverValidate() {
+    if (driverFormkey.currentState!.validate())
+      return true;
+    else
+      return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = new Size(Context: context);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -141,19 +170,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             centerTitle: true,
           ),
           body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            padding: EdgeInsets.symmetric(
+                vertical: size.BLOCK_HEIGHT * 2, horizontal: size.BLOCK_WIDTH * 3.5),
             child: Column(
               children: [
-                Center(child: _getUserWidget(size, context)),
-                showMultiPane ? _getDriverWidget(size, context) : Container(),
-                Center(child: _getRegisterButtonWidget(size, context)),
+                Center(child: _getUserWidget(size)),
+                isDriver ? _getDriverWidget(size) : Container(),
+                Center(child: _getRegisterButtonWidget()),
               ],
             ),
           )),
     );
   }
 
-  _getDriverWidget(Size size, BuildContext context) {
+  _getDriverWidget(Size size) {
     return Center(
       child: Form(
         autovalidateMode: AutovalidateMode.always, // Auto Validation Check
@@ -162,45 +192,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: Text(
                 'Bank Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 1),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt,
-                          color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.moneyCheckAlt, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Routing Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Routing Number is Required!"),
-                    MinLengthValidator(9,
-                        errorText: "Please enter a valid Routing Number!"),
-                    MaxLengthValidator(9,
-                        errorText: "Please enter a valid Routing Number!")
+                    MinLengthValidator(9, errorText: "Please enter a valid Routing Number!"),
+                    MaxLengthValidator(9, errorText: "Please enter a valid Routing Number!")
                   ]),
                   onChanged: (value) => setState(() => routingNum = value),
                   textInputAction: TextInputAction.next,
@@ -208,37 +236,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.moneyCheck, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Account Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Account Number is Required!"),
-                    MinLengthValidator(9,
-                        errorText: "Please enter a valid Account Number!"),
-                    MaxLengthValidator(12,
-                        errorText: "Please enter a valid Account Number!")
+                    MinLengthValidator(9, errorText: "Please enter a valid Account Number!"),
+                    MaxLengthValidator(12, errorText: "Please enter a valid Account Number!")
                   ]),
                   onChanged: (value) => setState(() => accountNum = value),
                   textInputAction: TextInputAction.next,
@@ -246,41 +273,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: Text(
                 'Car Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 1),
               child: DropdownSearch<String>(
                   autoValidateMode: AutovalidateMode.always,
                   // validator: (value) {},
                   mode: Mode.BOTTOM_SHEET,
                   showSearchBox: true,
-                  validator:
-                      RequiredValidator(errorText: "Car Brand is required!"),
+                  validator: RequiredValidator(errorText: "Car Brand is required!"),
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
                       prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       labelStyle: TextStyle(color: kHintText),
                       labelText: "Car Brand"),
@@ -289,33 +316,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   selectedItem: ""),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0, bottom: 25),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: DropdownSearch<String>(
                   autoValidateMode: AutovalidateMode.always,
                   mode: Mode.BOTTOM_SHEET,
                   showSearchBox: true,
-                  validator:
-                      RequiredValidator(errorText: "Car Color is required!"),
+                  validator: RequiredValidator(errorText: "Car Color is required!"),
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.palette, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       labelStyle: TextStyle(color: kHintText),
                       labelText: "Car Color"),
@@ -328,28 +355,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   selectedItem: ""),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.calendar, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.calendar, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Year of Manufacture"),
@@ -358,12 +386,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (value != null) {
                       int currentYear = DateTime.now().year;
                       int val;
-                      try {
-                        val = int.parse(value);
-                      } catch (e) {
-                        print("error from the catch: $e");
-                        val = 0;
-                      }
+                      val = int.tryParse(value) ?? 0;
                       diff = currentYear - val;
                     } else
                       diff = 16;
@@ -379,34 +402,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(Icons.crop_7_5_rounded, color: kIconColor),
+                      prefixIcon: Icon(Icons.crop_7_5_rounded, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "License Plate Number"),
                   validator: MultiValidator([
-                    RequiredValidator(
-                        errorText: "License Plate Number is Required!"),
+                    RequiredValidator(errorText: "License Plate Number is Required!"),
                     PatternValidator(r"^[0-9a-zA-Z]{6}$",
                         errorText: "Please enter a valid license plate!"),
                   ]),
@@ -416,34 +439,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.idCard, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.idCard, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Driver License Number"),
                   validator: MultiValidator([
-                    RequiredValidator(
-                        errorText: "Driver License Number is Required!"),
+                    RequiredValidator(errorText: "Driver License Number is Required!"),
                     PatternValidator(r"^(.*[A-Za-z]){1}.[0-9]{11}$",
                         errorText:
                             "Please enter a valid driver river license number!"), // 11 but should be 12 numbers
@@ -454,16 +477,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: FormBuilderDateTimePicker(
                 name: 'licenseEnd',
                 onChanged: (value) {
-                  // String dd;
-                  // if (value!.day < 10) {
-                  //   dd = "0" + value.day.toString();
-                  // } else {
-                  //   dd = value.day.toString();
-                  // }
                   String mm;
                   if (value!.month < 10) {
                     mm = "0" + value.month.toString();
@@ -475,7 +492,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   setState(() => licenseEnd = givenDate);
                 },
                 validator: (value) {
-                  var age;
+                  var isAfter;
                   if (value != null) {
                     String dd;
                     if (value.day < 10) {
@@ -491,19 +508,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     String yyyy = value.year.toString();
                     String givenDate = yyyy + '-' + mm + '-' + dd;
-                    // var now = new DateTime();
-                    print(givenDate);
                     var dateNow = new DateTime.now();
-                    print(dateNow);
-                    //var givenDate = "1969-07-20";
                     var givenDateFormat = DateTime.parse(givenDate);
-                    var diff = dateNow.difference(givenDateFormat);
-                    age = ((diff.inDays) / 31).round();
-                    print("age = $age");
+                    isAfter = dateNow.isAfter(givenDateFormat);
                   } else {
-                    age = 0;
+                    isAfter = true;
                   }
-                  if (age < 0)
+                  if (isAfter == false)
                     return null;
                   else
                     return ('Your Driver License is expired!');
@@ -512,82 +523,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.idCard, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.idCard, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'License Expiration Date'),
-                //initialTime: TimeOfDay(hour: 8, minute: 0),
-                // initialValue: DateTime.now(),
-                // enabled:! true,
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: Text(
                 'Car Insurance Information',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 1),
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.carCrash, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.carCrash, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Insurance Provider"),
                 value: insProvider,
-                items: insuranceProviders
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: insuranceProviders.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator: RequiredValidator(
-                    errorText: "Insurance Provider is Required!"),
+                validator: RequiredValidator(errorText: "Insurance Provider is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insProvider = value!;
@@ -596,31 +600,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.stream, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Coverage Type"),
                 value: insType,
                 items: <String>[
@@ -632,14 +636,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
                 dropdownColor: kBackgroundColor,
-                validator:
-                    RequiredValidator(errorText: "Coverage Type is Required!"),
+                validator: RequiredValidator(errorText: "Coverage Type is Required!"),
                 onChanged: (String? value) {
                   setState(() {
                     insType = value!;
@@ -648,16 +650,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: FormBuilderDateTimePicker(
                 name: 'insuranceStartDate',
                 onChanged: (value) {
-                  // String dd;
-                  // if (value!.day < 10) {
-                  //   dd = "0" + value.day.toString();
-                  // } else {
-                  //   dd = value.day.toString();
-                  // }
                   String mm;
                   if (value!.month < 10) {
                     mm = "0" + value.month.toString();
@@ -669,7 +665,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   setState(() => insStartDate = givenDate);
                 },
                 validator: (value) {
-                  var age;
+                  var isBefore;
                   if (value != null) {
                     String dd;
                     if (value.day < 10) {
@@ -685,19 +681,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     String yyyy = value.year.toString();
                     String givenDate = yyyy + '-' + mm + '-' + dd;
-                    // var now = new DateTime();
-                    print(givenDate);
                     var dateNow = new DateTime.now();
-                    print(dateNow);
-                    //var givenDate = "1969-07-20";
                     var givenDateFormat = DateTime.parse(givenDate);
-                    var diff = dateNow.difference(givenDateFormat);
-                    age = ((diff.inDays) / 31).round();
-                    print("age = $age");
+                    isBefore = givenDateFormat.isBefore(dateNow);
                   } else {
-                    age = 0;
+                    isBefore = false;
                   }
-                  if (age < 0)
+                  if (isBefore == true)
                     return null;
                   else
                     return ('Your Insurance policy cannot start in the future!');
@@ -706,43 +696,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'Insurance Start Date'),
-                //initialTime: TimeOfDay(hour: 8, minute: 0),
-                // initialValue: DateTime.now(),
-                // enabled:! true,
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: FormBuilderDateTimePicker(
+                autovalidateMode: AutovalidateMode.always,
                 name: 'insuranceEndDate',
                 onChanged: (value) {
-                  // String dd;
-                  // if (value!.day < 10) {
-                  //   dd = "0" + value.day.toString();
-                  // } else {
-                  //   dd = value.day.toString();
-                  // }
                   String mm;
                   if (value!.month < 10) {
                     mm = "0" + value.month.toString();
@@ -754,7 +736,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   setState(() => insEndDate = givenDate);
                 },
                 validator: (value) {
-                  var age;
+                  var isAfter;
                   if (value != null) {
                     String dd;
                     if (value.day < 10) {
@@ -770,51 +752,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     String yyyy = value.year.toString();
                     String givenDate = yyyy + '-' + mm + '-' + dd;
-                    // var now = new DateTime();
-                    print(givenDate);
                     var dateNow = new DateTime.now();
-                    print(dateNow);
-                    //var givenDate = "1969-07-20";
                     var givenDateFormat = DateTime.parse(givenDate);
-                    var diff = dateNow.difference(givenDateFormat);
-                    age = ((diff.inDays) / 31).round();
-                    print("age = $age");
+                    isAfter = dateNow.isAfter(givenDateFormat);
                   } else {
-                    age = 0;
+                    isAfter = true;
                   }
-                  if (age < 0)
+                  if (isAfter == false)
                     return null;
                   else
-                    return ('Your Insurance policy expired!');
+                    return ('Your Insurance policy is expired!');
                 },
                 inputType: InputType.date,
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'Insurance End Date'),
-                //initialTime: TimeOfDay(hour: 8, minute: 0),
-                // initialValue: DateTime.now(),
-                // enabled:! true,
               ),
             ),
           ],
@@ -823,7 +796,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  _getUserWidget(Size size, BuildContext context) {
+  _getUserWidget(Size size) {
     return Center(
       child: Form(
         autovalidateMode: AutovalidateMode.always, // Auto Validation Check
@@ -831,180 +804,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         child: Column(
           children: <Widget>[
-            Stack(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-                  child: CircleAvatar(
-                    radius: 71,
-                    backgroundColor: kBlack.withOpacity(.5),
-                    child: CircleAvatar(
-                      radius: 65,
-                      backgroundColor: kBlack.withOpacity(.5),
-                      backgroundImage:
-                          _pickedImage == null ? null : FileImage(_pickedImage),
+            Center(
+              child: Stack(
+                children: <Widget>[
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: _imageFile == null
+                        ? AssetImage(
+                            "images/chris.jpg",
+                          ) as ImageProvider
+                        : FileImage(Io.File(_imageFile!.path)),
+                  ),
+                  Positioned(
+                    bottom: 20,
+                    right: 20,
+                    child: InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (_) => bottomSheet(),
+                        );
+                      },
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.black,
+                        size: 28,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                    top: 120,
-                    left: 110,
-                    child: RawMaterialButton(
-                      elevation: 10,
-                      fillColor: kBlack.withOpacity(.5),
-                      child: Icon(Icons.add_a_photo),
-                      padding: EdgeInsets.all(15.0),
-                      shape: CircleBorder(),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(
-                                  'Choose option',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: kBlack.withOpacity(.5)),
-                                ),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: [
-                                      InkWell(
-                                        onTap: _pickImageCamera,
-                                        splashColor: Colors.purpleAccent,
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.camera,
-                                                color: Colors.purpleAccent,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Camera',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w500,
-                                                  color:
-                                                      kBlack.withOpacity(.5)),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: _pickImageGallery,
-                                        splashColor: Colors.purpleAccent,
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.image,
-                                                color: Colors.purpleAccent,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Gallery',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w500,
-                                                  color:
-                                                      kBlack.withOpacity(.5)),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: _remove,
-                                        splashColor: Colors.purpleAccent,
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.remove_circle,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Remove',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.red),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      },
-                    ))
-              ],
+                ],
+              ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(top: 25.0),
-            //   child: FormBuilder(
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: <Widget>[
-            //         FormBuilderImagePicker(
-            //           name: 'photos',
-            //           decoration:
-            //               const InputDecoration(labelText: 'Pick Photos'),
-            //           maxImages: 1,
-            //         ),
-            //         const SizedBox(height: 15),
-            //         RaisedButton(onPressed: () {
-            //           if (_formKey.currentState.saveAndValidate()) {
-            //             print(_formKey.currentState.value);
-            //           }
-            //         })
-            //       ],
-            //     ),
-            //   ),
-            // ),
             Padding(
-              padding: EdgeInsets.only(top: 40.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "First Name"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "First Name is Required!"),
                     MinLengthValidator(2,
-                        errorText:
-                            "First name should be at least 2 characters long!"),
+                        errorText: "First name should be at least 2 characters long!"),
                     MaxLengthValidator(50,
-                        errorText:
-                            "First name should not exceed 50 characters!"),
+                        errorText: "First name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -1014,39 +878,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.signature, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.signature, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Last Name"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Last Name is Required!"),
                     MinLengthValidator(2,
-                        errorText:
-                            "Last name should be at least 2 characters long!"),
-                    MaxLengthValidator(50,
-                        errorText:
-                            "Last name should not exceed 50 characters!"),
+                        errorText: "Last name should be at least 2 characters long!"),
+                    MaxLengthValidator(50, errorText: "Last name should not exceed 50 characters!"),
                     PatternValidator(r"(^[A-Za-z-,\s']+$)",
                         errorText: "Please enter a valid name!"),
                   ]),
@@ -1056,36 +918,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.envelope, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.envelope, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Email Address"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),
-                    MaxLengthValidator(50,
-                        errorText: "Email should not exceed 50 characters!"),
+                    MaxLengthValidator(50, errorText: "Email should not exceed 50 characters!"),
                   ]),
                   onChanged: (value) => setState(() => email = value),
                   keyboardType: TextInputType.emailAddress,
@@ -1093,38 +955,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.phoneAlt, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Phone Number"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Phone Number is Required!"),
-                    MaxLengthValidator(10,
-                        errorText: "Phone Number should not exceed 10 digits!"),
+                    MaxLengthValidator(10, errorText: "Phone Number should not exceed 10 digits!"),
                     MinLengthValidator(10,
-                        errorText:
-                            "Phone Number should not be less than 10 digits!"),
+                        errorText: "Phone Number should not be less than 10 digits!"),
                     PatternValidator(r"^[0-9]{10}$",
                         errorText: "Please enter a valid phone number!"),
                   ]),
@@ -1134,24 +995,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: FormBuilderDateTimePicker(
                 name: 'dob',
                 onChanged: (value) {
                   String dd;
-                  if (value!.day < 10) {
-                    dd = "0" + value.day.toString();
-                  } else {
-                    dd = value.day.toString();
-                  }
-                  String mm;
-                  if (value.month < 10) {
-                    mm = "0" + value.month.toString();
-                  } else {
-                    mm = value.month.toString();
-                  }
-                  String yyyy = value.year.toString();
-                  String givenDate = yyyy + '-' + mm + '-' + dd;
+                  String givenDate;
+                  if (value != null) {
+                    if (value.day < 10) {
+                      dd = "0" + value.day.toString();
+                    } else {
+                      dd = value.day.toString();
+                    }
+                    String mm;
+                    if (value.month < 10) {
+                      mm = "0" + value.month.toString();
+                    } else {
+                      mm = value.month.toString();
+                    }
+                    String yyyy = value.year.toString();
+                    givenDate = yyyy + '-' + mm + '-' + dd;
+                  } else
+                    givenDate = "";
+
                   setState(() => dob = givenDate);
                 },
                 validator: (value) {
@@ -1171,15 +1037,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     String yyyy = value.year.toString();
                     String givenDate = yyyy + '-' + mm + '-' + dd;
-                    // var now = new DateTime();
-                    print(givenDate);
                     var dateNow = new DateTime.now();
-                    print(dateNow);
-                    //var givenDate = "1969-07-20";
                     var givenDateFormat = DateTime.parse(givenDate);
                     var diff = dateNow.difference(givenDateFormat);
                     age = ((diff.inDays) / 365).round();
-                    print("age = $age");
                   } else {
                     age = 0;
                   }
@@ -1192,59 +1053,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.birthdayCake, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.birthdayCake, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: 'Date of Birth'),
-
-                //initialTime: TimeOfDay(hour: 8, minute: 0),
-                // initialValue: DateTime.now(),
-                // enabled: true,
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.venusMars, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.venusMars, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
                     ),
                     errorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
+                      borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                     ),
                     focusedErrorBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
+                      borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                     ),
-                    labelStyle: TextStyle(
-                        color: kHintText, fontWeight: FontWeight.bold),
+                    labelStyle: TextStyle(color: kHintText, fontWeight: FontWeight.bold),
                     labelText: "Gender"),
                 value: gender,
                 items: <String>[
@@ -1257,8 +1114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style:
-                          TextStyle(color: kBlack, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),
@@ -1272,69 +1128,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   controller: _pass,
                   obscureText: true,
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Password"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Password is Required!"),
-                    PatternValidator(
-                        r"^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,50}$",
-                        errorText:
-                            'Password must contain one symbol and number!')
+                    PatternValidator(r"^(?=.*[0-9])(?=.*[a-zA-Z])([a-z0-9\S]+).{5,50}$",
+                        errorText: 'Password must contain one character and a number!')
                   ]),
                   onChanged: (value) => setState(() => password = value),
                   textInputAction: TextInputAction.next,
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: TextFormField(
                   controller: _confirmPass,
                   obscureText: true,
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.lock, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.lock, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
+                        ),
                       ),
                       errorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
+                        borderSide: BorderSide(color: kGreen, width: size.BLOCK_WIDTH * 2),
                       ),
                       focusedErrorBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
+                        borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
                       hintText: "Confirm Password"),
@@ -1347,20 +1203,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 25.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
               child: Text(
                 'Are you driving?',
-                style: TextStyle(
-                    color: Color(0xFF33415C), fontWeight: FontWeight.bold),
+                style: TextStyle(color: Color(0xFF33415C), fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 1),
               child: FlutterSwitch(
-                width: 100.0,
-                height: 45.0,
+                height: size.BLOCK_HEIGHT * 6,
+                width: size.BLOCK_WIDTH * 26,
                 toggleSize: 35.0,
-                value: showMultiPane,
+                value: isDriver,
                 borderRadius: 30.0,
                 showOnOff: true,
                 activeText: 'Driver',
@@ -1391,7 +1246,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 onToggle: (value) {
                   setState(() {
-                    showMultiPane = value;
+                    isDriver = value;
                   });
                 },
               ),
@@ -1402,24 +1257,108 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  _getRegisterButtonWidget(Size size, BuildContext context) {
+  _getRegisterButtonWidget() {
     return Center(
       child: Form(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  userValidate();
-                  driverValidate();
-                },
-                child: Text("Register"),
-              ),
-            ),
-          ],
-        ),
-      ),
+          child: RoundedButton(
+        buttonName: 'Register',
+        onClick: () async {
+          print(userValidate());
+          print(driverValidate());
+          await Provider.of<User?>(context, listen: false);
+          EasyLoading.show(status: "Signing up...");
+          String img64;
+          if (_imageFile == null) {
+            EasyLoading.dismiss();
+            EasyLoading.showError("Please upload a profile picture");
+            return;
+          } else {
+            final bytes = await Io.File(_imageFile!.path).readAsBytesSync();
+            img64 = base64Encode(bytes);
+          }
+          if (isDriver) {
+            if (!userValidate() || !driverValidate()) {
+              EasyLoading.dismiss();
+              EasyLoading.showError("Please fill up all required fields! Driver");
+              return;
+            }
+          } else {
+            if (!userValidate()) {
+              EasyLoading.dismiss();
+              EasyLoading.showError("Please fill up all required fields!");
+              return;
+            }
+          }
+
+          String uid;
+          try {
+            uid = (await context.read<Auth>().signup(email.trim(), password.trim()))!;
+          } catch (error) {
+            EasyLoading.dismiss();
+            EasyLoading.showError("Signing up failed, please try again!");
+            print(error);
+            return;
+          }
+          print(uid);
+
+          Map<String, dynamic> obj;
+          if (isDriver)
+            obj = {
+              "uid": uid,
+              "firstName": firstName.trim(),
+              "lastName": lastName.trim(),
+              "email": email.trim(),
+              "phone": phone.trim(),
+              "dob": dob.trim(),
+              "gender": gender.trim(),
+              "isDriver": isDriver,
+              "profilePicData": img64,
+              "routingNum": routingNum.trim(),
+              "accountNum": accountNum.trim(),
+              "make": carBrand.trim(),
+              "year": carYear.trim(),
+              "color": carColor.trim(),
+              "plateNum": carPlate.trim(),
+              "provider": insProvider.trim(),
+              "coverage": insType.trim(),
+              "startDate": insStartDate.trim(),
+              "endDate": insEndDate.trim(),
+              "licenseNum": driverLicense.trim(),
+              "licenseExpDate": licenseEnd.trim(),
+            };
+          else
+            obj = {
+              "uid": uid,
+              "firstName": firstName.trim(),
+              "lastName": lastName.trim(),
+              "email": email.trim(),
+              "phone": phone.trim(),
+              "dob": dob.trim(),
+              "gender": gender.trim(),
+              "isDriver": isDriver,
+              "profilePicData": img64,
+            };
+
+          HttpsCallable register =
+              await FirebaseFunctions.instance.httpsCallable.call('account-registerUser');
+          try {
+            final result = await register(obj);
+            print("result: " + result.toString());
+            print("result.data: " + result.data.toString());
+            if (result.data == null) {
+              EasyLoading.dismiss();
+              EasyLoading.showSuccess("Signed Up!");
+              await context.read<Auth>().signOut();
+              Navigator.pushNamed(context, LoginScreen.id);
+              return;
+            }
+          } catch (e) {
+            EasyLoading.dismiss();
+            EasyLoading.showInfo("Signing up failed, please try again! try and catch");
+            print("error from catch " + e.toString());
+          }
+        },
+      )),
     );
   }
 }
