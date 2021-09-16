@@ -151,3 +151,18 @@ export interface PaymentSchema {
     date: firestore.Timestamp
 
 }
+
+
+
+export interface GeoPointSchema {
+
+    hash: string
+
+    index: number
+
+    tripID: string
+
+    x: number
+
+    y: number
+}

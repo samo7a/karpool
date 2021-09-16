@@ -55,7 +55,7 @@ export function newPaymentDAO(): PaymentDAO {
 
 
 export function newTripDAO(): TripDAO {
-    return new TripDAO(admin.firestore())
+    return new TripDAO(admin.firestore(), admin.database())
 }
 
 export function newDirectionsDAO(): DirectionsDAOInterface {
@@ -115,3 +115,45 @@ export const createRoute = functions.https.onCall(async (data, context) => {
     }
 
 })
+
+
+export const testAdd = functions.https.onCall(async (data, context) => {
+    return newTripDAO().addGeoPoints([
+        {
+            "x": -82.8281804,
+            "y": 27.8436234,
+            index: 0,
+            tripID: data.tripID,
+            hash: 'someHash'
+        },
+        {
+            "x": -82.8281804,
+            "y": 27.8436234,
+            index: 1,
+            tripID: data.tripID,
+            hash: 'someHash'
+        },
+        {
+            "x": -82.8281817,
+            "y": 27.8436907,
+            index: 2,
+            tripID: data.tripID,
+            hash: 'someHash'
+        },
+        {
+            "x": -82.8281817,
+            "y": 27.8436907,
+            index: 3,
+            tripID: data.tripID,
+            hash: 'someHash'
+        }
+    ])
+})
+
+
+export const testRemove = functions.https.onCall(async (data, context) => {
+
+    return newTripDAO().removeGeoPoints(data.tripID)
+
+})
+
