@@ -33,7 +33,7 @@ export interface CreatedTripSchema {
     isOpen: boolean
 
     /**
-     * Distance between startLocation and endLocation
+     * Distance between startLocation and endLocation (Meters)
      */
     estimatedDistance: number
 
@@ -44,9 +44,16 @@ export interface CreatedTripSchema {
     estimatedFare: number
 
     /**
+     * The estimate duration of the entire trip. (Seconds)
+     */
+    estimatedDuration: number
+
+    /**
      * Number of seats available in the trip.
      */
-    seatCount: number
+    seatsAvailable: number
+
+
 
 
 }

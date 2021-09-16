@@ -5,7 +5,7 @@ import { Point, Route } from '../../models-shared/route';
 //TODO: Move to test folder working on unit tests.
 export class DirectionsDAOMock implements DirectionsDAOInterface {
 
-    createRoute(start: Point, end: Point, waypoints: Point[]): Promise<Route> {
+    getRoute(start: Point, end: Point, waypoints: Point[]): Promise<Route> {
         return Promise.resolve({
             "waypointOrder": [
                 1,
