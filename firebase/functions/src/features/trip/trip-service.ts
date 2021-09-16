@@ -3,6 +3,7 @@ import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
 import { DirectionsDAOInterface } from "../../data-access/directions/dao";
+import { Point } from "../../models-shared/route";
 
 
 export class TripService {
@@ -60,6 +61,19 @@ export class TripService {
         const driverTrips = await this.tripDAO.getDriverTrips(driverID)
 
         return driverTrips
+    }
+
+
+    /**
+     * 
+     * @param pickup 
+     * @param dropoff 
+     * @param after 
+     * @param before 
+     * @returns 
+     */
+    searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date): Promise<CreatedTripSchema[]> {
+        return Promise.reject(new Error('Method Unimplemented.'))
     }
 
 
