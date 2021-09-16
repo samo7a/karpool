@@ -97,21 +97,21 @@ export class TripService {
         })
 
 
-        const trip2 = await this.tripDAO.getCreatedTrip(tripID)
+        // const trip2 = await this.tripDAO.getCreatedTrip(tripID)
 
 
 
 
-                // Call change route function to update route
+        //         // Call change route function to update route
                 
-                const scheduleTime = trip2.startTime.getTime()
-                const currentTime = new Date().getTime()
+        //         const scheduleTime = trip2.startTime.getTime()
+        //         const currentTime = new Date().getTime()
         
-        if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
 
                    // Charge the rider $5 penality or add a field in user as debt and add the value
 
-            }
+          //  }
     }
 
 }
