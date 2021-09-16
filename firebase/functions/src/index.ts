@@ -96,7 +96,7 @@ export const createRoute = functions.https.onCall(async (data, context) => {
 
     const arg: any = `The arguments don't matter for the mock since its static`
 
-    const route = await mock.createRoute(arg, arg, arg)
+    const route = await mock.getRoute(arg, arg, arg)
 
     const allPoints: { x: number, y: number }[] = []
 
