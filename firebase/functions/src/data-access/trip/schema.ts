@@ -48,6 +48,7 @@ export interface CreatedTripSchema {
      */
     seatCount: number
 
+
 }
 
 export interface ScheduleTripSchema {

@@ -1,8 +1,9 @@
-import { CreatedTripSchema } from "../../data-access/trip/schema";
+import { CreatedTripSchema} from "../../data-access/trip/schema";
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
 import { DirectionsDAOInterface } from "../../data-access/directions/dao";
+import { HttpsError } from "firebase-functions/lib/providers/https";
 
 
 export class TripService {
@@ -63,5 +64,54 @@ export class TripService {
     }
 
 
+    /**
+     * @param riderID
+     * @returns scheduled trips
+     */
+    async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]>{
+
+        const riderTrips = await this.tripDAO.getRiderTrips(riderID)
+
+        return riderTrips
+    }
+
+
+     /**
+     * @param tripID
+     */
+
+    async cancelRide(riderID: string, tripID: string): Promise<void>{
+
+    //Read from database
+
+    //Do logic
+
+    //Write to database
+    
+        await this.tripDAO.updateCreateTrip(tripID, (trip) => {
+            if(trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('aborted',`Rider isn't part of this ride.`)
+            }
+            trip.riderStatus[riderID] = 'Rejected'
+           return trip 
+        })
+
+
+        const trip2 = await this.tripDAO.getCreatedTrip(tripID)
+
+
+
+
+                // Call change route function to update route
+                
+                const scheduleTime = trip2.startTime.getTime()
+                const currentTime = new Date().getTime()
+        
+        if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+
+                   // Charge the rider $5 penality or add a field in user as debt and add the value
+
+            }
+    }
 
 }

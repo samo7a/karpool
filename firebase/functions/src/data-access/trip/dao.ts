@@ -1,8 +1,8 @@
 import { CreatedTripSchema } from "./schema";
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-//import { fireDecode } from "../utils/decode";
-//import { TripService } from "../../features/trip/trip-service";
+import { fireEncode } from "../utils/encode";
+
 
 export interface TripDAOInterface {
 
@@ -16,7 +16,9 @@ export interface TripDAOInterface {
 
     getDriverTrips(driverID: string): Promise<CreatedTripSchema[]>
 
+    getRiderTrips(riderID: string): Promise<CreatedTripSchema[]>
 
+    updateCreateTrip(tripID: string, closure: (data: CreatedTripSchema) => CreatedTripSchema ): Promise<void>
 
 }
 
@@ -27,7 +29,7 @@ export class TripDAO implements TripDAOInterface {
     constructor(db: admin.firestore.Firestore) {
         this.db = db
     }
-
+    //Function to add new trips by the driver
    async createAddedTrip(data: CreatedTripSchema): Promise<string> {
         const tripRef = this.db.collection(FirestoreKey.trips).doc()
         await tripRef.create(data)
@@ -40,6 +42,27 @@ export class TripDAO implements TripDAOInterface {
     async getDriverTrips(driverID: string): Promise<CreatedTripSchema[]> {
         const snapshot = await this.db.collection(FirestoreKey.trips).where('driverID','==',driverID).get()
         return snapshot.docs.map(doc => doc.data()) as CreatedTripSchema[]
+    }
+
+
+    async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]>{
+
+        const scheduledRides = await this.db.collection(FirestoreKey.trips).where(`riderStatus.${riderID}`, 'in', ['Requested', 'Accepted']).get()
+
+        return scheduledRides.docs.map(doc => doc.data()) as CreatedTripSchema[]
+    }
+
+
+    async updateCreateTrip(tripID: string, closure: (data: CreatedTripSchema) => CreatedTripSchema ): Promise<void> {
+
+    const docReference = this.db.collection(FirestoreKey.trips).doc(tripID)
+
+       await this.db.runTransaction(async transaction => {
+           const trip = await transaction.get(docReference).then(doc => doc.data()) as CreatedTripSchema
+           const newTrip = closure(trip)
+          return transaction.update(docReference, fireEncode(newTrip))
+       })
+
     }
  
 }
