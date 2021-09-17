@@ -28,9 +28,9 @@ class TripResultContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 24.0,
-        bottom: 1,
+      padding: EdgeInsets.only(
+        top: size.BLOCK_HEIGHT * 3,
+        bottom: size.BLOCK_HEIGHT * 0.25,
       ),
       child: Column(
         children: [
@@ -48,7 +48,7 @@ class TripResultContainer extends StatelessWidget {
                 child: Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 5),
+                      padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 3),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +80,7 @@ class TripResultContainer extends StatelessWidget {
                       thickness: size.BLOCK_WIDTH * 0.75,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 5),
+                      padding: EdgeInsets.only(left: size.BLOCK_WIDTH),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
