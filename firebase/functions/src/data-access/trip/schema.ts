@@ -71,9 +71,21 @@ export interface ScheduleTripSchema {
     driverID: string
 
     /**
-     * 
+     * PENDING/ON-ROUTE/COMPLETED
      */
     riders: Record<string, boolean>
+
+    //NEED!!!! ROUTE TAKEN
+
+    /*
+    Number of passengers in trip
+    */
+    numPassengers: number
+
+    /*
+    PENDING/ON-ROUTE/COMPLETED
+    */
+    tripStatus: string
 
 
     vehicleID: string
@@ -84,10 +96,11 @@ export interface ScheduleTripSchema {
      */
     distance: number
 
-    /**
-     * Per person 
-     */
-    fare: number
+    /*
+    The id of the rider with the fare paid
+    */
+
+    fares: Record<string,number>
 
     /**
      * 
