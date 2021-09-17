@@ -1,6 +1,5 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
-
 import { AuthenticationDAO } from "./auth/dao";
 import { UserDAO } from "./data-access/user/dao";
 import { PaymentDAO } from "./data-access/payment-dao/dao";
@@ -8,11 +7,8 @@ import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
 import { VehicleDAO } from "./data-access/vehicle/dao";
 import { TripDAO } from "./data-access/trip/dao";
 import { DirectionsDAOMock } from "./data-access/directions/dao-mock";
-
-
 import { AccountService } from "./features/account-management/account-service";
 import { TripService } from "./features/trip/trip-service";
-
 import { getEnv } from "./env-config";
 
 //MARK: Setup

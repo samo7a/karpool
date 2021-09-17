@@ -27,7 +27,7 @@ export const getDriverTrips = functions.https.onCall(async(data, context) =>{
 
 export const getRiderTrips = functions.https.onCall(async (data, context) =>{
 
-        const uid = "3SfMDjnkjkfNJAbTVyFBcinew303"//validateAuthorization(context)
+        const uid = validateAuthorization(context)
         
         if(uid){
             return newTripService().getRiderTrips(data)
@@ -40,7 +40,7 @@ export const getRiderTrips = functions.https.onCall(async (data, context) =>{
 
 export const cancelRidebyRider = functions.https.onCall(async (data, context) => {
 
-        const uid = '3SfMDjnkjkfNJAbTVyFBcinew303'//validateAuthorization(context)
+        const uid = validateAuthorization(context)
 
         if(uid){
            return  newTripService().cancelRide(data.riderID, data.tripID)
