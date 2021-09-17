@@ -21,7 +21,7 @@ export const createAddedTrip = functions.https.onCall(async(data, context)=>{
 
 export const getDriverTrips = functions.https.onCall(async(data, context) =>{
     //validate who is calling function ???
-   // const user = validateAuthorization(context)
+    validateAuthorization(context)
     return  newTripService().getDriverTrips(data)
 })
 
