@@ -40,6 +40,8 @@ export interface TripDAOInterface {
 
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema>
 
+
+
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -139,5 +141,7 @@ export class TripDAO implements TripDAOInterface {
         return this.db.collection(FirestoreKey.tripsCreated).doc(tripID)
             .get().then(doc => doc.data() as CreatedTripSchema)
     }
+
+
 
 }
