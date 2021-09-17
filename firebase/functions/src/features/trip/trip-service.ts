@@ -155,8 +155,9 @@ export class TripService {
 
 
     /**
-     * @param riderID
-     * @returns scheduled trips
+     * 
+     * @param riderID 
+     * @returns 
      */
     async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]> {
 
@@ -167,47 +168,41 @@ export class TripService {
 
 
     /**
-    * @param tripID
-    */
+     * 
+     * @param riderID 
+     * @param tripID 
+     */
 
     async cancelRide(riderID: string, tripID: string): Promise<void> {
 
         //Read from database
 
-        //Do logic
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-        //Write to database
+            if (trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+            }
+            trip.riderStatus[riderID] = 'Rejected'
 
-        // await this.tripDAO.updateCreateTrip(tripID, (trip) => {
-        //     if (trip.riderStatus[riderID] === undefined) {
-        //         throw new HttpsError('aborted', `Rider isn't part of this ride.`)
-        //     }
-        //     trip.riderStatus[riderID] = 'Rejected'
-        //     return trip
-        // })
+            //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
-        //Get
+            // Call change route function to update route
+            console.log("Rider canceled, Route will be updated")
 
-        //Set
+            //Do logic
+            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+            const currentTime = new Date().getTime()
 
+                if (((currentTime - scheduleTime) /1000 ) < 10800 ){
 
+                    console.log("Rider will be fined")
 
-        // const trip2 = await this.tripDAO.getCreatedTrip(tripID)
+                    // Charge the rider $5 penality or add a field in user as debt and add the value
 
-
-
-
-        //         // Call change route function to update route
-
-        //         const scheduleTime = trip2.startTime.getTime()
-        //         const currentTime = new Date().getTime()
-
-        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
-
-        // Charge the rider $5 penality or add a field in user as debt and add the value
-
-        //  }
+                }    
     }
+
 
     async declineRiderRequest (riderID: string, tripID: string): Promise<void>{
         //get trip 
@@ -246,6 +241,4 @@ export class TripService {
 
        // this.setTripRoute(tripID)
     }
-
-
 }

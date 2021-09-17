@@ -32,7 +32,7 @@ export class DirectionsDAO implements DirectionsDAOInterface {
                 alternatives: false, //Guaruntee only one route in response and increase performance.
                 origin: '',
                 destination: '',
-                waypoints: waypoints?.map(point => ('')),
+                waypoints: waypoints?.map(point => (''))
             }
         }).then(res => {
             if (res.data.routes.length === 0) {
