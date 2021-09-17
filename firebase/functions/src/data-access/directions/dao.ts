@@ -6,11 +6,11 @@ export interface DirectionsDAOInterface {
 
     /**
      * Creates a route between the start and end points which passes through all waypoints.
-     * @param start A point that specifies where the route will start.
-     * @param end A point that specifies where the route will end.
-     * @param waypoints An array of points the route must pass through.
+     * @param start A point or address string that specifies where the route will start.
+     * @param end A point or address string that specifies where the route will end.
+     * @param waypoints An array of points or address strings the route must pass through.
      */
-    createRoute(start: Point, end: Point, waypoints: Point[]): Promise<Route>
+    getRoute(start: Point | string, end: Point | string, waypoints: (Point | string)[] | undefined, departureTime?: Date): Promise<Route>
 
 }
 
@@ -23,16 +23,16 @@ export class DirectionsDAO implements DirectionsDAOInterface {
         this.apiKey = apiKey
     }
 
-    createRoute(start: Point, end: Point, waypoints: Point[], departureTime?: Date): Promise<Route> {
+    getRoute(start: Point | string, end: Point | string, waypoints: (Point | string)[] | undefined, departureTime?: Date): Promise<Route> {
         return new Client({}).directions({
             params: {
                 key: this.apiKey,
                 departure_time: departureTime,
                 optimize: true, //Want the most effecient route even if way points ordering is changed.
                 alternatives: false, //Guaruntee only one route in response and increase performance.
-                origin: { lng: start.x, lat: start.y },
-                destination: { lng: end.x, lat: end.y },
-                waypoints: waypoints.map(point => ({ lng: point.x, lat: point.y })),
+                origin: '',
+                destination: '',
+                waypoints: waypoints?.map(point => ('')),
             }
         }).then(res => {
             if (res.data.routes.length === 0) {

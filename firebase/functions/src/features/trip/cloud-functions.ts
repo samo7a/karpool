@@ -40,7 +40,7 @@ export const getRiderTrips = functions.https.onCall(async (data, context) =>{
 
 export const cancelRidebyRider = functions.https.onCall(async (data, context) => {
 
-        const uid = validateAuthorization(context)
+        const uid = '3SfMDjnkjkfNJAbTVyFBcinew303'//validateAuthorization(context)
 
         if(uid){
            return  newTripService().cancelRide(data.riderID, data.tripID)

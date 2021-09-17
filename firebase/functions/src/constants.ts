@@ -23,3 +23,7 @@ export const RealtimeKey = {
     tracking: 'tracking'
 
 }
+
+export const Constants = {
+    hashPrecision: 5
+}

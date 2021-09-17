@@ -1,11 +1,13 @@
-import { CreatedTripSchema} from "../../data-access/trip/schema";
+import { CreatedTripSchema, GeoPointSchema } from "../../data-access/trip/schema";
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
 import { DirectionsDAOInterface } from "../../data-access/directions/dao";
+import { Point, Route } from "../../models-shared/route";
+import { hashesForPoints } from "../../geo-hash";
+import * as geohasher from 'ngeohash'
+import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
-import { Point } from "../../models-shared/route";
-
 
 export class TripService {
 
@@ -28,10 +30,10 @@ export class TripService {
      */
     async createAddedTrip(uid: string, data: TripCreationData): Promise<string> {
 
-        //TODO: Call the directionsDAO and store the route in the database.
-        console.log(this.directionsDAO === undefined)
+        //Address string => (x, y) via Google Api
+        const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress, undefined)
 
-        return this.tripDAO.createAddedTrip({
+        const tripID = await this.tripDAO.createAddedTrip({
             driverID: uid,
 
             startTime: firestore.Timestamp.fromDate(new Date(data.startTime)),
@@ -42,12 +44,99 @@ export class TripService {
 
             isOpen: true,
 
-            estimatedDistance: -1, //ToDO
+            estimatedDistance: route.distance,
 
-            estimatedFare: 10, //ToDO
+            estimatedFare: 0,
 
-            seatCount: data.seatCount
+            estimatedDuration: route.duration,
 
+            seatsAvailable: data.seatCount
+
+        })
+
+        await this.setTripRoute(tripID, route)
+
+        return tripID
+    }
+
+
+    /**
+     * Sets the current route of a created trip.
+     * @param tripID The id of the trip.
+     * @param start The trip's starting point.
+     * @param end THe trip's ending point.
+     * @param waypoints Rider pickup and dropoff locations.
+     */
+    async setTripRoute(tripID: string, route: Route) {
+
+        await this.tripDAO.removeGeoPoints(tripID)
+
+        const rawPoints = route.legs.map(leg => leg.steps.map(step => step.startPoint)).flatMap(arr => arr)
+
+        const geoPoints = hashesForPoints(tripID, rawPoints, Constants.hashPrecision)
+
+        await this.tripDAO.addGeoPoints(geoPoints)
+
+        //TODO: Add estimated fare, distance, duration for each rider.
+        await this.tripDAO.updateCreatedTrip(tripID, {
+            estimatedDistance: route.distance,
+            estimatedFare: 0.0
+        })
+
+    }
+
+
+
+    /**
+     * 
+     * @param pickup 
+     * @param dropoff 
+     * @param after 
+     * @param before 
+     * @param passengerNum 
+     * @returns 
+     */
+    async searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date, passengerNum: number): Promise<CreatedTripSchema[]> {
+
+        //Get hash of pickup point
+        const pickupHash = geohasher.encode(pickup.y, pickup.x, Constants.hashPrecision)
+
+        const dropoffHash = geohasher.encode(dropoff.y, dropoff.x, Constants.hashPrecision)
+
+        const [pickupPoints, dropoffPoints] = await Promise.all([
+            this.tripDAO.getGeoPointsByHash(pickupHash),
+            this.tripDAO.getGeoPointsByHash(dropoffHash)
+        ])
+
+        //[TripID: Point]
+        const map: Record<string, GeoPointSchema> = {}
+
+        // Create map so we have O(n) runtime.
+        dropoffPoints.forEach(point => {
+            map[point.tripID] = point
+        })
+
+        const validTripIDs = pickupPoints.filter(pickupPoint => {
+
+            const dropoffPoint = map[pickupPoint.tripID]
+
+            const existsInBoth = dropoffPoint !== undefined
+
+            const sameDirection = pickupPoint.index < dropoffPoint.index
+
+            return existsInBoth && sameDirection
+
+        }).map(point => point.tripID)
+
+
+        //Return all trips
+        const trips = await Promise.all(validTripIDs.map(tripID => this.tripDAO.getCreatedTrip(tripID)))
+
+        return trips.filter(trip => {
+            const startTime = trip.startTime.toDate().getTime()
+            const isWithinTimeInterval = startTime > after.getTime() && startTime < before.getTime()
+            const hasEnoughSeats = trip.seatsAvailable >= passengerNum
+            return hasEnoughSeats && isWithinTimeInterval
         })
 
     }
@@ -66,10 +155,11 @@ export class TripService {
 
 
     /**
-     * @param riderID
-     * @returns scheduled trips
+     * 
+     * @param riderID 
+     * @returns 
      */
-    async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]>{
+    async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]> {
 
         const riderTrips = await this.tripDAO.getRiderTrips(riderID)
 
@@ -77,56 +167,39 @@ export class TripService {
     }
 
 
-     /**
-     * @param tripID
+    /**
+     * 
+     * @param riderID 
+     * @param tripID 
      */
 
-    async cancelRide(riderID: string, tripID: string): Promise<void>{
+    async cancelRide(riderID: string, tripID: string): Promise<void> {
 
-    //Read from database
+        //Read from database
 
-    //Do logic
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-    //Write to database
-    
-        await this.tripDAO.updateCreateTrip(tripID, (trip) => {
-            if(trip.riderStatus[riderID] === undefined) {
-                throw new HttpsError('aborted',`Rider isn't part of this ride.`)
+            if (trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
             }
             trip.riderStatus[riderID] = 'Rejected'
-           return trip 
-        })
 
+            //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
-        // const trip2 = await this.tripDAO.getCreatedTrip(tripID)
+            // Call change route function to update route
+            console.log("Rider canceled, Route will be updated")
 
+            //Do logic
+            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+            const currentTime = new Date().getTime()
 
+                if (((currentTime - scheduleTime) /1000 ) < 10800 ){
 
+                    console.log("Rider will be fined")
 
-        //         // Call change route function to update route
-                
-        //         const scheduleTime = trip2.startTime.getTime()
-        //         const currentTime = new Date().getTime()
-        
-        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+                    // Charge the rider $5 penality or add a field in user as debt and add the value
 
-                   // Charge the rider $5 penality or add a field in user as debt and add the value
-
-          //  }
+                }    
     }
-
-    /*
-     * 
-     * @param pickup 
-     * @param dropoff 
-     * @param after 
-     * @param before 
-     * @returns 
-     */
-    searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date): Promise<CreatedTripSchema[]> {
-        return Promise.reject(new Error('Method Unimplemented.'))
-    }
-
-
-
 }
