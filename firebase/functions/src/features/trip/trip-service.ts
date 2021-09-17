@@ -7,6 +7,7 @@ import { Point, Route } from "../../models-shared/route";
 import { hashesForPoints } from "../../geo-hash";
 import * as geohasher from 'ngeohash'
 import { Constants } from "../../constants";
+import { HttpsError } from "firebase-functions/lib/providers/https";
 
 export class TripService {
 
@@ -208,6 +209,43 @@ export class TripService {
         //  }
     }
 
+    async declineRiderRequest (riderID: string, tripID: string): Promise<void>{
+        //get trip 
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
+        if(trip == undefined){
+            throw new HttpsError('not-found','Trip does not exist')
+        }
+        //check if rider is in trip
+        if(trip.riderStatus[riderID] == undefined){
+            throw new HttpsError('not-found','Rider hasnt requested a trip')
+        }
+        //change status to rejected
+        trip.riderStatus[riderID] = 'Rejected'
+
+
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
+
+    }
+
+    async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{
+        //get trip 
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
+        if(trip == undefined){
+            throw new HttpsError('not-found','Trip does not exist')
+        }
+        //check if rider is in trip
+        if(trip.riderStatus[riderID] == undefined){
+            throw new HttpsError('not-found','Rider hasnt requested a trip')
+        }
+        //change status to rejected
+        trip.riderStatus[riderID] = 'Accepted'
+        
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
+        //TO DO BELOW
+        //const route = await this.directionsDAO.getRoute()
+
+       // this.setTripRoute(tripID)
+    }
 
 
 }
