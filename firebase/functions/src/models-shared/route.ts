@@ -1,3 +1,5 @@
+import * as polylineDecoder from 'google-polyline'
+
 
 //Internal types that represent a route.
 
@@ -15,7 +17,7 @@ export interface Point {
 }
 
 
-export interface Route {
+export class Route {
 
     waypointOrder: number[]
 
@@ -34,6 +36,24 @@ export interface Route {
      * (Seconds)
      */
     duration: number
+
+    constructor(
+        waypointOrder: number[],
+        polyline: string,
+        legs: Leg[],
+        distance: number,
+        duration: number
+    ) {
+        this.waypointOrder = waypointOrder
+        this.polyline = polyline
+        this.legs = legs
+        this.distance = distance
+        this.duration = duration
+    }
+
+    getPolylinePoints(): Point[] {
+        return polylineDecoder.decode(this.polyline).map(p => ({ y: p[0], x: p[1] })) //Decoder orders coordiantes as [Lat, Long] (y, x)
+    }
 
 }
 

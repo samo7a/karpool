@@ -30,7 +30,7 @@ export function hashesForPoints(tripID: string, points: Point[], geoPrecision: n
     //Add cross points if they find any not discovered geohash squares.
     //Each cross point that is added to the final list should have the same index as its origin point.
     points.forEach((p, i) => {
-        crossPoints(p, 1600).forEach(crossPoint => {
+        crossPoints(p, 3200).forEach(crossPoint => {
             const hash = geohash.encode(crossPoint.y, crossPoint.x, geoPrecision)
             if (!set.has(hash)) {
                 set.add(hash)
@@ -68,3 +68,18 @@ function crossPoints(point: Point, distance: number): Point[] {
 
     return points
 }
+
+/*
+
+
+Start and end match with route
+
+Start and end matches is reversed
+
+Start passes through but not end
+
+End passes through but not start
+
+
+
+*/

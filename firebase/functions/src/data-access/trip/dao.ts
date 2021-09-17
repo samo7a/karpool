@@ -40,8 +40,6 @@ export interface TripDAOInterface {
 
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema>
 
-
-
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -114,8 +112,7 @@ export class TripDAO implements TripDAOInterface {
     async createAddedTrip(data: CreatedTripSchema): Promise<string> {
         const tripRef = this.db.collection(FirestoreKey.tripsCreated).doc()
         await tripRef.create(data)
-        return "Trip Added successfully!!"
-        //throw new Error("Method not implemented.");
+        return tripRef.id
     }
 
 
@@ -141,7 +138,5 @@ export class TripDAO implements TripDAOInterface {
         return this.db.collection(FirestoreKey.tripsCreated).doc(tripID)
             .get().then(doc => doc.data() as CreatedTripSchema)
     }
-
-
 
 }
