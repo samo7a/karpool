@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
+
 import { AuthenticationDAO } from "./auth/dao";
 import { UserDAO } from "./data-access/user/dao";
 import { PaymentDAO } from "./data-access/payment-dao/dao";
@@ -7,8 +8,11 @@ import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
 import { VehicleDAO } from "./data-access/vehicle/dao";
 import { TripDAO } from "./data-access/trip/dao";
 import { DirectionsDAOMock } from "./data-access/directions/dao-mock";
+
+
 import { AccountService } from "./features/account-management/account-service";
 import { TripService } from "./features/trip/trip-service";
+
 import { getEnv } from "./env-config";
 
 //MARK: Setup
@@ -18,7 +22,7 @@ import { getEnv } from "./env-config";
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
-import { DirectionsDAOInterface } from "./data-access/directions/dao";
+import { DirectionsDAO, DirectionsDAOInterface } from "./data-access/directions/dao";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -55,7 +59,8 @@ export function newTripDAO(): TripDAO {
 }
 
 export function newDirectionsDAO(): DirectionsDAOInterface {
-    return new DirectionsDAOMock()
+    // return new DirectionsDAOMock()
+    return new DirectionsDAO(getEnv().directions_api.private_key)
 }
 
 export function newAccountService(): AccountService {
@@ -84,6 +89,8 @@ exports.trip = require('./features/trip/cloud-functions')
 
 
 import * as geohash from 'ngeohash'
+import { hashesForPoints } from "./geo-hash";
+import { Constants } from "./constants";
 
 //Test with mock only.
 export const createRoute = functions.https.onCall(async (data, context) => {
@@ -110,6 +117,102 @@ export const createRoute = functions.https.onCall(async (data, context) => {
         hashes: hashes
     }
 
+})
+
+export const testRoute = functions.https.onCall((data, context) => {
+
+    return newTripService().createAddedTrip('Chris', {
+        startTime: '2021-09-16T03:30:05.075Z',
+        startAddress: '5600 Laura St Zephyrhills, FL 33542',
+        endAddress: '605 N Stella Ave, Lakeland, FL 33801',
+        seatCount: 4
+    })
+})
+
+/*
+
+searchTrips({
+    p1: { y: 28.51358, x: -81.39253 },
+    p2: { y: 28.08409, x:  -81.97955 }
+})
+
+
+*/
+
+export const createTrips = functions.https.onCall(async (data, context) => {
+
+    // const addys: { s: string, e: string }[] = [
+    //     { s: '5600 Laura St Zephyrhills, FL 33542', e: '605 N Stella Ave, Lakeland, FL 33801' },        //Not valid
+    //     { s: '1206 Poinsettia Ave Orlando, FL 32804', e: '1499 Dorothy Ave E Haines City, FL 33844' }, // Not valid
+    //     { s: '1206 Poinsettia Ave Orlando, FL 32804', e: '12520 NW 20th Ct, Miami, FL 33167' },  //Not valid
+    //     { s: '1206 Poinsettia Ave Orlando, FL 32804', e: '1301 N 15th St, Tampa, FL 33605' }, // Valid
+    //     { s: '1301 N 15th St, Tampa, FL 33605', e: '1206 Poinsettia Ave Orlando, FL 32804' }, // InValid
+    //     { s: '5101 Linwood Cir, Sanford, FL 32771', e: '1062 Bella Vista Dr NE St. Petersburg, FL 33702' } //Valid
+
+
+    // ]
+
+    // const tripIDs = await Promise.all(addys.map(addy => {
+    //     return newTripService().createAddedTrip('Chris', {
+    //         startTime: '2021-09-16T03:30:05.075Z',
+    //         startAddress: addy.s,
+    //         endAddress: addy.e,
+    //         seatCount: 4
+    //     })
+    // }))
+
+
+    // const trips = await Promise.all(tripIDs.map(tripID => { return newTripDAO().getCreatedTrip(tripID) }))
+
+    // trips.forEach(trip => {
+    //     const rawPoints = decoder.decode(trip.polyline
+    //     ).map(p => ({ y: p[0], x: p[1] })) //Decoder orders coordiantes as [Lat, Long] (y, x)
+
+    //     console.log(`Got ${rawPoints.length} points`)
+
+    //     const geoPoints = hashesForPoints('SomeID', rawPoints, Constants.hashPrecision)
+
+    //     let str = `lat,lng,hash`
+
+    //     geoPoints.forEach(p => {
+    //         str += `${p.y},${p.x},${p.hash}\n`
+    //     })
+
+    //     console.log("START_------------")
+    //     console.log(str)
+    // })
+
+})
+
+export const searchTrips = functions.https.onCall((data, context) => {
+
+    return newTripService().searchTrips(data.p1, data.p2, new Date('2021-09-01T00:01:03.334Z'), new Date('2021-09-20T23:59:03.334Z'), 1).then(trips => {
+        return `Found ${trips.length} Trips!`
+    })
+})
+
+import * as decoder from 'google-polyline'
+
+export const csvPoints = functions.https.onCall(async (data, context) => {
+
+    const docData = await admin.firestore().collection('poly').doc('poly').get().then(doc => doc.data()!)
+
+    console.log(docData.poly)
+
+    const rawPoints = decoder.decode(docData.poly
+    ).map(p => ({ y: p[0], x: p[1] })) //Decoder orders coordiantes as [Lat, Long] (y, x)
+
+    console.log(`Got ${rawPoints.length} points`)
+
+    const geoPoints = hashesForPoints('SomeID', rawPoints, Constants.hashPrecision)
+
+    let str = `lat,lng,hash`
+
+    geoPoints.forEach(p => {
+        str += `${p.y},${p.x},${p.hash}\n`
+    })
+
+    return str
 })
 
 

@@ -31,7 +31,9 @@ export class TripService {
     async createAddedTrip(uid: string, data: TripCreationData): Promise<string> {
 
         //Address string => (x, y) via Google Api
-        const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress, undefined)
+        const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress)
+
+        console.log(`XX${route.polyline}XX`)
 
         const tripID = await this.tripDAO.createAddedTrip({
             driverID: uid,
@@ -50,7 +52,9 @@ export class TripService {
 
             estimatedDuration: route.duration,
 
-            seatsAvailable: data.seatCount
+            seatsAvailable: data.seatCount,
+
+            polyline: route.polyline
 
         })
 
@@ -71,9 +75,7 @@ export class TripService {
 
         await this.tripDAO.removeGeoPoints(tripID)
 
-        const rawPoints = route.legs.map(leg => leg.steps.map(step => step.startPoint)).flatMap(arr => arr)
-
-        const geoPoints = hashesForPoints(tripID, rawPoints, Constants.hashPrecision)
+        const geoPoints = hashesForPoints(tripID, route.getPolylinePoints(), Constants.hashPrecision)
 
         await this.tripDAO.addGeoPoints(geoPoints)
 
@@ -116,17 +118,31 @@ export class TripService {
             map[point.tripID] = point
         })
 
+        //TODO: Remove when done debugging
+        console.log(`Got ${pickupPoints.length} pickup points and ${dropoffPoints.length} dropoff points.`)
+        console.log(pickupPoints.map(p => p.tripID))
+        console.log(dropoffPoints.map(p => p.tripID))
+
+        /**
+         * Filter for trips that:
+         * • Pass through both geoHash squares that contain the rider's pickup and dropoff location.
+         * • 
+         */
         const validTripIDs = pickupPoints.filter(pickupPoint => {
 
             const dropoffPoint = map[pickupPoint.tripID]
 
-            const existsInBoth = dropoffPoint !== undefined
+            if (dropoffPoint === undefined) { //Undefined dropoff means the trip does pass through both the geoHash squares that contain the rider's pickup and dropoff points.
+                return false
+            }
 
             const sameDirection = pickupPoint.index < dropoffPoint.index
 
-            return existsInBoth && sameDirection
+            return sameDirection
 
         }).map(point => point.tripID)
+
+        console.log('VALID', validTripIDs)
 
 
         //Return all trips
@@ -155,9 +171,8 @@ export class TripService {
 
 
     /**
-     * 
-     * @param riderID 
-     * @returns 
+     * @param riderID
+     * @returns scheduled trips
      */
     async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]> {
 
@@ -168,60 +183,47 @@ export class TripService {
 
 
     /**
-     * 
-     * @param riderID 
-     * @param tripID 
-     */
+    * @param tripID
+    */
 
     async cancelRide(riderID: string, tripID: string): Promise<void> {
 
         //Read from database
 
-        const trip = await this.tripDAO.getCreatedTrip(tripID)
+        //Do logic
 
-            if (trip.riderStatus[riderID] === undefined) {
-                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
-            }
-            trip.riderStatus[riderID] = 'Rejected'
+        //Write to database
 
-            //Write to database
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
+        // await this.tripDAO.updateCreateTrip(tripID, (trip) => {
+        //     if (trip.riderStatus[riderID] === undefined) {
+        //         throw new HttpsError('aborted', `Rider isn't part of this ride.`)
+        //     }
+        //     trip.riderStatus[riderID] = 'Rejected'
+        //     return trip
+        // })
 
-            // Call change route function to update route
-            console.log("Rider canceled, Route will be updated")
+        //Get
 
-            //Do logic
-            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
-            const currentTime = new Date().getTime()
+        //Set
 
-                if (((currentTime - scheduleTime) /1000 ) < 10800 ){
 
-                    console.log("Rider will be fined")
 
-                    // Charge the rider $5 penality or add a field in user as debt and add the value
+        // const trip2 = await this.tripDAO.getCreatedTrip(tripID)
 
-                }    
+
+
+
+        //         // Call change route function to update route
+
+        //         const scheduleTime = trip2.startTime.getTime()
+        //         const currentTime = new Date().getTime()
+
+        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+
+        // Charge the rider $5 penality or add a field in user as debt and add the value
+
+        //  }
     }
-
-
-    async declineRiderRequest (riderID: string, tripID: string): Promise<void>{
-        //get trip 
-        const trip = await this.tripDAO.getCreatedTrip(tripID)
-        if(trip == undefined){
-            throw new HttpsError('not-found','Trip does not exist')
-        }
-        //check if rider is in trip
-        if(trip.riderStatus[riderID] == undefined){
-            throw new HttpsError('not-found','Rider hasnt requested a trip')
-        }
-        //change status to rejected
-        trip.riderStatus[riderID] = 'Rejected'
-
-
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
-
-    }
-
     async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{
         //get trip 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
@@ -234,21 +236,24 @@ export class TripService {
         }
         //change status to rejected
         trip.riderStatus[riderID] = 'Accepted'
-        
+
         await this.tripDAO.updateCreatedTrip(tripID, trip)
         //TO DO BELOW
         //const route = await this.directionsDAO.getRoute()
 
        // this.setTripRoute(tripID)
-    }
+        // Charge the rider $5 penality or add a field in user as debt and add the value
 
+        //  }
+    }
+    
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>{
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(driverID)
         //If Driver hasnt completed an trips
         if(trips == undefined){
             throw new HttpsError('not-found','Driver hasnt completed a Trip')
-        }
+        }   
         else{
              return trips 
         }
