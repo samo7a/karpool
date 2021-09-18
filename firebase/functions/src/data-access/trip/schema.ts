@@ -114,8 +114,6 @@ export interface ScheduleTripSchema {
     currentLocation: firestore.GeoPoint
 
 
-
-
 }
 
 export interface RiderInfoSchema {

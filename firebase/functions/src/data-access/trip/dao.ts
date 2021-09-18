@@ -1,7 +1,8 @@
-import { CreatedTripSchema, GeoPointSchema } from "./schema";
+import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "./schema";
 import * as admin from 'firebase-admin'
 import { FirestoreKey, RealtimeKey } from '../../constants'
 import { autoID } from "../utils/misc";
+import { _documentWithOptions } from "firebase-functions/lib/providers/firestore";
 
 
 export interface TripDAOInterface {
@@ -40,7 +41,7 @@ export interface TripDAOInterface {
 
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema>
 
-
+    getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> 
 
 }
 
@@ -140,6 +141,20 @@ export class TripDAO implements TripDAOInterface {
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema> {
         return this.db.collection(FirestoreKey.tripsCreated).doc(tripID)
             .get().then(doc => doc.data() as CreatedTripSchema)
+    }
+
+    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
+        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where('driverID','==',`${driverID}`).get()
+
+
+        return completedTrips.docs.map(doc =>doc.data()) as ScheduleTripSchema[]
+        
+    }
+
+    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> {
+         const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`,'==','COMPLETED').get()
+
+        return completedTrips.docs.map(doc =>doc.data()) as ScheduleTripSchema[]
     }
 
 

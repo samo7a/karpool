@@ -1,4 +1,4 @@
-import { CreatedTripSchema, GeoPointSchema } from "../../data-access/trip/schema";
+import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "../../data-access/trip/schema";
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
@@ -240,5 +240,29 @@ export class TripService {
         //const route = await this.directionsDAO.getRoute()
 
        // this.setTripRoute(tripID)
+    }
+
+    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>{
+        //get trips
+        const trips = await this.tripDAO.getDriverCompletedTrips(driverID)
+        //If Driver hasnt completed an trips
+        if(trips == undefined){
+            throw new HttpsError('not-found','Driver hasnt completed a Trip')
+        }
+        else{
+             return trips 
+        }
+    }
+
+    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>{
+        //get trips
+        const trips = await this.tripDAO.getDriverCompletedTrips(riderID)
+        //If Driver hasnt completed an trips
+        if(trips == undefined){
+            throw new HttpsError('not-found','Driver hasnt completed a Trip')
+        }
+        else{
+            return trips
+        }
     }
 }
