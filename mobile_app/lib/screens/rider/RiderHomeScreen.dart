@@ -25,7 +25,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       "tripID": "1",
       "tripDate": "01/01/2021",
       "tripTime": "04:30 PM",
-      "from": "Address 1",
+      "from": "1000 S Semoran Blvd, 32792, winter park, fl, apt # 509 ",
       "to": "Address 2",
     },
     {
