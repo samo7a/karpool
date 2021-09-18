@@ -27,6 +27,7 @@ class TopDrawer extends StatelessWidget {
           Center(
             child: Text(
               'Profile Management',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 letterSpacing: 0.5,

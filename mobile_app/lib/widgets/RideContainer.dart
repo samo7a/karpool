@@ -7,7 +7,7 @@ class RideContainer extends StatelessWidget {
     Key? key,
     required this.date,
     required this.time,
-    required this.fromAddress,
+    required this.fromAddress, 
     required this.toAddress,
   }) : super(key: key);
 

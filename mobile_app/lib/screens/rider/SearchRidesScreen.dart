@@ -49,8 +49,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       "from": "Address 1",
       "to": "Address 2",
       "price": "32",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "imageLink": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
     },
     {
       "tripID": "2",
@@ -59,8 +58,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       "from": "Address 1",
       "to": "Address 2",
       "price": "45",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "imageLink": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
     },
     {
       "tripID": "3",
@@ -69,8 +67,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       "from": "Address 1",
       "to": "Address 2",
       "price": "12",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "imageLink": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
     },
     {
       "tripID": "4",
@@ -79,8 +76,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       "from": "Address 1",
       "to": "Address 2",
       "price": "17",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
+      "imageLink": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
     },
   ];
 
@@ -122,10 +118,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   void getSuggestion(String input) async {
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String type = '(regions)';
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
@@ -141,10 +135,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   void getEndSuggestion(String input) async {
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String type = '(regions)';
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
@@ -354,8 +346,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
               FlatButton(
                 minWidth: size.BLOCK_WIDTH * 40,
                 height: size.BLOCK_HEIGHT * 5,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                 color: Colors.green,
                 child: Text(
                   'Search Rides',
@@ -414,8 +405,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                       style: TextStyle(
                                         fontFamily: 'Glory',
                                         fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            20, // size object not working here,
+                                        fontSize: 20, // size object not working here,
                                       ),
                                     ),
                                   ),
@@ -430,8 +420,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                       style: TextStyle(
                                         fontFamily: 'Glory',
                                         fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            20, // size object not working here,
+                                        fontSize: 20, // size object not working here,
                                       ),
                                     ),
                                   ),
@@ -448,6 +437,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                           toAddress: trips[index]['to'] ?? "",
                           estimatedPrice: trips[index]['price'] ?? "",
                           profilePic: trips[index]['imageLink'] ?? "",
+                          status: "Pending",
                         ),
                       ),
                     ),

@@ -11,6 +11,7 @@ class TripResultContainer extends StatelessWidget {
     required this.toAddress,
     required this.profilePic,
     required this.estimatedPrice,
+    required this.status,
     // required this.onPress,
   }) : super(key: key);
 
@@ -20,6 +21,7 @@ class TripResultContainer extends StatelessWidget {
   final String toAddress;
   final String profilePic;
   final String estimatedPrice;
+  final String status;
   // final Function onPress;
 
   // TODO: add button for scheduling rides
@@ -33,7 +35,7 @@ class TripResultContainer extends StatelessWidget {
         bottom: size.BLOCK_HEIGHT * 0.25,
       ),
       child: Column(
-        children: [
+        children: [ 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
