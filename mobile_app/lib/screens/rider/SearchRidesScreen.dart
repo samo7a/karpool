@@ -253,7 +253,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
               ),
               Container(
                 child: TextFormField(
-                  // TODO: Add address api --> maps/google for input
                   controller: _controller,
                   onChanged: (value) => setState(() => startLoc = value),
                   decoration: InputDecoration(
@@ -278,16 +277,28 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                 shrinkWrap: true,
                 itemCount: _placeList.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_placeList[index]["description"]),
-                    onTap: () {
-                      setState(() {
-                        startLoc = _placeList[index]["description"];
-                        _controller.text = _placeList[index]["description"];
-                        _placeList = [];
-                        print("RESULT: " + startLoc);
-                      });
-                    },
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: kWhite,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        _placeList[index]["description"],
+                        style: TextStyle(
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 20,
+                        ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          startLoc = _placeList[index]["description"];
+                          _controller.text = _placeList[index]["description"];
+                          _placeList = [];
+                        });
+                      },
+                    ),
                   );
                 },
               ),
@@ -309,7 +320,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
               ),
               Container(
                 child: TextFormField(
-                  // TODO: Add address api --> maps/google for input
                   controller: _endController,
                   onChanged: (value) => setState(() => destination = value),
                   decoration: InputDecoration(
@@ -334,16 +344,28 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                 shrinkWrap: true,
                 itemCount: _toPlaceList.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_toPlaceList[index]["description"]),
-                    onTap: () {
-                      setState(() {
-                        destination = _toPlaceList[index]["description"];
-                        _endController.text = _toPlaceList[index]["description"];
-                        _toPlaceList = [];
-                        print("RESULT: " + destination);
-                      });
-                    },
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: kWhite,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        _toPlaceList[index]["description"],
+                        style: TextStyle(
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 20,
+                        ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          destination = _toPlaceList[index]["description"];
+                          _endController.text = _toPlaceList[index]["description"];
+                          _toPlaceList = [];
+                        });
+                      },
+                    ),
                   );
                 },
               ),
