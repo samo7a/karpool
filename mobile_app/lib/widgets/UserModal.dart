@@ -2,10 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-const String _heroAddTodo = 'add-todo-hero';
 
 class UserModal extends StatelessWidget {
-  /// {@macro add_todo_popup_card}
   const UserModal({Key? key}) : super(key: key);
 
   @override
