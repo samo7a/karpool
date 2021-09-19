@@ -33,14 +33,14 @@ export class TripService {
         //Address string => (x, y) via Google Api
         const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress)
 
-        console.log(`XX${route.polyline}XX`)
-
         const tripID = await this.tripDAO.createAddedTrip({
             driverID: uid,
 
             startTime: firestore.Timestamp.fromDate(new Date(data.startTime)),
 
             startLocation: data.startAddress,
+
+            endLocation: data.endAddress,
 
             riderStatus: {},
 
@@ -227,7 +227,7 @@ export class TripService {
     async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{
         //get trip 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
-        if(trip == undefined){
+        if(trip === undefined){
             throw new HttpsError('not-found','Trip does not exist')
         }
         //check if rider is in trip
@@ -251,7 +251,7 @@ export class TripService {
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(driverID)
         //If Driver hasnt completed an trips
-        if(trips == undefined){
+        if(trips === undefined){
             throw new HttpsError('not-found','Driver hasnt completed a Trip')
         }   
         else{
@@ -263,7 +263,7 @@ export class TripService {
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(riderID)
         //If Driver hasnt completed an trips
-        if(trips == undefined){
+        if(trips === undefined){
             throw new HttpsError('not-found','Driver hasnt completed a Trip')
         }
         else{

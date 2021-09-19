@@ -21,6 +21,11 @@ export interface CreatedTripSchema {
      * 
      */
     startLocation: string
+
+        /**
+     * 
+     */
+     endLocation: string
     
 
     /**
