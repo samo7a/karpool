@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../util/HeroDialog.dart';
+import 'UserModal.dart';
 
 class TripResultContainer extends StatelessWidget {
   const TripResultContainer({
     Key? key,
     required this.date,
     required this.time,
-    required this.fromAddress,
-    required this.toAddress,
+    // required this.fromAddress,
+    // required this.toAddress,
     required this.profilePic,
     required this.estimatedPrice,
     required this.status,
@@ -18,8 +20,8 @@ class TripResultContainer extends StatelessWidget {
 
   final String date;
   final String time;
-  final String fromAddress;
-  final String toAddress;
+  // final String fromAddress;
+  // final String toAddress;
   final String profilePic;
   final String estimatedPrice;
   final String status;
@@ -30,130 +32,55 @@ class TripResultContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
-    return Padding(
-      padding: EdgeInsets.only(
-        top: size.BLOCK_HEIGHT * 3,
-        bottom: size.BLOCK_HEIGHT * 0.25,
-      ),
-      child: Container(
-        width: size.BLOCK_WIDTH * 78,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(7),
-          color: kTripContainerColor,
-        ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          HeroDialogRoute(
+            builder: (context) {
+              return const UserModal();
+            },
+          ),
+        );
+      },
+      child: Hero(
+        tag: "unique-tag",
         child: Padding(
-          padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.date_range_outlined,
-                  ),
-                  SizedBox(
-                    width: size.BLOCK_WIDTH * 3,
-                  ),
-                  Text(
-                    date,
-                    style: TextStyle(
-                      color: kWhite,
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 1,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.timelapse_outlined,
-                  ),
-                  SizedBox(
-                    width: size.BLOCK_WIDTH * 3,
-                  ),
-                  Text(
-                    time,
-                    style: TextStyle(
-                      color: kWhite,
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 1,
-              ),
-              Column(
+          padding: EdgeInsets.only(
+            top: size.BLOCK_HEIGHT * 3,
+            bottom: size.BLOCK_HEIGHT * 0.25,
+          ),
+          child: Container(
+            width: size.BLOCK_WIDTH * 78,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color: kTripContainerColor,
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 3),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT * 1,
+                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.location_searching,
-                        color: Colors.green[800],
+                        Icons.date_range_outlined,
                       ),
                       SizedBox(
                         width: size.BLOCK_WIDTH * 3,
                       ),
-                      Expanded(
-                        child: Text(
-                          fromAddress,
-                          maxLines: 10,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: TextStyle(
-                            color: kWhite,
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 0.1),
-                    child: Icon(
-                      Icons.arrow_downward,
-                      size: size.BLOCK_HEIGHT * 3,
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.pin_drop_outlined,
-                        color: Colors.red,
-                      ),
-                      SizedBox(
-                        width: size.BLOCK_WIDTH * 3,
-                      ),
-                      Expanded(
-                        child: Text(
-                          toAddress,
-                          maxLines: 10,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: TextStyle(
-                            color: kWhite,
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 20,
-                          ),
+                      Text(
+                        date,
+                        style: TextStyle(
+                          color: kWhite,
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 20,
                         ),
                       ),
                     ],
@@ -161,6 +88,96 @@ class TripResultContainer extends StatelessWidget {
                   SizedBox(
                     height: size.BLOCK_HEIGHT * 1,
                   ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.timelapse_outlined,
+                      ),
+                      SizedBox(
+                        width: size.BLOCK_WIDTH * 3,
+                      ),
+                      Text(
+                        time,
+                        style: TextStyle(
+                          color: kWhite,
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT * 1,
+                  ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Row(
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       children: [
+                  //         Icon(
+                  //           Icons.location_searching,
+                  //           color: Colors.green[800],
+                  //         ),
+                  //         SizedBox(
+                  //           width: size.BLOCK_WIDTH * 3,
+                  //         ),
+                  //         Expanded(
+                  //           child: Text(
+                  //             fromAddress,
+                  //             maxLines: 10,
+                  //             overflow: TextOverflow.ellipsis,
+                  //             softWrap: false,
+                  //             style: TextStyle(
+                  //               color: kWhite,
+                  //               fontFamily: 'Glory',
+                  //               fontWeight: FontWeight.bold,
+                  //               fontSize: size.FONT_SIZE * 20,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     Padding(
+                  //       padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 0.1),
+                  //       child: Icon(
+                  //         Icons.arrow_downward,
+                  //         size: size.BLOCK_HEIGHT * 3,
+                  //       ),
+                  //     ),
+                  //     Row(
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       children: [
+                  //         Icon(
+                  //           Icons.pin_drop_outlined,
+                  //           color: Colors.red,
+                  //         ),
+                  //         SizedBox(
+                  //           width: size.BLOCK_WIDTH * 3,
+                  //         ),
+                  //         Expanded(
+                  //           child: Text(
+                  //             toAddress,
+                  //             maxLines: 10,
+                  //             overflow: TextOverflow.ellipsis,
+                  //             softWrap: false,
+                  //             style: TextStyle(
+                  //               color: kWhite,
+                  //               fontFamily: 'Glory',
+                  //               fontWeight: FontWeight.bold,
+                  //               fontSize: size.FONT_SIZE * 20,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     SizedBox(
+                  //       height: size.BLOCK_HEIGHT * 1,
+                  //     ),
+
+                  //   ],
+                  // ),
                   Center(
                     child: Text(
                       '\$ ' + estimatedPrice,
@@ -177,7 +194,7 @@ class TripResultContainer extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),

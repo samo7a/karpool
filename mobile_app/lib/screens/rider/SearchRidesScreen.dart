@@ -433,8 +433,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         child: TripResultContainer(
                           date: trips[index]['tripDate'] ?? "",
                           time: trips[index]['tripTime'] ?? "",
-                          fromAddress: trips[index]['from'] ?? "",
-                          toAddress: trips[index]['to'] ?? "",
+                          //fromAddress: trips[index]['from'] ?? "",
+                          //toAddress: trips[index]['to'] ?? "",
                           estimatedPrice: trips[index]['price'] ?? "",
                           profilePic: trips[index]['imageLink'] ?? "",
                           status: "Pending",

@@ -69,7 +69,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                   trips.removeAt(index);
                 },
                 confirmDismiss: (direction) async {
-                    return await showDialog(
+                  return await showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -77,8 +77,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                         content: Text(
                           "Are you sure you wish to cancel your ride?",
                           style: TextStyle(
-                            fontFamily: 'Glory', 
-                            fontWeight: FontWeight.bold, 
+                            fontFamily: 'Glory',
+                            fontWeight: FontWeight.bold,
                             fontSize: size.FONT_SIZE * 22,
                           ),
                         ),
@@ -87,10 +87,10 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                           FlatButton(
                             onPressed: () => Navigator.of(context).pop(true),
                             child: const Text(
-                              "YES", 
+                              "YES",
                               style: TextStyle(
-                                fontFamily: 'Glory', 
-                                fontWeight: FontWeight.bold, 
+                                fontFamily: 'Glory',
+                                fontWeight: FontWeight.bold,
                                 fontSize: 20, // size object not working here
                               ),
                             ),
@@ -101,10 +101,10 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                             child: const Text(
                               "NO",
                               style: TextStyle(
-                                fontFamily: 'Glory', 
-                                fontWeight: FontWeight.bold, 
-                                fontSize: 20 // size object not working here
-                              ),
+                                  fontFamily: 'Glory',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20 // size object not working here
+                                  ),
                             ),
                           ),
                         ],
@@ -114,16 +114,27 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                   );
                 },
                 background: Container(
-                  child: Center(
-                    child: Text(
-                      'Delete Ride', 
-                      style: TextStyle(
-                        color: kWhite,
-                        fontFamily: 'Glory',
-                        fontWeight: FontWeight.bold,
-                        fontSize: size.FONT_SIZE * 26,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Delete Ride',
+                        style: TextStyle(
+                          color: kWhite,
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 26,
+                        ),
                       ),
-                    ),
+                      SizedBox(
+                        width: size.BLOCK_WIDTH * 2,
+                      ),
+                      Icon(
+                        Icons.delete_forever_rounded,
+                        color: Colors.white,
+                        size: size.FONT_SIZE * 30,
+                      ),
+                    ],
                   ),
                   color: kRed,
                 ),
@@ -134,6 +145,9 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                       time: trips[index]['tripTime'] ?? "",
                       fromAddress: trips[index]['from'] ?? "",
                       toAddress: trips[index]['to'] ?? "",
+                      estimatedPrice: trips[index]['price'] ?? "",
+                      profilePic: trips[index]['imageLink'] ?? "",
+                      status: "Pending",
                     ),
                   ),
                 ),
