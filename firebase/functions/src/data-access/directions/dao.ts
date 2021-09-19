@@ -44,7 +44,7 @@ export class DirectionsDAO implements DirectionsDAOInterface {
                 optimize: shouldOptimize, //Want the most effecient route even if way points ordering is changed.
                 alternatives: false, //Guaruntee only one route in response and increase performance.
                 origin: origin,
-                destination: destination,
+                destination: destination
             }
         }).then(res => {
             if (res.data.routes.length === 0) {

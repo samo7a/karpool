@@ -2,12 +2,11 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema } from './schema'
+import { UserSchema, CreditCardSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
 import { fireEncode } from '../utils/encode'
-import { CreditCardSchema } from './schema'
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
  * for unit testing.
