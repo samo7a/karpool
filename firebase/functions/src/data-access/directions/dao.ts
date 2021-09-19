@@ -1,5 +1,5 @@
 // import * as ngeo from 'ngeohash'
-import { Client, DirectionsRoute, DirectionsStep, RouteLeg } from '@googlemaps/google-maps-services-js'
+import { Client, DirectionsRoute, DirectionsStep, LatLng, RouteLeg } from '@googlemaps/google-maps-services-js'
 import { Point, Route, Leg, Step } from "../../models-shared/route";
 
 export interface DirectionsDAOInterface {
@@ -10,7 +10,7 @@ export interface DirectionsDAOInterface {
      * @param end A point or address string that specifies where the route will end.
      * @param waypoints An array of points or address strings the route must pass through.
      */
-    getRoute(start: Point | string, end: Point | string, waypoints: (Point | string)[] | undefined, departureTime?: Date): Promise<Route>
+    getRoute(start: Point | string, end: Point | string, waypoints?: (Point | string)[], departureTime?: Date): Promise<Route>
 
 }
 
@@ -23,16 +23,28 @@ export class DirectionsDAO implements DirectionsDAOInterface {
         this.apiKey = apiKey
     }
 
-    getRoute(start: Point | string, end: Point | string, waypoints: (Point | string)[] | undefined, departureTime?: Date): Promise<Route> {
+    getRoute(start: Point | string, end: Point | string, waypoints?: (Point | string)[], departureTime?: Date): Promise<Route> {
+
+        const origin: LatLng = typeof start === 'string' ? start : [start.y, start.x]
+
+        const destination: LatLng = typeof end === 'string' ? end : [end.y, end.x]
+
+        const formattedWaypoints: LatLng[] | undefined = waypoints === undefined ? undefined : waypoints.map(p => typeof p === 'string' ? p : [p.y, p.x])
+
+        //The googleSDK crashes if the optimize is set to true and waypoints is undefined.
+        //Passing an empty for waypoints results in whacky route to Texas problem.
+        const shouldOptimize: boolean = formattedWaypoints !== undefined && formattedWaypoints.length > 0
+
+        console.log(origin, destination, formattedWaypoints, shouldOptimize, 'CALL')
+
         return new Client({}).directions({
             params: {
                 key: this.apiKey,
                 departure_time: departureTime,
-                optimize: true, //Want the most effecient route even if way points ordering is changed.
+                optimize: shouldOptimize, //Want the most effecient route even if way points ordering is changed.
                 alternatives: false, //Guaruntee only one route in response and increase performance.
-                origin: '',
-                destination: '',
-                waypoints: waypoints?.map(point => (''))
+                origin: origin,
+                destination: destination,
             }
         }).then(res => {
             if (res.data.routes.length === 0) {
@@ -47,13 +59,13 @@ export class DirectionsDAO implements DirectionsDAOInterface {
 
         const legs = route.legs.map(leg => this.transformLeg(leg))
 
-        return {
-            waypointOrder: route.waypoint_order,
-            polyline: route.overview_polyline.points,
-            legs: legs,
-            distance: this.getTotalDistance(legs),
-            duration: this.getTotalDuration(legs)
-        }
+        return new Route(
+            route.waypoint_order,
+            route.overview_polyline.points,
+            legs,
+            this.getTotalDistance(legs),
+            this.getTotalDuration(legs)
+        )
     }
 
 
