@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
 import '../util/HeroDialog.dart';
-import 'UserModal.dart';
+import 'DriverModal.dart';
 
 class TripResultContainer extends StatelessWidget {
-  const TripResultContainer({
-    Key? key,
-    required this.date,
-    required this.time,
-    // required this.fromAddress,
-    // required this.toAddress,
-    required this.profilePic,
-    required this.estimatedPrice,
-    required this.status,
-    // required this.onPress,
-  }) : super(key: key);
+  const TripResultContainer(
+      {Key? key,
+      // required this.date,
+      // required this.time,
+      // // required this.fromAddress,
+      // // required this.toAddress,
+      // required this.profilePic,
+      // required this.fullName,
+      // required this.starRating,
+      // required this.estimatedPrice,
+      // required this.status,
+      // required this.onPress,
+      required this.trip})
+      : super(key: key);
 
-  final String date;
-  final String time;
-  // final String fromAddress;
-  // final String toAddress;
-  final String profilePic;
-  final String estimatedPrice;
-  final String status;
-  // final Function onPress;
+  // final String date;
+  // final String time;
+  // // final String fromAddress;
+  // // final String toAddress;
+  // final String profilePic;
+  // final String estimatedPrice;
+  // final String status;
+  // // final Function onPress;
+  // final String fullName;
+  // final int starRating; //change to double later
+  final RiderTrip trip;
 
   // TODO: add button for scheduling rides
 
@@ -37,7 +44,9 @@ class TripResultContainer extends StatelessWidget {
         Navigator.of(context).push(
           HeroDialogRoute(
             builder: (context) {
-              return const UserModal();
+              return DriverModal(
+                trip: trip,
+              );
             },
           ),
         );
@@ -75,7 +84,7 @@ class TripResultContainer extends StatelessWidget {
                         width: size.BLOCK_WIDTH * 3,
                       ),
                       Text(
-                        date,
+                        trip.date,
                         style: TextStyle(
                           color: kWhite,
                           fontFamily: 'Glory',
@@ -97,7 +106,7 @@ class TripResultContainer extends StatelessWidget {
                         width: size.BLOCK_WIDTH * 3,
                       ),
                       Text(
-                        time,
+                        trip.time,
                         style: TextStyle(
                           color: kWhite,
                           fontFamily: 'Glory',
@@ -180,7 +189,7 @@ class TripResultContainer extends StatelessWidget {
                   // ),
                   Center(
                     child: Text(
-                      '\$ ' + estimatedPrice,
+                      '\$ ' + trip.estimatedPrice.toString(),
                       style: TextStyle(
                         color: Colors.green[900],
                         fontFamily: 'Glory',

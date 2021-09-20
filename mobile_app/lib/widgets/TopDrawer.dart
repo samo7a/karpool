@@ -4,9 +4,12 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class TopDrawer extends StatelessWidget {
-  const TopDrawer(
-      {Key? key, required this.profilePic, required this.fullName, required this.starRating})
-      : super(key: key);
+  const TopDrawer({
+    Key? key,
+    required this.profilePic,
+    required this.fullName,
+    required this.starRating,
+  }) : super(key: key);
 
   final String profilePic;
   final String fullName;

@@ -1,3 +1,6 @@
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class User {
   final String uid;
   final String firstName;
@@ -11,18 +14,46 @@ class User {
   final bool isRider;
   final String profileURL;
   final int rating; // change to double later
-  User(
-      {required this.uid,
-      required this.firstName,
-      required this.lastName,
-      // required this.dateOfBirth,
-      // required this.gender,
-      required this.isDriver,
-      required this.isRider,
-      required this.isVerified,
-      required this.rating,
-      required this.profileURL,
-      // required this.email,
-      required this.phoneNumber});
+  User({
+    required this.uid,
+    required this.firstName,
+    required this.lastName,
+    // required this.dateOfBirth,
+    // required this.gender,
+    required this.isDriver,
+    required this.isRider,
+    required this.isVerified,
+    required this.rating,
+    required this.profileURL,
+    // required this.email,
+    required this.phoneNumber,
+  });
+  static Future<User> getDriverFromFireBase(String uid) async {
+    final obj = <String, dynamic>{
+      "uid": uid,
+      "driver": true,
+    };
+    HttpsCallable getUser = await FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    final result = await getUser(obj);
+    String firstName = result.data['firstName'] ?? "";
+    String lastName = result.data['lastName'] ?? "";
+    String phone = result.data['phone'] ?? "";
+    String url = result.data['profileURL'] ?? "";
+    var rating = result.data['driverRating'] ?? 0; //change to 0.0
+    var riderRole = result.data['roles']['Rider'] ?? false;
+    var driverRole = result.data["roles"]["Driver"] ?? false;
+    print(result.data.toString());
+    return User(
+      uid: uid,
+      firstName: firstName,
+      lastName: lastName,
+      phoneNumber: phone,
+      profileURL: url,
+      rating: rating,
+      isVerified: true,
+      isDriver: driverRole,
+      isRider: riderRole,
+    );
+  }
 }
 // (Ahmed) I will add the other fields later.

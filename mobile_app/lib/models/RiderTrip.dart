@@ -1,7 +1,10 @@
 // wait till you figure out the user objec comming from the backedn
-class Trip {
+import 'User.dart';
+
+class RiderTrip {
   final String tripId;
   final String driverId;
+  final User driver;
   final String date;
   final String time;
   final String fromAddress;
@@ -15,7 +18,7 @@ class Trip {
   final double estimatedDuration;
   final double estimatedFare;
 
-  Trip({
+  RiderTrip({
     required this.tripId,
     required this.date,
     required this.time,
@@ -30,11 +33,13 @@ class Trip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
+    required this.driver,
   });
 
   // api call
-  Future<Trip> tripFromFireBase() async {
-    return Trip(
+  Future<RiderTrip> tripFromFireBase() async {
+    User driver = await User.getDriverFromFireBase(this.driverId);
+    return RiderTrip(
       tripId: "1",
       driverId: "3333",
       date: "01/01/2021",
@@ -49,6 +54,7 @@ class Trip {
       estimatedDistance: 100,
       estimatedDuration: 100,
       estimatedFare: 10.42,
+      driver: driver,
     );
   }
 }
