@@ -9,37 +9,58 @@ class RideContainer extends StatelessWidget {
     required this.time,
     required this.fromAddress,
     required this.toAddress,
+    required this.profilePic,
+    required this.estimatedPrice,
+    required this.status,
+    // required this.onPress,
   }) : super(key: key);
 
   final String date;
   final String time;
   final String fromAddress;
   final String toAddress;
+  final String profilePic;
+  final String estimatedPrice;
+  final String status;
+  // final Function onPress;
+
+  // TODO: add button for scheduling rides
 
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0, bottom: 1,),
+      padding: EdgeInsets.only(
+        top: size.BLOCK_HEIGHT * 3,
+        bottom: size.BLOCK_HEIGHT * 0.25,
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: size.BLOCK_HEIGHT * 7,
             width: size.BLOCK_WIDTH * 78,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(7),
               color: kTripContainerColor,
             ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT * 1,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Icon(
+                        Icons.date_range_outlined,
+                      ),
+                      SizedBox(
+                        width: size.BLOCK_WIDTH * 3,
+                      ),
                       Text(
                         date,
                         style: TextStyle(
@@ -49,7 +70,19 @@ class RideContainer extends StatelessWidget {
                           fontSize: size.FONT_SIZE * 20,
                         ),
                       ),
-                      SizedBox(height: size.BLOCK_HEIGHT * 0.5),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT * 1,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.timelapse_outlined,
+                      ),
+                      SizedBox(
+                        width: size.BLOCK_WIDTH * 3,
+                      ),
                       Text(
                         time,
                         style: TextStyle(
@@ -61,44 +94,93 @@ class RideContainer extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-                VerticalDivider(
-                  color: kWhite,
-                  thickness: size.BLOCK_WIDTH * 0.75,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  SizedBox(
+                    height: size.BLOCK_HEIGHT * 1,
+                  ),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'From: ' + fromAddress,
-                        style: TextStyle(
-                          color: kWhite,
-                          fontFamily: 'Glory',
-                          fontWeight: FontWeight.bold,
-                          fontSize: size.FONT_SIZE * 20,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_searching,
+                            color: Colors.green[800],
+                          ),
+                          SizedBox(
+                            width: size.BLOCK_WIDTH * 3,
+                          ),
+                          Expanded(
+                            child: Text(
+                              fromAddress,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: TextStyle(
+                                color: kWhite,
+                                fontFamily: 'Glory',
+                                fontWeight: FontWeight.bold,
+                                fontSize: size.FONT_SIZE * 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 0.1),
+                        child: Icon(
+                          Icons.arrow_downward,
+                          size: size.BLOCK_HEIGHT * 3,
                         ),
                       ),
-                      SizedBox(height: size.BLOCK_HEIGHT * 0.5),
-                      Text(
-                        'To: ' + toAddress,
-                        style: TextStyle(
-                          color: kWhite,
-                          fontFamily: 'Glory',
-                          fontWeight: FontWeight.bold,
-                          fontSize: size.FONT_SIZE * 20,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.pin_drop_outlined,
+                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            width: size.BLOCK_WIDTH * 3,
+                          ),
+                          Expanded(
+                            child: Text(
+                              toAddress,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: TextStyle(
+                                color: kWhite,
+                                fontFamily: 'Glory',
+                                fontWeight: FontWeight.bold,
+                                fontSize: size.FONT_SIZE * 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: size.BLOCK_HEIGHT * 1,
+                      ),
+                      Center(
+                        child: Text(
+                          '\$ ' + estimatedPrice,
+                          style: TextStyle(
+                            color: Colors.green[900],
+                            fontFamily: 'Glory',
+                            fontWeight: FontWeight.bold,
+                            fontSize: size.FONT_SIZE * 20,
+                          ),
                         ),
+                      ),
+                      SizedBox(
+                        height: size.BLOCK_HEIGHT * 1,
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-            width: size.BLOCK_WIDTH * 3,
           ),
           Icon(
             Icons.check_circle,

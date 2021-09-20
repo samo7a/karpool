@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/RiderTrip.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TripResultContainer.dart';
@@ -41,47 +43,119 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   }
 
   // static scheduled rides list
-  List<Map<String, String>> trips = [
-    {
-      "tripID": "1",
-      "tripDate": "01/01/2021",
-      "tripTime": "04:30 PM",
-      "from": "Address 1",
-      "to": "Address 2",
-      "price": "32",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-    },
-    {
-      "tripID": "2",
-      "tripDate": "01/10/2021",
-      "tripTime": "04:30 PM",
-      "from": "Address 1",
-      "to": "Address 2",
-      "price": "45",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-    },
-    {
-      "tripID": "3",
-      "tripDate": "01/20/2021",
-      "tripTime": "04:30 PM",
-      "from": "Address 1",
-      "to": "Address 2",
-      "price": "12",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-    },
-    {
-      "tripID": "4",
-      "tripDate": "01/30/2021",
-      "tripTime": "04:30 PM",
-      "from": "Address 1",
-      "to": "Address 2",
-      "price": "17",
-      "imageLink":
-          "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-    },
+  List<RiderTrip> trips = [
+    RiderTrip(
+      tripId: "1",
+      date: "01/01/2021",
+      time: "04:30 PM",
+      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+      status: "Pending",
+      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+      estimatedPrice: 32.34,
+      driverId: "23344",
+      isOpen: true,
+      polyLine: "polyLine",
+      seatNumbers: 4,
+      estimatedDistance: 111,
+      estimatedDuration: 111,
+      estimatedFare: 11,
+      driver: new User(
+        uid: "939393",
+        firstName: "Ahmed",
+        lastName: "Elshetany",
+        isDriver: true,
+        isRider: true,
+        isVerified: true,
+        rating: 4,
+        profileURL:
+            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+        phoneNumber: "4074583995",
+      ),
+    ),
+    RiderTrip(
+      tripId: "1",
+      date: "01/01/2021",
+      time: "04:30 PM",
+      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+      status: "Pending",
+      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+      estimatedPrice: 32.34,
+      driverId: "23344",
+      isOpen: true,
+      polyLine: "polyLine",
+      seatNumbers: 4,
+      estimatedDistance: 111,
+      estimatedDuration: 111,
+      estimatedFare: 11,
+      driver: new User(
+        uid: "939393",
+        firstName: "Ahmed",
+        lastName: "Elshetany",
+        isDriver: true,
+        isRider: true,
+        isVerified: true,
+        rating: 4,
+        profileURL:
+            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+        phoneNumber: "4074583995",
+      ),
+    ),
+    RiderTrip(
+      tripId: "1",
+      date: "01/01/2021",
+      time: "04:30 PM",
+      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+      status: "Pending",
+      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+      estimatedPrice: 32.34,
+      driverId: "23344",
+      isOpen: true,
+      polyLine: "polyLine",
+      seatNumbers: 4,
+      estimatedDistance: 111,
+      estimatedDuration: 111,
+      estimatedFare: 11,
+      driver: new User(
+        uid: "939393",
+        firstName: "Ahmed",
+        lastName: "Elshetany",
+        isDriver: true,
+        isRider: true,
+        isVerified: true,
+        rating: 4,
+        profileURL:
+            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+        phoneNumber: "4074583995",
+      ),
+    ),
+    RiderTrip(
+      tripId: "1",
+      date: "01/01/2021",
+      time: "04:30 PM",
+      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+      status: "Pending",
+      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+      estimatedPrice: 32.34,
+      driverId: "23344",
+      isOpen: true,
+      polyLine: "polyLine",
+      seatNumbers: 4,
+      estimatedDistance: 111,
+      estimatedDuration: 111,
+      estimatedFare: 11,
+      driver: new User(
+        uid: "939393",
+        firstName: "Ahmed",
+        lastName: "Elshetany",
+        isDriver: true,
+        isRider: true,
+        isVerified: true,
+        rating: 4,
+        profileURL:
+            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+        phoneNumber: "4074583995",
+      ),
+    ),
   ];
 
   final _controller = TextEditingController();
@@ -122,10 +196,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   void getSuggestion(String input) async {
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String type = '(regions)';
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
@@ -141,10 +213,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   void getEndSuggestion(String input) async {
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String type = '(regions)';
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
@@ -376,8 +446,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
               FlatButton(
                 minWidth: size.BLOCK_WIDTH * 40,
                 height: size.BLOCK_HEIGHT * 5,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                 color: Colors.green,
                 child: Text(
                   'Search Rides',
@@ -436,8 +505,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                       style: TextStyle(
                                         fontFamily: 'Glory',
                                         fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            20, // size object not working here,
+                                        fontSize: 20, // size object not working here,
                                       ),
                                     ),
                                   ),
@@ -452,8 +520,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                       style: TextStyle(
                                         fontFamily: 'Glory',
                                         fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            20, // size object not working here,
+                                        fontSize: 20, // size object not working here,
                                       ),
                                     ),
                                   ),
@@ -464,12 +531,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                           );
                         },
                         child: TripResultContainer(
-                          date: trips[index]['tripDate'] ?? "",
-                          time: trips[index]['tripTime'] ?? "",
-                          fromAddress: trips[index]['from'] ?? "",
-                          toAddress: trips[index]['to'] ?? "",
-                          estimatedPrice: trips[index]['price'] ?? "",
-                          profilePic: trips[index]['imageLink'] ?? "",
+                          trip: trips[index],
                         ),
                       ),
                     ),
