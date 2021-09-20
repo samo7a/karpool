@@ -1,9 +1,12 @@
 // wait till you figure out the user objec comming from the backedn
-import 'package:mobile_app/models/User.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+
+import 'User.dart';
 
 class DriverTrip {
   final String tripId;
   final String driverId;
+  final User driver;
   final String date;
   final String time;
   final String fromAddress;
@@ -32,35 +35,8 @@ class DriverTrip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
+    required this.driver,
   });
 
   // api call
-  Future<DriverTrip> tripFromFireBase() async {
-    
-    return DriverTrip(
-      tripId: "1",
-      driverId: "3333",
-      date: "01/01/2021",
-      fromAddress: "Address 1",
-      status: "Pending",
-      time: "04:30 PM",
-      toAddress: "Address 2",
-      estimatedPrice: 100,
-      isOpen: true,
-      polyLine: "polyLineEncodedString",
-      seatNumbers: 3,
-      estimatedDistance: 100,
-      estimatedDuration: 100,
-      estimatedFare: 10.42,
-    );
-  }
 }
-
-// From Server -> Frontend
-//     		{
-// 		estimatedDistance: number
-// 		estimatedDuration: number
-// 		estimatedFare: number
-// 		isOpen: bool
-//     		}
-

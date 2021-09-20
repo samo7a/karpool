@@ -50,7 +50,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  DriverHomeScreen(),
+                  DriverHomeScreen(user: user),
                   DriverHistoryScreen(),
                 ],
               ),

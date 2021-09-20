@@ -1,4 +1,6 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -8,17 +10,58 @@ import 'package:mobile_app/widgets/RideContainer.dart';
 import 'ScheduleScreen.dart';
 
 class DriverHomeScreen extends StatefulWidget {
-  const DriverHomeScreen({Key? key}) : super(key: key);
+  final User user;
+  const DriverHomeScreen({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   @override
   _DriverHomeScreenState createState() => _DriverHomeScreenState();
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
+  User? user;
+
+  @override
+  void initState() {
+    user = widget.user;
+    tripFromFireBase();
+  }
+
   final String tripDate = '01/01/2021';
   final String tripTime = '04:30 PM';
   final String from = 'Address 1';
   final String to = 'Address 2';
+  List<DriverTrip> trips2 = [];
+
+  Future<void> tripFromFireBase() async {
+    print(user!.uid);
+    final obj = <String, dynamic>{
+      "driverId": user!.uid,
+    };
+    HttpsCallable getTrips =
+        await FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
+    final result = await getTrips(obj);
+    print(result.data.toString());
+    // return DriverTrip(
+    //   tripId: "1",
+    //   driverId: "3333",
+    //   date: "01/01/2021",
+    //   fromAddress: "Address 1",
+    //   status: "Pending",
+    //   time: "04:30 PM",
+    //   toAddress: "Address 2",
+    //   estimatedPrice: 100,
+    //   isOpen: true,
+    //   polyLine: "polyLineEncodedString",
+    //   seatNumbers: 3,
+    //   estimatedDistance: 100,
+    //   estimatedDuration: 100,
+    //   estimatedFare: 10.42,
+    //   driver: driver,
+    // );
+  }
 
   // static scheduled trips list
   // TODO: API call to get scheduled trips map/...
