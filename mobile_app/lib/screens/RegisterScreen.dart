@@ -1261,6 +1261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Center(
       child: Form(
           child: RoundedButton(
+            color: 0xFF0466CB,
         buttonName: 'Register',
         onClick: () async {
           print(userValidate());

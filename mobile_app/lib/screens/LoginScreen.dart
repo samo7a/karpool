@@ -226,6 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               RoundedButton(
+                color: 0xFF0466CB,
                 buttonName: 'Login',
                 onClick: () {
                   login();

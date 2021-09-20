@@ -4,6 +4,8 @@ import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
+import 'package:mobile_app/widgets/ModalButton.dart';
+import 'package:mobile_app/widgets/widgets.dart';
 
 class DriverModal extends StatelessWidget {
   const DriverModal({
@@ -24,25 +26,32 @@ class DriverModal extends StatelessWidget {
   // final double estimatedPrice;
   // final String time;
   final RiderTrip trip;
+
+//TODO: api call
+  void schedule() async {}
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Hero(
-          tag: "unique-tag",
-          child: Material(
-            color: Color(0xff0353A4),
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-            child: SingleChildScrollView(
+        padding: EdgeInsets.all(size.BLOCK_WIDTH * 5),
+        child: Material(
+          color: Color(0xff0353A4),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(size.BLOCK_WIDTH * 3),
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    SizedBox(
+                      height: size.BLOCK_HEIGHT * 3,
+                    ),
                     Center(
                       child: Container(
                         width: size.BLOCK_WIDTH * 32,
@@ -62,7 +71,7 @@ class DriverModal extends StatelessWidget {
                       children: [
                         Center(
                           child: Text(
-                            "Your Driver: " + trip.driver.firstName + " " + trip.driver.lastName,
+                            trip.driver.firstName + " " + trip.driver.lastName,
                             style: TextStyle(
                               fontFamily: 'Glory',
                               fontSize: size.FONT_SIZE * 24,
@@ -213,8 +222,26 @@ class DriverModal extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: size.BLOCK_HEIGHT * 1,
+                    Padding(
+                      padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ModalButton(
+                            buttonName: "Cancel",
+                            onClick: () {
+                              Navigator.pop(context);
+                            },
+                            color: 0xffF31818,
+                          ),
+                          ModalButton(
+                            buttonName: "Schedule",
+                            color: 0xff3CB032,
+                            onClick: schedule,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

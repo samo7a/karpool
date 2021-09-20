@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
 class RideContainer extends StatelessWidget {
   const RideContainer({
     Key? key,
-    required this.date,
-    required this.time,
-    required this.fromAddress,
-    required this.toAddress,
-    required this.profilePic,
-    required this.estimatedPrice,
-    required this.status,
+    // required this.date,
+    // required this.time,
+    // required this.fromAddress, 
+    // required this.toAddress,
+    // required this.profilePic,
+    // required this.estimatedPrice,
+    // required this.status,
+    required this.trip,
     // required this.onPress,
   }) : super(key: key);
 
-  final String date;
-  final String time;
-  final String fromAddress;
-  final String toAddress;
-  final String profilePic;
-  final String estimatedPrice;
-  final String status;
+  // final String date;
+  // final String time;
+  // final String fromAddress;
+  // final String toAddress;
+  // final String profilePic;
+  // final String estimatedPrice;
+  // final String status;
+  final RiderTrip trip;
   // final Function onPress;
 
   // TODO: add button for scheduling rides
@@ -62,7 +65,7 @@ class RideContainer extends StatelessWidget {
                         width: size.BLOCK_WIDTH * 3,
                       ),
                       Text(
-                        date,
+                        trip.date,
                         style: TextStyle(
                           color: kWhite,
                           fontFamily: 'Glory',
@@ -84,7 +87,7 @@ class RideContainer extends StatelessWidget {
                         width: size.BLOCK_WIDTH * 3,
                       ),
                       Text(
-                        time,
+                        trip.time,
                         style: TextStyle(
                           color: kWhite,
                           fontFamily: 'Glory',
@@ -112,7 +115,7 @@ class RideContainer extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text(
-                              fromAddress,
+                              trip.fromAddress,
                               maxLines: 10,
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
@@ -145,7 +148,7 @@ class RideContainer extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text(
-                              toAddress,
+                              trip.toAddress,
                               maxLines: 10,
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
@@ -164,7 +167,7 @@ class RideContainer extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          '\$ ' + estimatedPrice,
+                          '\$ ' + trip.estimatedPrice.toString(),
                           style: TextStyle(
                             color: Colors.green[900],
                             fontFamily: 'Glory',
