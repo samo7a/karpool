@@ -5,6 +5,8 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RideContainer.dart';
 
+import 'ScheduleScreen.dart';
+
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({Key? key}) : super(key: key);
 
@@ -277,7 +279,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.pushNamed(context, AddTripScreen.id);
+          Navigator.pushNamed(context, ScheduleScreen.id);
         },
         child: Icon(
           Icons.add,
