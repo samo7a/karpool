@@ -47,12 +47,14 @@ class MainScreen extends StatelessWidget {
                 height: size.BLOCK_HEIGHT * 20,
               ),
               RoundedButton(
+                color: 0xFF0466CB,
                 buttonName: 'Login',
                 onClick: () {
                   Navigator.pushNamed(context, LoginScreen.id);
                 },
               ),
               RoundedButton(
+                color: 0xFF0466CB,
                 buttonName: 'Sign Up',
                 onClick: () {
                   Navigator.pushNamed(context, RegisterScreen.id);

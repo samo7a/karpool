@@ -65,6 +65,7 @@ class ForgotPassword extends StatelessWidget {
                 inputAction: TextInputAction.done,
               ),
               RoundedButton(
+                color: 0xFF0466CB,
                 buttonName: 'Send',
                 onClick: () async {
                   EasyLoading.show(status: "Sending ...");

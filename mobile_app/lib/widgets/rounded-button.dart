@@ -7,10 +7,12 @@ class RoundedButton extends StatelessWidget {
     Key? key,
     required this.buttonName,
     required this.onClick,
+    required this.color,
   }) : super(key: key);
 
   final String buttonName;
   final Function onClick;
+  final int color;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class RoundedButton extends StatelessWidget {
         width: size.BLOCK_WIDTH * 40,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
-          color: kButtonColor,
+          color: Color(color),
         ),
         child: TextButton(
           onPressed: () {
@@ -30,7 +32,11 @@ class RoundedButton extends StatelessWidget {
           },
           child: Text(
             buttonName,
-            style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
+            style: TextStyle(
+              fontSize: size.FONT_SIZE * 20,
+              color: Colors.white,
+              height: 1,
+            ),
           ),
         ),
       ),
