@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -8,7 +9,8 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/RideContainer.dart';
 
 class RiderHomeScreen extends StatefulWidget {
-  const RiderHomeScreen({Key? key}) : super(key: key);
+  final User user;
+  const RiderHomeScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _RiderHomeScreenState createState() => _RiderHomeScreenState();
@@ -19,6 +21,45 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   final String tripTime = '04:30 PM';
   final String from = 'Address 1';
   final String to = 'Address 2';
+  User? user;
+  // api call
+  Future<void> tripFromFireBase() async {
+    // User driver = await User.getDriverFromFireBase(th);
+    print(user!.uid);
+    final obj = <String, dynamic>{
+      "riderId": user!.uid,
+    };
+    HttpsCallable getTrips =
+        await FirebaseFunctions.instance.httpsCallable.call('trip-getRiderTrips');
+    try {
+      final result = await getTrips(obj);
+      print(result.data.toString());
+    } catch (e) {
+      print(e.toString());
+    }
+    // return RiderTrip(
+    //   tripId: "1",
+    //   driverId: "3333",
+    //   date: "01/01/2021",
+    //   fromAddress: "Address 1",
+    //   status: "Pending",
+    //   time: "04:30 PM",
+    //   toAddress: "Address 2",
+    //   estimatedPrice: 100,
+    //   isOpen: true,
+    //   polyLine: "polyLineEncodedString",
+    //   seatNumbers: 3,
+    //   estimatedDistance: 100,
+    //   estimatedDuration: 100,
+    //   estimatedFare: 10.42,
+    //   driver: driver,
+    // );
+  }
+
+  void initState() {
+    user = widget.user;
+    tripFromFireBase();
+  }
 
   // static scheduled rides list
   // TODO: API call to get scheduled rides map/...

@@ -49,7 +49,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  RiderHomeScreen(),
+                  RiderHomeScreen(user: user),
                   RiderHistoryScreen(),
                 ],
               ),
