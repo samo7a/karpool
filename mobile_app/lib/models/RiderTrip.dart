@@ -59,11 +59,4 @@ class RiderTrip {
   }
 }
 
-// From Server -> Frontend
-//     		{
-// 		estimatedDistance: number
-// 		estimatedDuration: number
-// 		estimatedFare: number
-// 		isOpen: bool
-//     		}
 

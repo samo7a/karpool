@@ -195,11 +195,9 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
 
   void getSuggestion(String input) async {
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
-    String type = '(regions)';
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
-    print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
       setState(() {
         _placeList = json.decode(response.body)['predictions'];
