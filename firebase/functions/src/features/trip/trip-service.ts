@@ -222,6 +222,37 @@ export class TripService {
 
         // Charge the rider $5 penality or add a field in user as debt and add the value
 
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
+
+            if (trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+            }
+            trip.riderStatus[riderID] = 'Rejected'
+
+            //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
+
+            // Call change route function to update route
+            console.log("Rider canceled, Route will be updated")
+
+        //         // Call change route function to update route
+            //Do logic
+            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+            const currentTime = new Date().getTime()
+
+        //         const scheduleTime = trip2.startTime.getTime()
+        //         const currentTime = new Date().getTime()
+                if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+
+        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
+                    console.log("Rider will be fined")
+
+        // Charge the rider $5 penality or add a field in user as debt and add the value
+                    // Charge the rider $5 penality or add a field in user as debt and add the value
+
+        //  }
+                }    
+
         //  }
     }
     async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{

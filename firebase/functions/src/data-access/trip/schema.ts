@@ -7,6 +7,8 @@ type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
 export interface CreatedTripSchema {
 
+    
+    tripID: string
     /**
      * The id of the driver for the trip.
      */
