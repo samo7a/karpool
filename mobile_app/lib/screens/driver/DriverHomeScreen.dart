@@ -1,12 +1,14 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RideContainer.dart';
-
+import 'package:uuid/uuid.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ScheduleScreen.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -23,8 +25,8 @@ class DriverHomeScreen extends StatefulWidget {
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   User? user;
 
-  @override
   void initState() {
+    super.initState();
     user = widget.user;
     tripFromFireBase();
   }
@@ -36,149 +38,227 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   List<DriverTrip> trips2 = [];
 
   Future<void> tripFromFireBase() async {
-    print(user!.uid);
+    // User driver = await User.getDriverFromFireBase(th);
+    EasyLoading.show(status: "Loading...");
+    String uid = user!.uid;
+    print("driverID: " + uid);
     final obj = <String, dynamic>{
-      "driverId": user!.uid,
+      "driverID": uid,
     };
-    HttpsCallable getTrips =
-        await FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
-    final result = await getTrips(obj);
-    print(result.data.toString());
-    // return DriverTrip(
-    //   tripId: "1",
-    //   driverId: "3333",
-    //   date: "01/01/2021",
-    //   fromAddress: "Address 1",
-    //   status: "Pending",
-    //   time: "04:30 PM",
-    //   toAddress: "Address 2",
-    //   estimatedPrice: 100,
-    //   isOpen: true,
-    //   polyLine: "polyLineEncodedString",
-    //   seatNumbers: 3,
-    //   estimatedDistance: 100,
-    //   estimatedDuration: 100,
-    //   estimatedFare: 10.42,
-    //   driver: driver,
-    // );
+    HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
+    // List<RiderTrip> tripList = [];
+
+    setState(() {
+      trips.clear();
+    });
+    final result;
+    final data;
+    int length;
+    try {
+      result = await getTrips(obj);
+      data = result.data;
+      length = result.data.length;
+      if (length == 0) {
+        EasyLoading.dismiss();
+        setState(() {
+          trips.clear();
+        });
+        print("cancel");
+        return;
+      }
+      print("length: " + length.toString());
+      // print(data);
+      for (int i = 0; i < length; i++) {
+        String tripId = data[i]["docID"];
+        String driverId = data[i]["driverID"];
+        print("driverId from result: " + data[i]["driverID"]);
+        User driver = await User.getDriverFromFireBase(driverId);
+        // print(driver.firstName);
+        dynamic timestamp = data[i]["startTime"] ?? "error";
+        print("timestamp $timestamp");
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        //print(DateTime.parse(timestamp.toDate().toString()));
+        print("date $ts");
+        String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+
+        String time = ts.hour.toString() + ":" + ts.minute.toString();
+        String startAddress = data[i]["startLocation"];
+        String endAddress = data[i]["endLocation"] ?? " ";
+        int seatCount = data[i]["seatsAvailable"];
+        List<Map<String, String>> array = [];
+        Map<String, String> riders = Map<String, String>.from(data[i]["riderStatus"]);
+        riders.forEach((k, v) => {
+              print("riders.forEach   $k  $v"),
+              array.add({
+                "uid": k,
+                "status": v,
+              })
+            });
+        print(array);
+        print("rider type: " + riders.runtimeType.toString());
+        print("riders: $i  " + riders.toString());
+        print(i);
+        // print(i.toString() + " " + riders.toString());
+        String status = riders[uid] ?? " ";
+        // print(status);
+        double estimatedPrice = double.parse((data[i]["estimatedFare"].toString()));
+        String polyLine = data[i]["polyline"];
+        // print("polyline: $polyLine");
+        bool isOpen = data[i]["isOpen"];
+        double estimatedDistance =
+            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
+        double estimatedDuration = data[i]["estimatedDistance"] / 60;
+        setState(() {
+          //trips.clear();
+          trips.add(
+            RiderTrip(
+              tripId: tripId,
+              date: date,
+              time: time,
+              fromAddress: startAddress,
+              status: status,
+              toAddress: endAddress,
+              estimatedPrice: estimatedPrice,
+              driverId: driverId,
+              isOpen: isOpen,
+              polyLine: polyLine,
+              seatNumbers: seatCount,
+              estimatedDistance: estimatedDistance,
+              estimatedDuration: estimatedDuration,
+              estimatedFare: estimatedPrice,
+              driver: driver,
+            ),
+          );
+        });
+      }
+      EasyLoading.dismiss();
+      return;
+    } catch (e) {
+      print(e.toString());
+      EasyLoading.dismiss();
+      setState(() {
+        trips.clear();
+      });
+      return;
+    }
   }
 
   // static scheduled trips list
   // TODO: API call to get scheduled trips map/...
-  List<RiderTrip> trips = [
-    RiderTrip(
-      tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-      driver: new User(
-        uid: "939393",
-        firstName: "Ahmed",
-        lastName: "Elshetany",
-        isDriver: true,
-        isRider: true,
-        isVerified: true,
-        rating: 4,
-        profileURL:
-            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-        phoneNumber: "4074583995",
-      ),
-    ),
-    RiderTrip(
-      tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-      driver: new User(
-        uid: "939393",
-        firstName: "Ahmed",
-        lastName: "Elshetany",
-        isDriver: true,
-        isRider: true,
-        isVerified: true,
-        rating: 4,
-        profileURL:
-            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-        phoneNumber: "4074583995",
-      ),
-    ),
-    RiderTrip(
-      tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-      driver: new User(
-        uid: "939393",
-        firstName: "Ahmed",
-        lastName: "Elshetany",
-        isDriver: true,
-        isRider: true,
-        isVerified: true,
-        rating: 4,
-        profileURL:
-            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-        phoneNumber: "4074583995",
-      ),
-    ),
-    RiderTrip(
-      tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-      driver: new User(
-        uid: "939393",
-        firstName: "Ahmed",
-        lastName: "Elshetany",
-        isDriver: true,
-        isRider: true,
-        isVerified: true,
-        rating: 4,
-        profileURL:
-            "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-        phoneNumber: "4074583995",
-      ),
-    ),
-  ];
+  List<RiderTrip> trips = [];
+  //   RiderTrip(
+  //     tripId: "1",
+  //     date: "01/01/2021",
+  //     time: "04:30 PM",
+  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+  //     status: "Pending",
+  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+  //     estimatedPrice: 32.34,
+  //     driverId: "23344",
+  //     isOpen: true,
+  //     polyLine: "polyLine",
+  //     seatNumbers: 4,
+  //     estimatedDistance: 111,
+  //     estimatedDuration: 111,
+  //     estimatedFare: 11,
+  //     driver: new User(
+  //       uid: "939393",
+  //       firstName: "Ahmed",
+  //       lastName: "Elshetany",
+  //       isDriver: true,
+  //       isRider: true,
+  //       isVerified: true,
+  //       rating: 4,
+  //       profileURL:
+  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+  //       phoneNumber: "4074583995",
+  //     ),
+  //   ),
+  //   RiderTrip(
+  //     tripId: "1",
+  //     date: "01/01/2021",
+  //     time: "04:30 PM",
+  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+  //     status: "Pending",
+  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+  //     estimatedPrice: 32.34,
+  //     driverId: "23344",
+  //     isOpen: true,
+  //     polyLine: "polyLine",
+  //     seatNumbers: 4,
+  //     estimatedDistance: 111,
+  //     estimatedDuration: 111,
+  //     estimatedFare: 11,
+  //     driver: new User(
+  //       uid: "939393",
+  //       firstName: "Ahmed",
+  //       lastName: "Elshetany",
+  //       isDriver: true,
+  //       isRider: true,
+  //       isVerified: true,
+  //       rating: 4,
+  //       profileURL:
+  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+  //       phoneNumber: "4074583995",
+  //     ),
+  //   ),
+  //   RiderTrip(
+  //     tripId: "1",
+  //     date: "01/01/2021",
+  //     time: "04:30 PM",
+  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+  //     status: "Pending",
+  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+  //     estimatedPrice: 32.34,
+  //     driverId: "23344",
+  //     isOpen: true,
+  //     polyLine: "polyLine",
+  //     seatNumbers: 4,
+  //     estimatedDistance: 111,
+  //     estimatedDuration: 111,
+  //     estimatedFare: 11,
+  //     driver: new User(
+  //       uid: "939393",
+  //       firstName: "Ahmed",
+  //       lastName: "Elshetany",
+  //       isDriver: true,
+  //       isRider: true,
+  //       isVerified: true,
+  //       rating: 4,
+  //       profileURL:
+  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+  //       phoneNumber: "4074583995",
+  //     ),
+  //   ),
+  //   RiderTrip(
+  //     tripId: "1",
+  //     date: "01/01/2021",
+  //     time: "04:30 PM",
+  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
+  //     status: "Pending",
+  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
+  //     estimatedPrice: 32.34,
+  //     driverId: "23344",
+  //     isOpen: true,
+  //     polyLine: "polyLine",
+  //     seatNumbers: 4,
+  //     estimatedDistance: 111,
+  //     estimatedDuration: 111,
+  //     estimatedFare: 11,
+  //     driver: new User(
+  //       uid: "939393",
+  //       firstName: "Ahmed",
+  //       lastName: "Elshetany",
+  //       isDriver: true,
+  //       isRider: true,
+  //       isVerified: true,
+  //       rating: 4,
+  //       profileURL:
+  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
+  //       phoneNumber: "4074583995",
+  //     ),
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {

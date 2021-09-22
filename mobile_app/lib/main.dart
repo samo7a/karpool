@@ -67,6 +67,7 @@ class MyApp extends StatelessWidget {
               RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
               EditProfilScreen.id: (context) => EditProfilScreen(),
               ScheduleScreen.id: (context) => ScheduleScreen(),
+              SearchRidesScreen.id: (context) => SearchRidesScreen(),
             },
           );
         });

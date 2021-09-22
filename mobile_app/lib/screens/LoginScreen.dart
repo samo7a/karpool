@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (res != null) {
         bool verified = res.isVerified;
         if (!verified) {
+          user != null ? user.sendEmailVerification() : null;
           context.read<Auth>().signOut();
           await prefs.setString("role", "norole");
-          user != null ? user.sendEmailVerification() : null;
           EasyLoading.dismiss();
           EasyLoading.showInfo("Unverified user");
           return;
