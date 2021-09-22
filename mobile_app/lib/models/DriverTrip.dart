@@ -13,6 +13,7 @@ class DriverTrip {
   final double estimatedDistance;
   final double estimatedDuration;
   final double estimatedFare;
+  final dynamic timestamp;
   final List<Map<String, String>> riders;
 
   DriverTrip({
@@ -30,6 +31,6 @@ class DriverTrip {
     required this.estimatedDuration,
     required this.estimatedFare,
     required this.riders,
+    required this.timestamp,
   });
-
 }

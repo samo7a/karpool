@@ -16,8 +16,10 @@ class RiderTrip {
   final double estimatedDistance;
   final double estimatedDuration;
   final double estimatedFare;
+  final dynamic timestamp;
 
   RiderTrip({
+    required this.timestamp,
     required this.tripId,
     required this.date,
     required this.time,
@@ -34,8 +36,4 @@ class RiderTrip {
     required this.estimatedFare,
     // required this.driver,
   });
-
- 
 }
-
-

@@ -64,7 +64,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
         rider.forEach((k, v) => {
-              print("riders.forEach   $k  $v"),
+              // print("riders.forEach   $k  $v"),
               riders.add({
                 "uid": k,
                 "status": v,
@@ -93,6 +93,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
             riders: riders,
+            timestamp: ts,
           ),
         );
       }
@@ -270,7 +271,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
         backgroundColor: kButtonColor,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

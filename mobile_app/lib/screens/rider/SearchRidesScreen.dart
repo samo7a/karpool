@@ -45,6 +45,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   // static scheduled rides list
   List<RiderTrip> trips = [
     RiderTrip(
+      timestamp: "8888",
       tripId: "1",
       date: "01/01/2021",
       time: "04:30 PM",
@@ -87,6 +88,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
+      timestamp: "8888",
       // driver: new User(
       //   uid: "939393",
       //   firstName: "Ahmed",
@@ -101,6 +103,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       // ),
     ),
     RiderTrip(
+      timestamp: "8888",
       tripId: "1",
       date: "01/01/2021",
       time: "04:30 PM",
@@ -129,6 +132,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       // ),
     ),
     RiderTrip(
+      timestamp: "8888",
       tripId: "1",
       date: "01/01/2021",
       time: "04:30 PM",

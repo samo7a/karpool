@@ -24,17 +24,16 @@ class RiderHomeScreen extends StatefulWidget {
 
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
   User? user;
-
+  // late Future<List<RiderTrip>> trips;
   void initState() {
     super.initState();
     user = widget.user;
-    //tripFromFireBase();
+    tripFromFireBase();
   }
 
   Future<List<RiderTrip>> tripFromFireBase() async {
     EasyLoading.show(status: "Loading...");
     String uid = user!.uid;
-    // print("riderId: " + uid);
     final obj = <String, dynamic>{
       "riderID": uid,
     };
@@ -58,6 +57,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startLocation"];
@@ -75,6 +75,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         double estimatedDuration = data[i]["estimatedDistance"] / 60;
         tripList.add(
           RiderTrip(
+            timestamp: ts,
             tripId: tripId,
             date: date,
             time: time,
@@ -92,130 +93,18 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
           ),
         );
       }
+      tripList.sort((a, b) {
+        var adate = a.timestamp; //before -> var adate = a.expiry;
+        var bdate = b.timestamp; //var bdate = b.expiry;
+        return adate.compareTo(bdate);
+      });
+
       return tripList;
     } catch (e) {
       print(e.toString());
       return tripList;
     }
   }
-
-  // List<RiderTrip> trips = [];
-  // static scheduled rides list
-  // TODO: API call to get scheduled rides map/...
-  // List<RiderTrip> trips = [
-  //   RiderTrip(
-  //     tripId: "1",
-  //     date: "01/01/2021",
-  //     time: "04:30 PM",
-  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-  //     status: "Pending",
-  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-  //     estimatedPrice: 32.34,
-  //     driverId: "23344",
-  //     isOpen: true,
-  //     polyLine: "polyLine",
-  //     seatNumbers: 4,
-  //     estimatedDistance: 111,
-  //     estimatedDuration: 111,
-  //     estimatedFare: 11,
-  //     driver: new User(
-  //       uid: "939393",
-  //       firstName: "Ahmed",
-  //       lastName: "Elshetany",
-  //       isDriver: true,
-  //       isRider: true,
-  //       isVerified: true,
-  //       rating: 4,
-  //       profileURL:
-  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-  //       phoneNumber: "4074583995",
-  //     ),
-  //   ),
-  //   RiderTrip(
-  //     tripId: "1",
-  //     date: "01/01/2021",
-  //     time: "04:30 PM",
-  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-  //     status: "Pending",
-  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-  //     estimatedPrice: 32.34,
-  //     driverId: "23344",
-  //     isOpen: true,
-  //     polyLine: "polyLine",
-  //     seatNumbers: 4,
-  //     estimatedDistance: 111,
-  //     estimatedDuration: 111,
-  //     estimatedFare: 11,
-  //     driver: new User(
-  //       uid: "939393",
-  //       firstName: "Ahmed",
-  //       lastName: "Elshetany",
-  //       isDriver: true,
-  //       isRider: true,
-  //       isVerified: true,
-  //       rating: 4,
-  //       profileURL:
-  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-  //       phoneNumber: "4074583995",
-  //     ),
-  //   ),
-  //   RiderTrip(
-  //     tripId: "1",
-  //     date: "01/01/2021",
-  //     time: "04:30 PM",
-  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-  //     status: "Pending",
-  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-  //     estimatedPrice: 32.34,
-  //     driverId: "23344",
-  //     isOpen: true,
-  //     polyLine: "polyLine",
-  //     seatNumbers: 4,
-  //     estimatedDistance: 111,
-  //     estimatedDuration: 111,
-  //     estimatedFare: 11,
-  //     driver: new User(
-  //       uid: "939393",
-  //       firstName: "Ahmed",
-  //       lastName: "Elshetany",
-  //       isDriver: true,
-  //       isRider: true,
-  //       isVerified: true,
-  //       rating: 4,
-  //       profileURL:
-  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-  //       phoneNumber: "4074583995",
-  //     ),
-  //   ),
-  //   RiderTrip(
-  //     tripId: "1",
-  //     date: "01/01/2021",
-  //     time: "04:30 PM",
-  //     fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-  //     status: "Pending",
-  //     toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-  //     estimatedPrice: 32.34,
-  //     driverId: "23344",
-  //     isOpen: true,
-  //     polyLine: "polyLine",
-  //     seatNumbers: 4,
-  //     estimatedDistance: 111,
-  //     estimatedDuration: 111,
-  //     estimatedFare: 11,
-  //     driver: new User(
-  //       uid: "939393",
-  //       firstName: "Ahmed",
-  //       lastName: "Elshetany",
-  //       isDriver: true,
-  //       isRider: true,
-  //       isVerified: true,
-  //       rating: 4,
-  //       profileURL:
-  //           "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-  //       phoneNumber: "4074583995",
-  //     ),
-  //   ),
-  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -340,7 +229,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         ),
         backgroundColor: kButtonColor,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
