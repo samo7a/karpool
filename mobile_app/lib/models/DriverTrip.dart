@@ -6,7 +6,7 @@ import 'User.dart';
 class DriverTrip {
   final String tripId;
   final String driverId;
-  final User driver;
+  // final User driver;
   final String date;
   final String time;
   final String fromAddress;
@@ -35,7 +35,7 @@ class DriverTrip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
-    required this.driver,
+    // required this.driver,
   });
 
   // api call

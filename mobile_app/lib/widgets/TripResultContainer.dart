@@ -7,20 +7,20 @@ import '../util/HeroDialog.dart';
 import 'DriverModal.dart';
 
 class TripResultContainer extends StatelessWidget {
-  const TripResultContainer(
-      {Key? key,
-      // required this.date,
-      // required this.time,
-      // // required this.fromAddress,
-      // // required this.toAddress,
-      // required this.profilePic,
-      // required this.fullName,
-      // required this.starRating,
-      // required this.estimatedPrice,
-      // required this.status,
-      // required this.onPress,
-      required this.trip})
-      : super(key: key);
+  const TripResultContainer({
+    Key? key,
+    // required this.date,
+    // required this.time,
+    // // required this.fromAddress,
+    // // required this.toAddress,
+    // required this.profilePic,
+    // required this.fullName,
+    // required this.starRating,
+    // required this.estimatedPrice,
+    // required this.status,
+    // required this.onPress,
+    required this.trip,
+  }) : super(key: key);
 
   // final String date;
   // final String time;
@@ -46,6 +46,7 @@ class TripResultContainer extends StatelessWidget {
             builder: (context) {
               return DriverModal(
                 trip: trip,
+                driverId: trip.driverId,
               );
             },
           ),

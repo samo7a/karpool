@@ -28,6 +28,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   // api call
   Future<List<RiderTrip>> tripFromFireBase() async {
     // User driver = await User.getDriverFromFireBase(th);
+    EasyLoading.show(status: "Loading...");
     String uid = user!.uid;
     print("riderId: " + uid);
     final obj = <String, dynamic>{
@@ -43,12 +44,13 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       data = result.data;
       length = result.data.length;
       if (length == 0) {
+        EasyLoading.dismiss();
         // setState(() {
         //   trips.clear();
         // });
         return tripList;
       }
-      print("lenght: " + length.toString());
+      // print("lenght: " + length.toString());
       // print(data);
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
@@ -98,7 +100,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
             estimatedDistance: estimatedDistance,
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
-            driver: driver,
+            // driver: driver,
           ),
         );
         //});

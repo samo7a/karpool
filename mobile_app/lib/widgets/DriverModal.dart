@@ -1,13 +1,14 @@
 import 'dart:ui';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
 import 'package:mobile_app/widgets/widgets.dart';
 
-class DriverModal extends StatelessWidget {
+class DriverModal extends StatefulWidget {
   const DriverModal({
     Key? key,
     // required this.profilePic,
@@ -17,6 +18,7 @@ class DriverModal extends StatelessWidget {
     // required this.time,
     // required this.estimatedPrice,
     required this.trip,
+    required this.driverId,
   }) : super(key: key);
 
   // final String profilePic;
@@ -26,8 +28,25 @@ class DriverModal extends StatelessWidget {
   // final double estimatedPrice;
   // final String time;
   final RiderTrip trip;
+  final String driverId;
 
-//TODO: api call
+  @override
+  _DriverModalState createState() => _DriverModalState();
+}
+
+class _DriverModalState extends State<DriverModal> {
+  late User driver;
+  late String driverId;
+  late RiderTrip trip;
+  void initState() {
+    super.initState();
+    driverId = widget.driverId;
+    trip = widget.trip;
+    setState(() async {
+      driver = await User.getDriverFromFireBase(driverId);
+    });
+  }
+
   void schedule() async {}
 
   @override
@@ -60,7 +79,7 @@ class DriverModal extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: NetworkImage(
-                              trip.driver.profileURL,
+                              driver.profileURL,
                             ),
                             fit: BoxFit.fill,
                           ),
@@ -71,7 +90,7 @@ class DriverModal extends StatelessWidget {
                       children: [
                         Center(
                           child: Text(
-                            trip.driver.firstName + " " + trip.driver.lastName,
+                            driver.firstName + " " + driver.lastName,
                             style: TextStyle(
                               fontFamily: 'Glory',
                               fontSize: size.FONT_SIZE * 24,
@@ -85,7 +104,8 @@ class DriverModal extends StatelessWidget {
                     ),
                     Center(
                       child: RatingBarIndicator(
-                        rating: trip.driver.rating.ceilToDouble(), // remove the ceil function later
+                        rating: driver.rating
+                            .ceilToDouble(), // remove the ceil function later
                         itemCount: 5,
                         itemSize: size.BLOCK_WIDTH * 12,
                         direction: Axis.horizontal,
@@ -109,7 +129,7 @@ class DriverModal extends StatelessWidget {
                           width: size.BLOCK_WIDTH * 3,
                         ),
                         Text(
-                          trip.date,
+                          widget.trip.date,
                           style: TextStyle(
                             color: kWhite,
                             fontFamily: 'Glory',
@@ -131,7 +151,7 @@ class DriverModal extends StatelessWidget {
                           width: size.BLOCK_WIDTH * 3,
                         ),
                         Text(
-                          trip.time,
+                          widget.trip.time,
                           style: TextStyle(
                             color: kWhite,
                             fontFamily: 'Glory',
@@ -159,7 +179,7 @@ class DriverModal extends StatelessWidget {
                             ),
                             Expanded(
                               child: Text(
-                                trip.fromAddress,
+                                widget.trip.fromAddress,
                                 maxLines: 10,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
@@ -192,7 +212,7 @@ class DriverModal extends StatelessWidget {
                             ),
                             Expanded(
                               child: Text(
-                                trip.toAddress,
+                                widget.trip.toAddress,
                                 maxLines: 10,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
@@ -213,7 +233,7 @@ class DriverModal extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        '\$ ' + trip.estimatedPrice.toString(),
+                        '\$ ' + widget.trip.estimatedPrice.toString(),
                         style: TextStyle(
                           color: Colors.green[900],
                           fontFamily: 'Glory',

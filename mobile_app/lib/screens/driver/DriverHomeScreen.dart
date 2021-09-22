@@ -7,7 +7,6 @@ import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RideContainer.dart';
-import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ScheduleScreen.dart';
 
@@ -46,11 +45,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       "driverID": uid,
     };
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
-    // List<RiderTrip> tripList = [];
+    List<RiderTrip> tripList = [];
 
-    setState(() {
-      trips.clear();
-    });
+    // setState(() {
+    //   trips.clear();
+    // });
     final result;
     final data;
     int length;
@@ -60,18 +59,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       length = result.data.length;
       if (length == 0) {
         EasyLoading.dismiss();
-        setState(() {
-          trips.clear();
-        });
-        print("cancel");
+        // setState(() {
+        //   trips.clear();
+        // });
+        // print("cancel");
         return;
       }
-      print("length: " + length.toString());
+      // print("length: " + length.toString());
       // print(data);
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
-        print("driverId from result: " + data[i]["driverID"]);
+        // print("driverId from result: " + data[i]["driverID"]);
         User driver = await User.getDriverFromFireBase(driverId);
         // print(driver.firstName);
         dynamic timestamp = data[i]["startTime"] ?? "error";
@@ -126,7 +125,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               estimatedDistance: estimatedDistance,
               estimatedDuration: estimatedDuration,
               estimatedFare: estimatedPrice,
-              driver: driver,
+              // driver: driver,
             ),
           );
         });
