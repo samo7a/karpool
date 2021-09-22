@@ -186,11 +186,11 @@ class DriverRideContainer extends StatelessWidget {
               ),
             ),
           ),
-          Icon(
-            Icons.check_circle,
-            color: Colors.green,
-            size: size.FONT_SIZE * 55,
-          ),
+          // Icon(
+          //   Icons.check_circle,
+          //   color: Colors.green,
+          //   size: size.FONT_SIZE * 55,
+          // ),
         ],
       ),
     );

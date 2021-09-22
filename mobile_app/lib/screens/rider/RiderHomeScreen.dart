@@ -147,25 +147,25 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                               // ignore: deprecated_member_use
                               FlatButton(
                                 onPressed: () => {Navigator.of(context).pop(true)},
-                                child: const Text(
+                                child: Text(
                                   "YES",
                                   style: TextStyle(
                                     fontFamily: 'Glory',
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20, // size object not working here
+                                    fontSize: size.FONT_SIZE * 20,
                                   ),
                                 ),
                               ),
                               // ignore: deprecated_member_use
                               FlatButton(
                                 onPressed: () => Navigator.of(context).pop(false),
-                                child: const Text(
+                                child: Text(
                                   "NO",
                                   style: TextStyle(
-                                      fontFamily: 'Glory',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20 // size object not working here
-                                      ),
+                                    fontFamily: 'Glory',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: size.FONT_SIZE * 20,
+                                  ),
                                 ),
                               ),
                             ],
