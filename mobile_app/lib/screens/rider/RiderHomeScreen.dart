@@ -8,30 +8,33 @@ import 'package:mobile_app/screens/rider/SearchRidesScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 // import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
-import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:mobile_app/widgets/RiderRideContainer.dart';
-import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 class RiderHomeScreen extends StatefulWidget {
   final User user;
-  const RiderHomeScreen({Key? key, required this.user}) : super(key: key);
+  const RiderHomeScreen({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   @override
   _RiderHomeScreenState createState() => _RiderHomeScreenState();
 }
 
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
-  final String tripDate = '01/01/2021';
-  final String tripTime = '04:30 PM';
-  final String from = 'Address 1';
-  final String to = 'Address 2';
   User? user;
-  // api call
+
+  void initState() {
+    super.initState();
+    user = widget.user;
+    //tripFromFireBase();
+  }
+
   Future<List<RiderTrip>> tripFromFireBase() async {
-    // User driver = await User.getDriverFromFireBase(th);
     EasyLoading.show(status: "Loading...");
     String uid = user!.uid;
-    print("riderId: " + uid);
+    // print("riderId: " + uid);
     final obj = <String, dynamic>{
       "riderID": uid,
     };
@@ -46,45 +49,30 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       length = result.data.length;
       if (length == 0) {
         EasyLoading.dismiss();
-        // setState(() {
-        //   trips.clear();
-        // });
         return tripList;
       }
-      // print("lenght: " + length.toString());
-      // print(data);
+
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         print("trip id :  $tripId");
         String driverId = data[i]["driverID"];
-        // print("driverId: " + data[i]["driverID"]);
-        User driver = await User.getDriverFromFireBase(driverId);
-        // print(driver.firstName);
-        dynamic timestamp = data[i]["startTime"] ?? "error";
-        print("timestamp $timestamp");
+        dynamic timestamp = data[i]["startTime"];
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-        //print(DateTime.parse(timestamp.toDate().toString()));
-        print("date $ts");
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
-
-        String time = ts.hour.toString() + ":" + ts.minute.toString();
+        String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startLocation"];
         String endAddress = data[i]["endLocation"] ?? " ";
         int seatCount = data[i]["seatsAvailable"];
-        dynamic riders = data[i]["riderStatus"];
-        print(i);
-        // print(i.toString() + " " + riders.toString());
-        String status = riders[uid] ?? " ";
-        // print(status);
+
+        dynamic rider = data[i]["riderStatus"];
+        String status = rider[uid];
+
         double estimatedPrice = double.parse((data[i]["estimatedFare"].toString()));
         String polyLine = data[i]["polyline"];
-        // print("polyline: $polyLine");
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
         double estimatedDuration = data[i]["estimatedDistance"] / 60;
-        //setState(() {
-        // trips.clear();
         tripList.add(
           RiderTrip(
             tripId: tripId,
@@ -101,22 +89,14 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
             estimatedDistance: estimatedDistance,
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
-            // driver: driver,
           ),
         );
-        //});
       }
       return tripList;
     } catch (e) {
       print(e.toString());
       return tripList;
     }
-  }
-
-  void initState() {
-    super.initState();
-    user = widget.user;
-    //tripFromFireBase();
   }
 
   // List<RiderTrip> trips = [];
@@ -360,7 +340,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         ),
         backgroundColor: kButtonColor,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
     );
   }
 }

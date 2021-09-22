@@ -2,12 +2,10 @@
 class DriverTrip {
   final String tripId;
   final String driverId;
-  // final User driver;
   final String date;
   final String time;
   final String fromAddress;
   final String toAddress;
-  final String status;
   final double estimatedPrice;
   final bool isOpen;
   final String polyLine;
@@ -15,15 +13,13 @@ class DriverTrip {
   final double estimatedDistance;
   final double estimatedDuration;
   final double estimatedFare;
-  //add list of riders
-
+  final List<Map<String, String>> riders;
 
   DriverTrip({
     required this.tripId,
     required this.date,
     required this.time,
     required this.fromAddress,
-    required this.status,
     required this.toAddress,
     required this.estimatedPrice,
     required this.driverId,
@@ -33,8 +29,7 @@ class DriverTrip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
-    // required this.driver,
+    required this.riders,
   });
 
-  // api call
 }
