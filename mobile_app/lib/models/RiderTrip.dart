@@ -1,5 +1,4 @@
 // wait till you figure out the user objec comming from the backedn
-import 'User.dart';
 
 class RiderTrip {
   final String tripId;

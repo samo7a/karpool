@@ -2,11 +2,10 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
-import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:mobile_app/widgets/RideContainer.dart';
+import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ScheduleScreen.dart';
 
@@ -45,7 +44,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       "driverID": uid,
     };
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
-    List<RiderTrip> tripList = [];
+    List<DriverTrip> tripList = [];
 
     // setState(() {
     //   trips.clear();
@@ -110,7 +109,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         setState(() {
           //trips.clear();
           trips.add(
-            RiderTrip(
+            DriverTrip(
               tripId: tripId,
               date: date,
               time: time,
@@ -144,7 +143,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   // static scheduled trips list
   // TODO: API call to get scheduled trips map/...
-  List<RiderTrip> trips = [];
+  List<DriverTrip> trips = [];
   //   RiderTrip(
   //     tripId: "1",
   //     date: "01/01/2021",
@@ -390,7 +389,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           },
                         );
                       },
-                      child: RideContainer(
+                      child: DriverRideContainer(
                         trip: trip,
                       ),
                     ),

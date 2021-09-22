@@ -1,8 +1,4 @@
 // wait till you figure out the user objec comming from the backedn
-import 'package:cloud_functions/cloud_functions.dart';
-
-import 'User.dart';
-
 class DriverTrip {
   final String tripId;
   final String driverId;
@@ -19,6 +15,8 @@ class DriverTrip {
   final double estimatedDistance;
   final double estimatedDuration;
   final double estimatedFare;
+  //add list of riders
+
 
   DriverTrip({
     required this.tripId,

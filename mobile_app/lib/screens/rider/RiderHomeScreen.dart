@@ -8,7 +8,8 @@ import 'package:mobile_app/screens/rider/SearchRidesScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 // import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
-import 'package:mobile_app/widgets/RideContainer.dart';
+import 'package:mobile_app/widgets/DriverRideContainer.dart';
+import 'package:mobile_app/widgets/RiderRideContainer.dart';
 import 'package:uuid/uuid.dart';
 
 class RiderHomeScreen extends StatefulWidget {
@@ -331,7 +332,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                     ),
                     child: Container(
                       child: Center(
-                        child: RideContainer(
+                        child: RiderRideContainer(
                           trip: trip,
                         ),
                       ),

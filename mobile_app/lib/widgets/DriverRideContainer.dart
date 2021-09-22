@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
-class RideContainer extends StatelessWidget {
-  const RideContainer({
+class DriverRideContainer extends StatelessWidget {
+  const DriverRideContainer({
     Key? key,
     // required this.date,
     // required this.time,
-    // required this.fromAddress, 
+    // required this.fromAddress,
     // required this.toAddress,
     // required this.profilePic,
     // required this.estimatedPrice,
@@ -24,7 +25,7 @@ class RideContainer extends StatelessWidget {
   // final String profilePic;
   // final String estimatedPrice;
   // final String status;
-  final RiderTrip trip;
+  final DriverTrip trip;
   // final Function onPress;
 
   // TODO: add button for scheduling rides
