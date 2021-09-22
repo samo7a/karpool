@@ -33,7 +33,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Future<List<DriverTrip>> tripFromFireBase() async {
     EasyLoading.show(status: "Loading...");
     String uid = user!.uid;
-    // print("driverID: " + uid);
     final obj = <String, dynamic>{
       "driverID": uid,
     };
@@ -64,7 +63,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
         rider.forEach((k, v) => {
-              // print("riders.forEach   $k  $v"),
               riders.add({
                 "uid": k,
                 "status": v,
@@ -97,6 +95,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           ),
         );
       }
+      tripList.sort((a, b) {
+        var adate = a.timestamp; //before -> var adate = a.expiry;
+        var bdate = b.timestamp; //var bdate = b.expiry;
+        return adate.compareTo(bdate);
+      });
       return tripList;
     } catch (e) {
       print(e.toString());
@@ -112,7 +115,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         color: kDashboardColor,
         child: FutureBuilder<List<DriverTrip>>(
           future: tripFromFireBase(),
-          // initialData: [],
           builder: (BuildContext context, AsyncSnapshot<List<DriverTrip>> snapshot) {
             if (snapshot.hasData) {
               EasyLoading.dismiss();

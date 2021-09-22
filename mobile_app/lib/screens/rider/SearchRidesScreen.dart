@@ -60,18 +60,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
-      // driver: new User(
-      //   uid: "939393",
-      //   firstName: "Ahmed",
-      //   lastName: "Elshetany",
-      //   isDriver: true,
-      //   isRider: true,
-      //   isVerified: true,
-      //   rating: 4,
-      //   profileURL:
-      //       "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-      //   phoneNumber: "4074583995",
-      // ),
     ),
     RiderTrip(
       tripId: "1",
@@ -89,18 +77,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDuration: 111,
       estimatedFare: 11,
       timestamp: "8888",
-      // driver: new User(
-      //   uid: "939393",
-      //   firstName: "Ahmed",
-      //   lastName: "Elshetany",
-      //   isDriver: true,
-      //   isRider: true,
-      //   isVerified: true,
-      //   rating: 4,
-      //   profileURL:
-      //       "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-      //   phoneNumber: "4074583995",
-      // ),
     ),
     RiderTrip(
       timestamp: "8888",
@@ -118,18 +94,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
-      // driver: new User(
-      //   uid: "939393",
-      //   firstName: "Ahmed",
-      //   lastName: "Elshetany",
-      //   isDriver: true,
-      //   isRider: true,
-      //   isVerified: true,
-      //   rating: 4,
-      //   profileURL:
-      //       "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-      //   phoneNumber: "4074583995",
-      // ),
+
     ),
     RiderTrip(
       timestamp: "8888",
@@ -147,18 +112,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
-      // driver: new User(
-      //   uid: "939393",
-      //   firstName: "Ahmed",
-      //   lastName: "Elshetany",
-      //   isDriver: true,
-      //   isRider: true,
-      //   isVerified: true,
-      //   rating: 4,
-      //   profileURL:
-      //       "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGhvdG98ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80",
-      //   phoneNumber: "4074583995",
-      // ),
+
     ),
   ];
 
