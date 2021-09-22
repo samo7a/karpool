@@ -8,6 +8,7 @@ import { hashesForPoints } from "../../geo-hash";
 import * as geohasher from 'ngeohash'
 import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
+import { autoID } from "../../data-access/utils/misc";
 
 export class TripService {
 
@@ -33,7 +34,12 @@ export class TripService {
         //Address string => (x, y) via Google Api
         const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress)
 
-        const tripID = await this.tripDAO.createAddedTrip({
+        const tripID = autoID()
+
+        await this.tripDAO.createAddedTrip(tripID, {
+
+            docID: tripID,
+
             driverID: uid,
 
             startTime: firestore.Timestamp.fromDate(new Date(data.startTime)),
@@ -255,15 +261,15 @@ export class TripService {
 
         //  }
     }
-    async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{
+    async acceptRiderRequest(riderID: string, tripID: string): Promise<void> {
         //get trip 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
-        if(trip === undefined){
-            throw new HttpsError('not-found','Trip does not exist')
+        if (trip === undefined) {
+            throw new HttpsError('not-found', 'Trip does not exist')
         }
         //check if rider is in trip
-        if(trip.riderStatus[riderID] == undefined){
-            throw new HttpsError('not-found','Rider hasnt requested a trip')
+        if (trip.riderStatus[riderID] == undefined) {
+            throw new HttpsError('not-found', 'Rider hasnt requested a trip')
         }
         //change status to rejected
         trip.riderStatus[riderID] = 'Accepted'
@@ -272,32 +278,32 @@ export class TripService {
         //TO DO BELOW
         //const route = await this.directionsDAO.getRoute()
 
-       // this.setTripRoute(tripID)
+        // this.setTripRoute(tripID)
         // Charge the rider $5 penality or add a field in user as debt and add the value
 
         //  }
     }
-    
-    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>{
+
+    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(driverID)
         //If Driver hasnt completed an trips
-        if(trips === undefined){
-            throw new HttpsError('not-found','Driver hasnt completed a Trip')
-        }   
-        else{
-             return trips 
+        if (trips === undefined) {
+            throw new HttpsError('not-found', 'Driver hasnt completed a Trip')
+        }
+        else {
+            return trips
         }
     }
 
-    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>{
+    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> {
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(riderID)
         //If Driver hasnt completed an trips
-        if(trips === undefined){
-            throw new HttpsError('not-found','Driver hasnt completed a Trip')
+        if (trips === undefined) {
+            throw new HttpsError('not-found', 'Driver hasnt completed a Trip')
         }
-        else{
+        else {
             return trips
         }
     }

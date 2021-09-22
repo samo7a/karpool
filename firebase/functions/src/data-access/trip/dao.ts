@@ -13,7 +13,7 @@ export interface TripDAOInterface {
      * @param data 
      * @returns The id of the trip document.
      */
-    createAddedTrip(data: CreatedTripSchema): Promise<string>
+    createAddedTrip(id: string, data: CreatedTripSchema): Promise<string>
 
     getDriverTrips(driverID: string): Promise<CreatedTripSchema[]>
 
@@ -41,9 +41,9 @@ export interface TripDAOInterface {
 
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema>
 
-    getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> 
+    getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>
 
-    getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> 
+    getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -113,8 +113,8 @@ export class TripDAO implements TripDAOInterface {
         })
     }
 
-    async createAddedTrip(data: CreatedTripSchema): Promise<string> {
-        const tripRef = this.db.collection(FirestoreKey.tripsCreated).doc()
+    async createAddedTrip(docID: string, data: CreatedTripSchema): Promise<string> {
+        const tripRef = this.db.collection(FirestoreKey.tripsCreated).doc(docID)
         await tripRef.create(data)
         return tripRef.id
     }
@@ -123,15 +123,20 @@ export class TripDAO implements TripDAOInterface {
     //HERE Promise<CreatedTripSchema[]
     async getDriverTrips(driverID: string): Promise<CreatedTripSchema[]> {
         const snapshot = await this.db.collection(FirestoreKey.tripsCreated).where('driverID', '==', driverID).get()
-        return snapshot.docs.map(doc => doc.data()) as CreatedTripSchema[]
+
+        const now = new Date().getTime()
+        return (snapshot.docs.map(doc => doc.data()) as CreatedTripSchema[]).filter(t => t.startTime.toDate().getTime() > now)
     }
 
 
     async getRiderTrips(riderID: string): Promise<CreatedTripSchema[]> {
 
-        const scheduledRides = await this.db.collection(FirestoreKey.tripsCreated).where(`riderStatus.${riderID}`, 'in', ['Requested', 'Accepted']).get()
+        const scheduledRides = await this.db.collection(FirestoreKey.tripsCreated)
+            .where(`riderStatus.${riderID}`, 'in', ['Requested', 'Accepted'])
+            .get()
 
-        return scheduledRides.docs.map(doc => doc.data()) as CreatedTripSchema[]
+        const now = new Date().getTime()
+        return (scheduledRides.docs.map(doc => doc.data()) as CreatedTripSchema[]).filter(t => t.startTime.toDate().getTime() > now)
     }
 
     async updateCreatedTrip(tripID: string, data: Partial<CreatedTripSchema>): Promise<void> {
@@ -144,17 +149,17 @@ export class TripDAO implements TripDAOInterface {
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
-        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where('driverID','==',`${driverID}`).get()
+        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where('driverID', '==', `${driverID}`).get()
 
 
-        return completedTrips.docs.map(doc =>doc.data()) as ScheduleTripSchema[]
-        
+        return completedTrips.docs.map(doc => doc.data()) as ScheduleTripSchema[]
+
     }
 
     async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> {
-         const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`,'==','COMPLETED').get()
+        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`, '==', 'COMPLETED').get()
 
-        return completedTrips.docs.map(doc =>doc.data()) as ScheduleTripSchema[]
+        return completedTrips.docs.map(doc => doc.data()) as ScheduleTripSchema[]
     }
 
 
