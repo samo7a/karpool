@@ -120,6 +120,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               if (snapshot.hasData) {
                 EasyLoading.dismiss();
                 return ListView.builder(
+                  padding: EdgeInsets.only(bottom: size.BLOCK_HEIGHT * 10),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     final trip = snapshot.data![index];
@@ -355,7 +356,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           ),
           backgroundColor: kButtonColor,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
