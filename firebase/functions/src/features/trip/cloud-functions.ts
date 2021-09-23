@@ -29,7 +29,6 @@ export const createAddedTrip = functions.https.onCall(async (data, context) => {
  * 
  */
 export const getDriverTrips = functions.https.onCall(async (data, context) => {
-<<<<<<< HEAD
     //validate who is calling function ???
      const uid = validateAuthorization(context)
 
@@ -38,16 +37,6 @@ export const getDriverTrips = functions.https.onCall(async (data, context) => {
         }else{
             throw new HttpsError('failed-precondition', 'Invalid user')  
         }
-=======
-
-    const uid = validateAuthorization(context)
-
-    if (uid === data.driverID) {
-        return newTripService().getDriverTrips(data.driverID)
-    } else {
-        throw new HttpsError('failed-precondition', 'Invalid user')
-    }
->>>>>>> ac961bf12a37121ed98d5fc7e998c20cfc7abdcb
 })
 
 
