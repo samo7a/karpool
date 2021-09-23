@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 // import 'package:mobile_app/models/User.dart' as user; //I will need it later
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';
+import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import './screens/SplashScreen.dart';
@@ -68,6 +70,8 @@ class MyApp extends StatelessWidget {
               EditProfilScreen.id: (context) => EditProfilScreen(),
               ScheduleScreen.id: (context) => ScheduleScreen(),
               SearchRidesScreen.id: (context) => SearchRidesScreen(),
+              BankInfoScreen.id: (context) => BankInfoScreen(),
+              VehicleInfoScreen.id: (context) => VehicleInfoScreen(),
             },
           );
         });

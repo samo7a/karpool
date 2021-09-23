@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
+import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -91,8 +93,8 @@ class DriverDrawer extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                // TODO: Navigate to vehicle info
-                Navigator.pop(context);
+                //remove user, and add car object. Car model under construction
+                Navigator.pushNamed(context, VehicleInfoScreen.id, arguments: user);
               },
             ),
           ),
@@ -124,8 +126,8 @@ class DriverDrawer extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                // TODO: Navigate to bank info
-                Navigator.pop(context);
+                //remove user, and add Bank object. Bank model under construction
+                Navigator.pushNamed(context, BankInfoScreen.id, arguments: user);
               },
             ),
           ),
@@ -167,7 +169,6 @@ class DriverDrawer extends StatelessWidget {
               },
             ),
           ),
-          //SizedBox(height: 8),
           Container(
             height: 8,
             color: kDrawerColor,
@@ -197,8 +198,6 @@ class DriverDrawer extends StatelessWidget {
               onTap: () async {
                 return showDialog<void>(
                   context: context,
-                  //fix the buttons here functions
-                  //not final
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
@@ -246,7 +245,9 @@ class DriverDrawer extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              //Api Call to delete the account
+                            },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
@@ -278,7 +279,6 @@ class DriverDrawer extends StatelessWidget {
               },
             ),
           ),
-          // SizedBox(height: 8,),
           Container(
             height: 8,
             color: kDrawerColor,
