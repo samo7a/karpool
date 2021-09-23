@@ -237,54 +237,83 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       child: Container(
                         child: Center(
                           child: GestureDetector(
-                            onTap: () {
-                              showDialog(
+                            onTap: () async {
+                              return await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text("Start Ride"),
-                                    content: Text(
-                                      "Are you sure you wish to start this ride?",
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                                    ),
+                                    title: Text(
+                                      "Start Ride",
                                       style: TextStyle(
+                                        color: Color(0xffffffff),
+                                      ),
+                                    ),
+                                    content: Text(
+                                      "Are you sure you want to start this ride?",
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
                                         fontFamily: 'Glory',
                                         fontWeight: FontWeight.bold,
                                         fontSize: size.FONT_SIZE * 22,
                                       ),
                                     ),
-                                    actions: <Widget>[
-                                      // ignore: deprecated_member_use
-                                      FlatButton(
-                                        onPressed: () {
-                                          // TODO: Handle start ride
-                                          print("Chose Yes");
-                                          Navigator.of(context).pop(true);
-                                        },
-                                        child: const Text(
-                                          "YES",
-                                          style: TextStyle(
-                                            fontFamily: 'Glory',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20, // size object not working here,
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: Container(
+                                          height: size.BLOCK_HEIGHT * 7,
+                                          width: size.BLOCK_WIDTH * 30,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                            color: Color(0xff001233),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "No",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Color(0xffffffff),
+                                                fontFamily: 'Glory',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: size.FONT_SIZE * 22,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                      // ignore: deprecated_member_use
-                                      FlatButton(
-                                        onPressed: () {
-                                          print("Chose No");
-                                          Navigator.of(context).pop(false);
-                                        },
-                                        child: const Text(
-                                          "NO",
-                                          style: TextStyle(
-                                            fontFamily: 'Glory',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20, // size object not working here,
+                                      Padding(
+                                        padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                        child: TextButton(
+                                          onPressed: () => Navigator.of(context).pop(false),
+                                          child: Container(
+                                            height: size.BLOCK_HEIGHT * 7,
+                                            width: size.BLOCK_WIDTH * 30,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                              color: Color(0xffC80404),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Yes",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Color(0xffffffff),
+                                                  fontFamily: 'Glory',
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.FONT_SIZE * 22,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ],
-                                    backgroundColor: kWhite,
+                                    backgroundColor: Color(0xff0353A4),
                                   );
                                 },
                               );
@@ -304,7 +333,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 return Container();
               } else {
                 EasyLoading.show(status: "Loading...");
-                return Container();
+                EasyLoading.dismiss();
+                return Container(
+                  child: Center(
+                    child: Text(
+                      "Empty | No Rides | Edit this | Make it cool",
+                    ),
+                  ),
+                );
               }
             },
           ),

@@ -91,8 +91,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         );
       }
       tripList.sort((a, b) {
-        var adate = a.timestamp; //before -> var adate = a.expiry;
-        var bdate = b.timestamp; //var bdate = b.expiry;
+        var adate = a.timestamp;
+        var bdate = b.timestamp;
         return adate.compareTo(bdate);
       });
 
@@ -247,7 +247,14 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                 return Container();
               } else {
                 EasyLoading.show(status: "Loading...");
-                return Container();
+                EasyLoading.dismiss();
+                return Container(
+                  child: Center(
+                    child: Text(
+                      "Empty | No Rides | Edit this | Make it cool",
+                    ),
+                  ),
+                );
               }
             },
           ),
@@ -262,7 +269,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         ),
         backgroundColor: kButtonColor,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
