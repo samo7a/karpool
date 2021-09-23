@@ -13,7 +13,7 @@ class TopDrawer extends StatelessWidget {
 
   final String profilePic;
   final String fullName;
-  final int starRating; //change to double later
+  final num starRating; //change to double later
 
   @override
   Widget build(BuildContext context) {

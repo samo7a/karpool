@@ -13,27 +13,26 @@ class Auth {
       return null;
     else {
       final prefs = await SharedPreferences.getInstance();
-      final String role = await prefs.getString('role') ?? "norole";
+      final String role = prefs.getString('role') ?? "norole";
       if (role == 'norole') return null;
       bool isDriver = role == 'driver';
       final obj = <String, dynamic>{
         "uid": user.uid,
         "driver": isDriver,
       };
-      HttpsCallable getUser = await FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+      HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
       String firstName = result.data['firstName'] ?? "";
       String lastName = result.data['lastName'] ?? "";
       String phone = result.data['phone'] ?? "";
       String url = result.data['profileURL'] ?? "";
-      var rating;
+      num rating;
       if (isDriver)
-        rating = result.data['driverRating'] ?? 0; //change to 0.0
+        rating = result.data['driverRating'] ?? 0.0; //change to 0.0
       else
-        rating = result.data['riderRating'] ?? 0; //change to 0.0
+        rating = result.data['riderRating'] ?? 0.0; //change to 0.0
       var riderRole = result.data['roles']['Rider'] ?? false;
       var driverRole = result.data["roles"]["Driver"] ?? false;
-      print(result.data.toString());
       return User(
         uid: user.uid,
         firstName: firstName,
@@ -60,7 +59,7 @@ class Auth {
   Future<String?> signup(String email, String password) async {
     final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     await credential.user!.sendEmailVerification();
-    return await credential.user!.uid;
+    return credential.user!.uid;
   }
 
   //reset password

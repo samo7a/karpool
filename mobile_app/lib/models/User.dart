@@ -13,7 +13,7 @@ class User {
   final bool isVerified;
   final bool isRider;
   final String profileURL;
-  final int rating; // change to double later
+  final num rating; // change to double later
   User({
     required this.uid,
     required this.firstName,
@@ -33,16 +33,42 @@ class User {
       "uid": uid,
       "driver": true,
     };
-    HttpsCallable getUser = await FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
     String firstName = result.data['firstName'] ?? "";
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
     String url = result.data['profileURL'] ?? "";
-    var rating = result.data['driverRating'] ?? 0; //change to 0.0
+    num rating = result.data['driverRating'] ?? 0.0; //change to 0.0
     var riderRole = result.data['roles']['Rider'] ?? false;
     var driverRole = result.data["roles"]["Driver"] ?? false;
-    print(result.data.toString());
+    return User(
+      uid: uid,
+      firstName: firstName,
+      lastName: lastName,
+      phoneNumber: phone,
+      profileURL: url,
+      rating: rating,
+      isVerified: true,
+      isDriver: driverRole,
+      isRider: riderRole,
+    );
+  }
+
+  static Future<User> getRiderFromFireBase(String uid) async {
+    final obj = <String, dynamic>{
+      "uid": uid,
+      "driver": false,
+    };
+    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    final result = await getUser(obj);
+    String firstName = result.data['firstName'] ?? "";
+    String lastName = result.data['lastName'] ?? "";
+    String phone = result.data['phone'] ?? "";
+    String url = result.data['profileURL'] ?? "";
+    double rating = result.data['riderRating'] as double; //change to 0.0
+    var riderRole = result.data['roles']['Rider'] ?? false;
+    var driverRole = result.data["roles"]["Driver"] ?? false;
     return User(
       uid: uid,
       firstName: firstName,

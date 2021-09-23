@@ -104,8 +104,8 @@ class _DriverModalState extends State<DriverModal> {
                     ),
                     Center(
                       child: RatingBarIndicator(
-                        rating: driver.rating
-                            .ceilToDouble(), // remove the ceil function later
+                        rating: driver.rating as double,
+                        // .ceilToDouble(), // remove the ceil function later
                         itemCount: 5,
                         itemSize: size.BLOCK_WIDTH * 12,
                         direction: Axis.horizontal,
