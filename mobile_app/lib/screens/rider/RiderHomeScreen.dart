@@ -32,7 +32,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   }
 
   Future<List<RiderTrip>> tripFromFireBase() async {
-    EasyLoading.show(status: "Loading...");
     String uid = user!.uid;
     final obj = <String, dynamic>{
       "riderID": uid,
@@ -47,13 +46,11 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       data = result.data;
       length = result.data.length;
       if (length == 0) {
-        EasyLoading.dismiss();
         return tripList;
       }
 
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
-        print("trip id :  $tripId");
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
@@ -110,86 +107,62 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
-      body: Container(
-        color: kDashboardColor,
-        child: FutureBuilder<List<RiderTrip>>(
-          future: tripFromFireBase(),
-          // initialData: [],
-          builder: (BuildContext context, AsyncSnapshot<List<RiderTrip>> snapshot) {
-            if (snapshot.hasData) {
-              EasyLoading.dismiss();
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final trip = snapshot.data![index];
-                  return Dismissible(
-                    direction: DismissDirection.endToStart,
-                    key: Key(trip.tripId),
-                    onDismissed: (direction) {
-                      // TODO: API call to delete scheduled ride
-                      snapshot.data!.removeAt(index);
-                    },
-                    confirmDismiss: (direction) async {
-                      return await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
-                            ),
-                            title: Text(
-                              "Confirm Ride Cancellation",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
+      body: RefreshIndicator(
+        onRefresh: tripFromFireBase,
+        child: Container(
+          color: kDashboardColor,
+          child: FutureBuilder<List<RiderTrip>>(
+            future: tripFromFireBase(),
+            builder: (BuildContext context, AsyncSnapshot<List<RiderTrip>> snapshot) {
+              if (snapshot.hasData) {
+                EasyLoading.dismiss();
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final trip = snapshot.data![index];
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: Key(trip.tripId),
+                      onDismissed: (direction) {
+                        // TODO: API call to delete scheduled ride
+                        snapshot.data!.removeAt(index);
+                      },
+                      confirmDismiss: (direction) async {
+                        return await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
                               ),
-                            ),
-                            content: Text(
-                              "Are you sure you want to cancel your ride?",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
-                                fontFamily: 'Glory',
-                                fontWeight: FontWeight.bold,
-                                fontSize: size.FONT_SIZE * 22,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: Container(
-                                  height: size.BLOCK_HEIGHT * 7,
-                                  width: size.BLOCK_WIDTH * 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                    color: Color(0xff001233),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "No",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xffffffff),
-                                        fontFamily: 'Glory',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: size.FONT_SIZE * 22,
-                                      ),
-                                    ),
-                                  ),
+                              title: Text(
+                                "Confirm Ride Cancellation",
+                                style: TextStyle(
+                                  color: Color(0xffffffff),
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
-                                child: TextButton(
+                              content: Text(
+                                "Are you sure you want to cancel your ride?",
+                                style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontFamily: 'Glory',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: size.FONT_SIZE * 22,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
                                   onPressed: () => Navigator.of(context).pop(false),
                                   child: Container(
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                      color: Color(0xffC80404),
+                                      color: Color(0xff001233),
                                     ),
                                     child: Center(
                                       child: Text(
-                                        "Yes",
+                                        "No",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Color(0xffffffff),
@@ -201,57 +174,83 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                                     ),
                                   ),
                                 ),
+                                Padding(
+                                  padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                  child: TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: Container(
+                                      height: size.BLOCK_HEIGHT * 7,
+                                      width: size.BLOCK_WIDTH * 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                        color: Color(0xffC80404),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "Yes",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Color(0xffffffff),
+                                            fontFamily: 'Glory',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: size.FONT_SIZE * 22,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              backgroundColor: Color(0xff0353A4),
+                            );
+                          },
+                        );
+                      },
+                      background: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Delete Ride',
+                              style: TextStyle(
+                                color: kWhite,
+                                fontFamily: 'Glory',
+                                fontWeight: FontWeight.bold,
+                                fontSize: size.FONT_SIZE * 26,
                               ),
-                            ],
-                            backgroundColor: Color(0xff0353A4),
-                          );
-                        },
-                      );
-                    },
-                    background: Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Delete Ride',
-                            style: TextStyle(
-                              color: kWhite,
-                              fontFamily: 'Glory',
-                              fontWeight: FontWeight.bold,
-                              fontSize: size.FONT_SIZE * 26,
                             ),
-                          ),
-                          SizedBox(
-                            width: size.BLOCK_WIDTH * 2,
-                          ),
-                          Icon(
-                            Icons.delete_forever_rounded,
-                            color: Colors.white,
-                            size: size.FONT_SIZE * 30,
-                          ),
-                        ],
+                            SizedBox(
+                              width: size.BLOCK_WIDTH * 2,
+                            ),
+                            Icon(
+                              Icons.delete_forever_rounded,
+                              color: Colors.white,
+                              size: size.FONT_SIZE * 30,
+                            ),
+                          ],
+                        ),
+                        color: kRed,
                       ),
-                      color: kRed,
-                    ),
-                    child: Container(
-                      child: Center(
-                        child: RiderRideContainer(
-                          trip: trip,
+                      child: Container(
+                        child: Center(
+                          child: RiderRideContainer(
+                            trip: trip,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            } else if (snapshot.hasError) {
-              EasyLoading.dismiss();
-              EasyLoading.showError('Error: ${snapshot.error}');
-              return Container();
-            } else {
-              EasyLoading.show(status: "Loading...");
-              return Container();
-            }
-          },
+                    );
+                  },
+                );
+              } else if (snapshot.hasError) {
+                EasyLoading.dismiss();
+                EasyLoading.showError('Error: ${snapshot.error}');
+                return Container();
+              } else {
+                EasyLoading.show(status: "Loading...");
+                return Container();
+              }
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
