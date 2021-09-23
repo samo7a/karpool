@@ -25,6 +25,7 @@ class DriverDrawer extends StatelessWidget {
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
+        physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           Container(

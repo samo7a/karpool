@@ -7,6 +7,7 @@ import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';
 import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
+import 'package:mobile_app/screens/rider/PaymentScreen.dart';
 import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import './screens/SplashScreen.dart';
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
               SearchRidesScreen.id: (context) => SearchRidesScreen(),
               BankInfoScreen.id: (context) => BankInfoScreen(),
               VehicleInfoScreen.id: (context) => VehicleInfoScreen(),
+              PaymentScreen.id: (context) => PaymentScreen(),
             },
           );
         });

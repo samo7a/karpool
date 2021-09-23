@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/rider/PaymentScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -23,6 +24,7 @@ class RiderDrawer extends StatelessWidget {
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
+        physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           Container(
@@ -90,7 +92,10 @@ class RiderDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () {},
+              onTap: () {
+                // remove user, add card, Card model under construction
+                Navigator.pushNamed(context, PaymentScreen.id, arguments: user);
+              },
             ),
           ),
           Container(
@@ -209,7 +214,9 @@ class RiderDrawer extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              //api call to delete account
+                            },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
