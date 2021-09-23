@@ -134,42 +134,76 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("Confirm Ride Cancellation"),
-                            content: Text(
-                              "Are you sure you wish to cancel your ride?",
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                            ),
+                            title: Text(
+                              "Confirm Ride Cancellation",
                               style: TextStyle(
+                                color: Color(0xffffffff),
+                              ),
+                            ),
+                            content: Text(
+                              "Are you sure you want to cancel your ride?",
+                              style: TextStyle(
+                                color: Color(0xffffffff),
                                 fontFamily: 'Glory',
                                 fontWeight: FontWeight.bold,
                                 fontSize: size.FONT_SIZE * 22,
                               ),
                             ),
-                            actions: <Widget>[
-                              // ignore: deprecated_member_use
-                              FlatButton(
-                                onPressed: () => {Navigator.of(context).pop(true)},
-                                child: Text(
-                                  "YES",
-                                  style: TextStyle(
-                                    fontFamily: 'Glory',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: size.FONT_SIZE * 20,
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Container(
+                                  height: size.BLOCK_HEIGHT * 7,
+                                  width: size.BLOCK_WIDTH * 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    color: Color(0xff001233),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "No",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                              // ignore: deprecated_member_use
-                              FlatButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: Text(
-                                  "NO",
-                                  style: TextStyle(
-                                    fontFamily: 'Glory',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: size.FONT_SIZE * 20,
+                              Padding(
+                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                child: TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: Container(
+                                    height: size.BLOCK_HEIGHT * 7,
+                                    width: size.BLOCK_WIDTH * 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      color: Color(0xffC80404),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Yes",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: size.FONT_SIZE * 22,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
-                            backgroundColor: kWhite,
+                            backgroundColor: Color(0xff0353A4),
                           );
                         },
                       );

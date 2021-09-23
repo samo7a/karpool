@@ -134,57 +134,102 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("Confirm Trip Cancellation"),
-                            content: Text(
-                              "Are you sure you wish to cancel your trip?",
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                            ),
+                            title: Text(
+                              "Confirm Trip Cancellation",
                               style: TextStyle(
+                                color: Color(0xffffffff),
+                              ),
+                            ),
+                            content: Text(
+                              "Are you sure you want to cancel your trip?",
+                              style: TextStyle(
+                                color: Color(0xffffffff),
                                 fontFamily: 'Glory',
                                 fontWeight: FontWeight.bold,
                                 fontSize: size.FONT_SIZE * 22,
                               ),
                             ),
-                            actions: <Widget>[
-                              // ignore: deprecated_member_use
-                              FlatButton(
-                                onPressed: () => Navigator.of(context).pop(true),
-                                child: Text(
-                                  "YES",
-                                  style: TextStyle(
-                                    fontFamily: 'Glory',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: size.FONT_SIZE * 20, 
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Container(
+                                  height: size.BLOCK_HEIGHT * 7,
+                                  width: size.BLOCK_WIDTH * 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    color: Color(0xff001233),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "No",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                              // ignore: deprecated_member_use
-                              FlatButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: Text(
-                                  "NO",
-                                  style: TextStyle(
-                                    fontFamily: 'Glory',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: size.FONT_SIZE * 20, 
+                              Padding(
+                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                child: TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: Container(
+                                    height: size.BLOCK_HEIGHT * 7,
+                                    width: size.BLOCK_WIDTH * 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      color: Color(0xffC80404),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Yes",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: size.FONT_SIZE * 22,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
-                            backgroundColor: kWhite,
+                            backgroundColor: Color(0xff0353A4),
                           );
                         },
                       );
                     },
                     background: Container(
-                      child: Center(
-                        child: Text(
-                          'Delete Ride',
-                          style: TextStyle(
-                            color: kWhite,
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 26,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Delete Trip',
+                            style: TextStyle(
+                              color: kWhite,
+                              fontFamily: 'Glory',
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.FONT_SIZE * 26,
+                            ),
                           ),
-                        ),
+                          SizedBox(
+                            width: size.BLOCK_WIDTH * 2,
+                          ),
+                          Icon(
+                            Icons.delete_forever_rounded,
+                            color: Colors.white,
+                            size: size.FONT_SIZE * 30,
+                          ),
+                        ],
                       ),
                       color: kRed,
                     ),

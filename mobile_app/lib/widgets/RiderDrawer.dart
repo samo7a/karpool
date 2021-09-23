@@ -5,7 +5,6 @@ import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:mobile_app/widgets/ConfiramtionAlert.dart';
 import 'package:provider/provider.dart';
 import 'TopDrawer.dart';
 
@@ -158,24 +157,85 @@ class RiderDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () {
-                showDialog(
+              onTap: () async {
+                return showDialog<void>(
                   context: context,
                   //fix the buttons here functions
                   //not final
-                  builder: (_) => ConfirmationAlert(
-                    title: "You are about to delete your account.",
-                    msg: "Are you sure you want to delete your account?",
-                    textColor: Color(0xffffff),
-                    backgroundColor: Color(0x000000),
-                    rightButtonText: "Yes, delete my account",
-                    leftButtonText: "No, take me back",
-                    leftButtonColor: Color(0x933933),
-                    rightButtonColor: Color(0x1919191),
-                    rightButtonAction: () =>
-                        print("delete function"), //TODO: call the firebase delete function
-                    leftButtonAction: () => Navigator.pop(context),
-                  ),
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                      ),
+                      title: Text(
+                        "Delete Confirmation",
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                        ),
+                      ),
+                      content: Text(
+                        "Are you sure you want to delete your account?",
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                          fontFamily: 'Glory',
+                          fontWeight: FontWeight.bold,
+                          fontSize: size.FONT_SIZE * 22,
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Container(
+                            height: size.BLOCK_HEIGHT * 7,
+                            width: size.BLOCK_WIDTH * 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                              color: Color(0xff001233),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "No",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xffffffff),
+                                  fontFamily: 'Glory',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: size.FONT_SIZE * 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                          child: TextButton(
+                            onPressed: () {},
+                            child: Container(
+                              height: size.BLOCK_HEIGHT * 7,
+                              width: size.BLOCK_WIDTH * 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                color: Color(0xffC80404),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Yes",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xffffffff),
+                                    fontFamily: 'Glory',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: size.FONT_SIZE * 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      backgroundColor: Color(0xff0353A4),
+                    );
+                  },
                   barrierDismissible: false,
                 );
               },
