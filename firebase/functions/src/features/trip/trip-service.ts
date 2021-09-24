@@ -261,7 +261,7 @@ export class TripService {
 
     async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>{
         //get trips
-        const trips = await this.tripDAO.getDriverCompletedTrips(riderID)
+        const trips = await this.tripDAO.getRiderCompletedTrips(riderID)
         //If Driver hasnt completed an trips
         if(trips == undefined){
             throw new HttpsError('not-found','Driver hasnt completed a Trip')
