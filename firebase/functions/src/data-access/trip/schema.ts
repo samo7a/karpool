@@ -7,6 +7,8 @@ type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
 export interface CreatedTripSchema {
 
+    docID: string
+
     /**
      * The id of the driver for the trip.
      */
@@ -21,6 +23,12 @@ export interface CreatedTripSchema {
      * 
      */
     startLocation: string
+
+    /**
+ * 
+ */
+    endLocation: string
+
 
     /**
      * Status list of riders who have interacted with the trip.

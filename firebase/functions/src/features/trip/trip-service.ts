@@ -8,6 +8,7 @@ import { hashesForPoints } from "../../geo-hash";
 import * as geohasher from 'ngeohash'
 import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
+import { autoID } from "../../data-access/utils/misc";
 
 export class TripService {
 
@@ -33,14 +34,19 @@ export class TripService {
         //Address string => (x, y) via Google Api
         const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress)
 
-        console.log(`XX${route.polyline}XX`)
+        const tripID = autoID()
 
-        const tripID = await this.tripDAO.createAddedTrip({
+        await this.tripDAO.createAddedTrip(tripID, {
+
+            docID: tripID,
+
             driverID: uid,
 
             startTime: firestore.Timestamp.fromDate(new Date(data.startTime)),
 
             startLocation: data.startAddress,
+
+            endLocation: data.endAddress,
 
             riderStatus: {},
 
@@ -188,51 +194,51 @@ export class TripService {
 
     async cancelRide(riderID: string, tripID: string): Promise<void> {
 
-        //Read from database
+        //Get trip from the database
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-        //Do logic
+            // Check if trip exist in the database
+            if (trip === undefined) {
+                throw new HttpsError('not-found', 'Trip does not exist')
+            }
+            // Check if rider is part of the trip
+            if (trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+            }
 
-        //Write to database
+            // Cancel the rider by changing his status to Rejected. 
+            // This ride will not be shown in his search
+            trip.riderStatus[riderID] = 'Rejected'
 
-        // await this.tripDAO.updateCreateTrip(tripID, (trip) => {
-        //     if (trip.riderStatus[riderID] === undefined) {
-        //         throw new HttpsError('aborted', `Rider isn't part of this ride.`)
-        //     }
-        //     trip.riderStatus[riderID] = 'Rejected'
-        //     return trip
-        // })
+            //Write to database
+            await this.tripDAO.updateCreatedTrip(tripID, trip)
 
-        //Get
+            // Call change route function to update route
+            console.log("Rider canceled, Route will be updated")
+           
+            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+            const currentTime = new Date().getTime()
+            const calculatedTime = ((scheduleTime - currentTime)/1000 )  
+                console.log(scheduleTime, "=====", currentTime,"====", calculatedTime)
 
-        //Set
+                if ((calculatedTime < 10800) && (calculatedTime > 0)){
 
+                    console.log("Rider will be fined")
 
-
-        // const trip2 = await this.tripDAO.getCreatedTrip(tripID)
-
-
-
-
-        //         // Call change route function to update route
-
-        //         const scheduleTime = trip2.startTime.getTime()
-        //         const currentTime = new Date().getTime()
-
-        // if (((currentTime - scheduleTime) /1000 ) < 10800 ){
-
-        // Charge the rider $5 penality or add a field in user as debt and add the value
-
-        //  }
+                    // Charge the rider $5 penality or add a field in user as debt and add the value 
+                }    
     }
-    async acceptRiderRequest (riderID: string, tripID: string): Promise<void>{
+
+
+    async acceptRiderRequest(riderID: string, tripID: string): Promise<void> {
         //get trip 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
-        if(trip == undefined){
-            throw new HttpsError('not-found','Trip does not exist')
+        if (trip === undefined) {
+            throw new HttpsError('not-found', 'Trip does not exist')
         }
         //check if rider is in trip
-        if(trip.riderStatus[riderID] == undefined){
-            throw new HttpsError('not-found','Rider hasnt requested a trip')
+        if (trip.riderStatus[riderID] === undefined) {
+            throw new HttpsError('not-found', 'Rider hasnt requested a trip')
         }
         //change status to rejected
         trip.riderStatus[riderID] = 'Accepted'
@@ -241,32 +247,32 @@ export class TripService {
         //TO DO BELOW
         //const route = await this.directionsDAO.getRoute()
 
-       // this.setTripRoute(tripID)
+        // this.setTripRoute(tripID)
         // Charge the rider $5 penality or add a field in user as debt and add the value
 
         //  }
     }
-    
-    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>{
+
+    async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
         //get trips
         const trips = await this.tripDAO.getDriverCompletedTrips(driverID)
         //If Driver hasnt completed an trips
-        if(trips == undefined){
-            throw new HttpsError('not-found','Driver hasnt completed a Trip')
-        }   
-        else{
-             return trips 
+        if (trips === undefined) {
+            throw new HttpsError('not-found', 'Driver hasnt completed a Trip')
+        }
+        else {
+            return trips
         }
     }
 
-    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>{
+    async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> {
         //get trips
         const trips = await this.tripDAO.getRiderCompletedTrips(riderID)
         //If Driver hasnt completed an trips
-        if(trips == undefined){
-            throw new HttpsError('not-found','Driver hasnt completed a Trip')
+        if (trips === undefined) {
+            throw new HttpsError('not-found', 'Driver hasnt completed a Trip')
         }
-        else{
+        else {
             return trips
         }
     }
