@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +25,11 @@ class RiderHomeScreen extends StatefulWidget {
 
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
   User? user;
-  // late Future<List<RiderTrip>> trips;
+  late Future<List<RiderTrip>> trips;
   void initState() {
     super.initState();
     user = widget.user;
-    tripFromFireBase();
+    trips = tripFromFireBase();
   }
 
   Future<List<RiderTrip>> tripFromFireBase() async {
@@ -102,18 +104,24 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
     }
   }
 
+  Future _onRefresh() async {
+    setState(() {
+      trips = tripFromFireBase();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: tripFromFireBase,
+        onRefresh: _onRefresh,
         child: Container(
           color: kDashboardColor,
           child: FutureBuilder<List<RiderTrip>>(
-            future: tripFromFireBase(),
+            future: trips,
             builder: (BuildContext context, AsyncSnapshot<List<RiderTrip>> snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                 EasyLoading.dismiss();
                 return ListView.builder(
                   padding: EdgeInsets.only(bottom: size.BLOCK_HEIGHT * 10),
@@ -241,12 +249,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                     );
                   },
                 );
-              } else if (snapshot.hasError) {
-                EasyLoading.dismiss();
-                EasyLoading.showError('Error: ${snapshot.error}');
-                return Container();
-              } else {
-                EasyLoading.show(status: "Loading...");
+              } else if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
                 EasyLoading.dismiss();
                 return Container(
                   child: Center(
@@ -255,7 +258,16 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                     ),
                   ),
                 );
-              }
+              } else if (snapshot.hasError) {
+                EasyLoading.dismiss();
+                EasyLoading.showError('Error: ${snapshot.error}');
+                return Container();
+              } else if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.active) {
+                EasyLoading.show(status: "Loading...");
+                return Container();
+              } else
+                return Container();
             },
           ),
         ),

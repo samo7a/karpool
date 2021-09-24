@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -23,11 +25,12 @@ class DriverHomeScreen extends StatefulWidget {
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   User? user;
+  late Future<List<DriverTrip>> trips;
 
   void initState() {
     super.initState();
     user = widget.user;
-    tripFromFireBase();
+    trips = tripFromFireBase();
   }
 
   Future<List<DriverTrip>> tripFromFireBase() async {
@@ -106,18 +109,24 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
   }
 
+  Future _onRefresh() async {
+    setState(() {
+      trips = tripFromFireBase();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return RefreshIndicator(
-      onRefresh: tripFromFireBase,
+      onRefresh: _onRefresh,
       child: Scaffold(
         body: Container(
           color: kDashboardColor,
           child: FutureBuilder<List<DriverTrip>>(
             future: tripFromFireBase(),
             builder: (BuildContext context, AsyncSnapshot<List<DriverTrip>> snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                 EasyLoading.dismiss();
                 return ListView.builder(
                   padding: EdgeInsets.only(bottom: size.BLOCK_HEIGHT * 10),
@@ -328,13 +337,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     );
                   },
                 );
-              } else if (snapshot.hasError) {
+              } else if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
                 EasyLoading.dismiss();
                 EasyLoading.showError('Error: ${snapshot.error}');
-                return Container();
-              } else {
-                EasyLoading.show(status: "Loading...");
-                EasyLoading.dismiss();
                 return Container(
                   child: Center(
                     child: Text(
@@ -342,7 +347,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     ),
                   ),
                 );
-              }
+              } else if (snapshot.hasError) {
+                EasyLoading.dismiss();
+                EasyLoading.showError('Error: ${snapshot.error}');
+                return Container();
+              } else if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.active) {
+                EasyLoading.show(status: "Loading...");
+                return Container();
+              } else
+                return Container();
             },
           ),
         ),
