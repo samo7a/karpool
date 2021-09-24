@@ -31,6 +31,9 @@ class Auth {
         rating = result.data['driverRating'] ?? 0.0; //change to 0.0
       else
         rating = result.data['riderRating'] ?? 0.0; //change to 0.0
+      print("rating from auth");
+      print(rating);
+      print(rating.runtimeType);
       var riderRole = result.data['roles']['Rider'] ?? false;
       var driverRole = result.data["roles"]["Driver"] ?? false;
       return User(
@@ -39,7 +42,7 @@ class Auth {
         lastName: lastName,
         phoneNumber: phone,
         profileURL: url,
-        rating: rating,
+        rating: rating as double,
         isVerified: user.emailVerified,
         isDriver: driverRole,
         isRider: riderRole,

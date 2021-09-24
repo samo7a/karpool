@@ -19,7 +19,7 @@ class DriverDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final num rating = user.rating; // change to double later
+    final double rating = user.rating; // change to double later
     final String uName = user.firstName + " " + user.lastName;
     final String imageLink = user.profileURL;
     Size size = Size(Context: context);

@@ -13,7 +13,7 @@ class TopDrawer extends StatelessWidget {
 
   final String profilePic;
   final String fullName;
-  final num starRating; //change to double later
+  final double starRating; //change to double later
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class TopDrawer extends StatelessWidget {
           ),
           Center(
             child: RatingBarIndicator(
-              rating: starRating.ceilToDouble(), // remove the ceil function later
+              rating: starRating, // remove the ceil function later
               itemCount: 5,
               itemSize: size.BLOCK_WIDTH * 12,
               direction: Axis.horizontal,

@@ -13,7 +13,7 @@ class User {
   final bool isVerified;
   final bool isRider;
   final String profileURL;
-  final num rating; // change to double later
+  final double rating; // change to double later
   User({
     required this.uid,
     required this.firstName,
@@ -40,6 +40,9 @@ class User {
     String phone = result.data['phone'] ?? "";
     String url = result.data['profileURL'] ?? "";
     num rating = result.data['driverRating'] ?? 0.0; //change to 0.0
+    print("rating from user");
+    print(rating);
+    print(rating.runtimeType);
     var riderRole = result.data['roles']['Rider'] ?? false;
     var driverRole = result.data["roles"]["Driver"] ?? false;
     return User(
@@ -48,7 +51,7 @@ class User {
       lastName: lastName,
       phoneNumber: phone,
       profileURL: url,
-      rating: rating,
+      rating: rating as double,
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,
