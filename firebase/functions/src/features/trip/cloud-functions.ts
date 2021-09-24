@@ -12,6 +12,19 @@ export const searchTrips = functions.https.onCall(async (data, context) => {
 
     await validateAuthorization(context)
 
+    const t: {
+        pickupLocation: {
+            x: number
+            y: number
+        }
+        dropoffLocation: {
+            x: number
+            y: number
+        }
+        passengerCount: number
+        startDate: number
+    }
+
     const info = {
         pickupLocation: {
             x: validateNumber(data.pickupLocation.x),
