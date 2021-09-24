@@ -194,17 +194,16 @@ export class TripDAO implements TripDAOInterface {
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
-        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where('driverID', '==', `${driverID}`).get()
-
+        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where('driverID','==',`${driverID}`).where('tripStatus','==','COMPLETED').get()
 
         return completedTrips.docs.map(doc => doc.data()) as ScheduleTripSchema[]
-
     }
 
     async getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]> {
-        const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`, '==', 'COMPLETED').get()
 
-        return completedTrips.docs.map(doc => doc.data()) as ScheduleTripSchema[]
+         const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`,'==','COMPLETED').get()
+        return completedTrips.docs.map(doc =>doc.data()) as ScheduleTripSchema[]
+
     }
 
 
