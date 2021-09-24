@@ -3,15 +3,36 @@ import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../auth/utils"
 import { newTripService } from '../../index'
+import { validateDate, validateNumber } from "../../utils/validation"
 import { validateAddTripData } from "./validation"
 
 
-export const searchTrips = functions.https.onCall((data, context) => {
 
-    // const uid = validateAuthorization(context)
+export const searchTrips = functions.https.onCall(async (data, context) => {
 
-    //start end points
+    await validateAuthorization(context)
+
+    const info = {
+        pickupLocation: {
+            x: validateNumber(data.pickupLocation.x),
+            y: validateNumber(data.pickupLocation.y)
+        },
+        dropoffLocation: {
+            x: validateNumber(data.dropoffLocation.x),
+            y: validateNumber(data.dropoffLocation.y)
+        },
+        passengerCount: validateNumber(data.passengerCount),
+        startDate: validateDate(data.startDate)
+    }
+
+    //Cut off at the end of the day.
+    const endDate = new Date(info.startDate.getTime())
+    endDate.setUTCHours(23, 59, 59)
+
+    return newTripService().searchTrips(info.pickupLocation, info.dropoffLocation, info.startDate, endDate, info.passengerCount)
+
 })
+
 
 /**
  * 
