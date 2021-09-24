@@ -1,6 +1,37 @@
-import { Point } from './models-shared/route'
+import { Point } from '../models-shared/route'
 import * as geohash from 'ngeohash'
-import { GeoPointSchema } from './data-access/trip/schema'
+import { GeoPointSchema } from '../data-access/trip/schema'
+
+//TODO: Unit test all methods in this file.
+
+/** 
+ * Sorts the points by 'x' from smallest to largest. Then by 'y' from smallest to largest.
+ * The sorted list is then encoded to a list of geo-hashes which are joined together.
+ * NOTE: The hashes are encoded at a precision of 7 so its extremely unlikely that two routes will have the same cacheID.
+ * @param points A list of points.
+ */
+export function cacheID(points: Point[]): string {
+    const sorted = points.sort((a, b) => {
+        const dx = a.x - b.x
+        return dx === 0 ? a.y - b.y : dx
+    })
+    return sorted.map(p => geohash.encode(p.y, p.x, 7)).join('')
+}
+
+
+/**
+ * 
+ * @param waitTime 
+ * @param drivingTime 
+ * @param mileage 
+ * @param baseFare 
+ * @param tolls 
+ * @returns 
+ */
+export function calculateFare(waitTime: number, drivingTime: number, mileage: number, baseFare: number, tolls: number): number {
+    return waitTime * 0.03 + drivingTime * 0.015 + mileage * 0.4 + baseFare + tolls
+}
+
 
 
 //Assume points are in order.

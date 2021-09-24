@@ -11,6 +11,7 @@ interface EnvConfig {
     }
 }
 
+
 export function getEnv(): EnvConfig {
     return functions.config() as EnvConfig
 }

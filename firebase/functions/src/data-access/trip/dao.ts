@@ -1,8 +1,9 @@
-import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "./schema";
+import { CreatedTripSchema, GeoPointSchema, RouteSchema, ScheduleTripSchema } from "./schema";
 import * as admin from 'firebase-admin'
 import { FirestoreKey, RealtimeKey } from '../../constants'
 import { autoID } from "../utils/misc";
 import { _documentWithOptions } from "firebase-functions/lib/providers/firestore";
+import { Route } from "../../models-shared/route";
 
 
 export interface TripDAOInterface {
@@ -37,6 +38,21 @@ export interface TripDAOInterface {
 
     getGeoPointsByHash(hash: string): Promise<GeoPointSchema[]>
 
+    /**
+     * Stores the route data so it can be retrieved later without needing to call the Google API.
+     * @param tripID The document id of the trip the given route is associated with.
+     * @param cacheID An id generated derived from start, end, and waypoints points the route passes through.
+     * @param route A route object.
+     */
+    cacheRoute(tripID: string, cacheID: string, route: Route): Promise<void>
+
+    /**
+     * Gets routes stored for a certain trip.
+     * @param tripID The document id of the trip the given route is associated with.
+     * @param waypoints The number of waypoints the route has to narrow down the results.
+     */
+    getCachedRoutes(tripID: string, waypoints?: number): Promise<Route[]>
+
     updateCreatedTrip(tripID: string, data: Partial<CreatedTripSchema>): Promise<void>
 
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema>
@@ -55,6 +71,35 @@ export class TripDAO implements TripDAOInterface {
     constructor(db: admin.firestore.Firestore, realtimeDB: admin.database.Database) {
         this.db = db
         this.realtimeDB = realtimeDB
+    }
+
+    async cacheRoute(tripID: string, cacheID: string, route: Route): Promise<void> {
+        const data: RouteSchema = {
+            waypointOrder: route.waypointOrder,
+            tripID: tripID,
+            legs: route.legs,
+            distance: route.distance,
+            duration: route.duration,
+            polyline: route.polyline
+        }
+        await this.db.collection(FirestoreKey.cachedRoutes).doc(cacheID).create(data)
+    }
+
+
+    getCachedRoutes(tripID: string, waypoints?: number): Promise<Route[]> {
+        let query = this.db.collection(FirestoreKey.cachedRoutes)
+            .where('tripID', '==', tripID)
+
+        if (waypoints !== undefined) {
+            query = query.where('waypointCount', '==', waypoints)
+        }
+        return query.get().then(snap => {
+            return snap.docs.map(doc => {
+                const r = doc.data() as RouteSchema
+                return new Route(r.waypointOrder, r.polyline, r.legs, r.distance, r.duration)
+            })
+        })
+
     }
 
     async addGeoPoints(points: GeoPointSchema[]): Promise<void> {

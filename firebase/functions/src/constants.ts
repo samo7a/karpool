@@ -10,7 +10,9 @@ export const FirestoreKey = {
 
     tripsScheduled: 'trips-scheduled',
 
-    creditCards: 'credit-cards'
+    creditCards: 'credit-cards',
+
+    cachedRoutes: 'routes-cached'
 
 }
 

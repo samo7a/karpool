@@ -7,13 +7,15 @@ import { PaymentDAO } from "./data-access/payment-dao/dao";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
 import { VehicleDAO } from "./data-access/vehicle/dao";
 import { TripDAO } from "./data-access/trip/dao";
-import { DirectionsDAOMock } from "./data-access/directions/dao-mock";
+import { DirectionsDAOMock } from "./data-access/route/dao-mock";
 
 
 import { AccountService } from "./features/account-management/account-service";
 import { TripService } from "./features/trip/trip-service";
 
-import { getEnv } from "./env-config";
+import { getEnv } from "./utils/env-config";
+
+import { RouteDAO, RouteDAOInterface } from "./data-access/route/dao";
 
 //MARK: Setup
 
@@ -22,7 +24,6 @@ import { getEnv } from "./env-config";
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
-import { DirectionsDAO, DirectionsDAOInterface } from "./data-access/directions/dao";
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -58,9 +59,9 @@ export function newTripDAO(): TripDAO {
     return new TripDAO(admin.firestore(), admin.database())
 }
 
-export function newDirectionsDAO(): DirectionsDAOInterface {
+export function newRouteDAO(): RouteDAOInterface {
     // return new DirectionsDAOMock()
-    return new DirectionsDAO(getEnv().directions_api.private_key)
+    return new RouteDAO(getEnv().directions_api.private_key)
 }
 
 export function newAccountService(): AccountService {
@@ -76,7 +77,7 @@ export function newAccountService(): AccountService {
 export function newTripService(): TripService {
     return new TripService(
         newTripDAO(),
-        newDirectionsDAO()
+        newRouteDAO()
     )
 }
 
@@ -89,7 +90,7 @@ exports.trip = require('./features/trip/cloud-functions')
 
 
 import * as geohash from 'ngeohash'
-import { hashesForPoints } from "./geo-hash";
+import { cacheID, hashesForPoints } from "./utils/route";
 import { Constants } from "./constants";
 
 //Test with mock only.
@@ -182,6 +183,37 @@ export const createTrips = functions.https.onCall(async (data, context) => {
     //     console.log(str)
     // })
 
+})
+
+import { Point } from "./models-shared/route";
+
+export const testCache = functions.https.onCall(async (data, context) => {
+
+    //27.721337, -82.663498
+
+    //27.827675, -82.640423
+    //27.889591, -82.311503
+
+    //27.905876, -82.292386
+
+
+    const start = { y: 27.721337, x: - 82.663498 }
+    const end = { y: 27.905876, x: -82.292386 }
+
+    const waypoints: Point[] = [
+        { y: 27.889591, x: -82.311503 },
+        { y: 27.827675, x: -82.640423 }
+    ]
+
+    const route = await newRouteDAO().getRoute(start, end, waypoints)
+
+    const arr: Point[] = [...waypoints]
+    arr.push(start)
+    arr.push(end)
+
+    await newTripDAO().cacheRoute('SomeTripID', cacheID(arr), route)
+
+    return route
 })
 
 export const searchTrips = functions.https.onCall((data, context) => {

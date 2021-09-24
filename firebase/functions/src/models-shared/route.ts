@@ -105,5 +105,4 @@ export interface Step {
 
     instruction: string
 
-
 }

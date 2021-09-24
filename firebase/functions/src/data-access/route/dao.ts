@@ -2,7 +2,7 @@
 import { Client, DirectionsRoute, DirectionsStep, LatLng, RouteLeg } from '@googlemaps/google-maps-services-js'
 import { Point, Route, Leg, Step } from "../../models-shared/route";
 
-export interface DirectionsDAOInterface {
+export interface RouteDAOInterface {
 
     /**
      * Creates a route between the start and end points which passes through all waypoints.
@@ -15,7 +15,7 @@ export interface DirectionsDAOInterface {
 }
 
 
-export class DirectionsDAO implements DirectionsDAOInterface {
+export class RouteDAO implements RouteDAOInterface {
 
     private apiKey: string
 
@@ -44,7 +44,8 @@ export class DirectionsDAO implements DirectionsDAOInterface {
                 optimize: shouldOptimize, //Want the most effecient route even if way points ordering is changed.
                 alternatives: false, //Guaruntee only one route in response and increase performance.
                 origin: origin,
-                destination: destination
+                destination: destination,
+                waypoints: formattedWaypoints
             }
         }).then(res => {
             if (res.data.routes.length === 0) {

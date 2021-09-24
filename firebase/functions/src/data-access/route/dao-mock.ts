@@ -1,9 +1,9 @@
-import { DirectionsDAOInterface } from './dao'
+import { RouteDAOInterface } from './dao'
 import { Point, Route } from '../../models-shared/route';
 
 
 //TODO: Move to test folder working on unit tests.
-export class DirectionsDAOMock implements DirectionsDAOInterface {
+export class DirectionsDAOMock implements RouteDAOInterface {
 
     getRoute(start: Point, end: Point, waypoints: Point[]): Promise<Route> {
         throw new Error('Not implemented.')

@@ -9,6 +9,8 @@ import { validateAddTripData } from "./validation"
 export const searchTrips = functions.https.onCall((data, context) => {
 
     // const uid = validateAuthorization(context)
+
+    //start end points
 })
 
 /**
@@ -81,6 +83,7 @@ export const acceptRiderRequest = functions.https.onCall(async (data, context) =
         throw new HttpsError('failed-precondition', 'Invalid User')
     }
 })
+
 
 export const getDriverCompletedTrips = functions.https.onCall(async (data, context) => {
     const uid = validateAuthorization(context)

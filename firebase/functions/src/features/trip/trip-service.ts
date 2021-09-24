@@ -2,9 +2,9 @@ import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "../../dat
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
-import { DirectionsDAOInterface } from "../../data-access/directions/dao";
+import { RouteDAOInterface } from "../../data-access/route/dao";
 import { Point, Route } from "../../models-shared/route";
-import { hashesForPoints } from "../../geo-hash";
+import { hashesForPoints } from "../../utils/route";
 import * as geohasher from 'ngeohash'
 import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
@@ -14,11 +14,11 @@ export class TripService {
 
     private tripDAO: TripDAOInterface
 
-    private directionsDAO: DirectionsDAOInterface
+    private directionsDAO: RouteDAOInterface
 
     constructor(
         tripDAO: TripDAOInterface,
-        directionsDAO: DirectionsDAOInterface
+        directionsDAO: RouteDAOInterface
     ) {
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
@@ -54,7 +54,7 @@ export class TripService {
 
             estimatedDistance: route.distance,
 
-            estimatedFare: 0,
+            estimatedTotalFare: 0,
 
             estimatedDuration: route.duration,
 
@@ -88,7 +88,7 @@ export class TripService {
         //TODO: Add estimated fare, distance, duration for each rider.
         await this.tripDAO.updateCreatedTrip(tripID, {
             estimatedDistance: route.distance,
-            estimatedFare: 0.0
+            estimatedTotalFare: 0.0
         })
 
     }
