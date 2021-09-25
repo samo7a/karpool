@@ -227,8 +227,8 @@ export const testCache = functions.https.onCall(async (data, context) => {
 
 export const searchTrips = functions.https.onCall((data, context) => {
 
-    return newTripService().searchTrips(data.p1, data.p2, new Date('2021-09-01T00:01:03.334Z'), new Date('2021-09-20T23:59:03.334Z'), 1).then(trips => {
-        return `Found ${trips.length} Trips!`
+    return newTripService().searchTrips(data.p1, data.p2, new Date('2021-09-01T00:01:03.334Z'), new Date('2021-09-20T23:59:03.334Z'), 1).then(response => {
+        return `Found ${response.trips.length} Trips!`
     })
 })
 

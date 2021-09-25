@@ -4,11 +4,13 @@ import { TripDAOInterface } from '../../data-access/trip/dao'
 import { firestore } from "firebase-admin";
 import { RouteDAOInterface } from "../../data-access/route/dao";
 import { Point, Route } from "../../models-shared/route";
-import { hashesForPoints } from "../../utils/route";
+import { calculateFare, hashesForPoints } from "../../utils/route";
 import * as geohasher from 'ngeohash'
 import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { autoID } from "../../data-access/utils/misc";
+import { RiderStatus } from "../../data-access/trip/schema";
+import { distance } from "../../utils/misc";
 
 export class TripService {
 
@@ -116,7 +118,7 @@ export class TripService {
      * @param passengerNum 
      * @returns 
      */
-    async searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date, passengerNum: number): Promise<CreatedTripSchema[]> {
+    async searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date, passengerNum: number): Promise<{ trips: CreatedTripSchema[], estimatedFare: number }> {
 
         //Get hash of pickup point
         const pickupHash = geohasher.encode(pickup.y, pickup.x, Constants.hashPrecision)
@@ -166,12 +168,17 @@ export class TripService {
         //Return all trips
         const trips = await Promise.all(validTripIDs.map(tripID => this.tripDAO.getCreatedTrip(tripID)))
 
-        return trips.filter(trip => {
+        const tripResults = trips.filter(trip => {
             const startTime = trip.startTime.toDate().getTime()
             const isWithinTimeInterval = startTime > after.getTime() && startTime < before.getTime()
             const hasEnoughSeats = trip.seatsAvailable >= passengerNum
             return hasEnoughSeats && isWithinTimeInterval
         })
+
+        return {
+            trips: tripResults,
+            estimatedFare: calculateFare(0, 0, distance(pickup, dropoff), 1.50, 0.0)
+        }
 
     }
 
@@ -200,14 +207,35 @@ export class TripService {
     }
 
 
+
+
+    private getWaypoints(trip: CreatedTripSchema, riderStatus: RiderStatus): Point[] {
+        const points: Point[] = []
+        trip.riderInfo.forEach(entry => {
+            if (trip.riderStatus[entry.riderID] === riderStatus) {
+                points.push({ x: entry.pickupLocation.longitude, y: entry.pickupLocation.latitude })
+                points.push({ x: entry.dropoffLocation.longitude, y: entry.dropoffLocation.latitude })
+            }
+        })
+        return points
+    }
+
+
     /**
     * @param tripID
     */
 
     async cancelRide(riderID: string, tripID: string): Promise<void> {
 
+
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
+
+        console.log(this.getWaypoints(trip, 'Accepted'))
+
+        trip.riderInfo.forEach(r => {
+            r.pickupLocation
+        })
 
         // Check if trip exist in the database
         if (trip === undefined) {
