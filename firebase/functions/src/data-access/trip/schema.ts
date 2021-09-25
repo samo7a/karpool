@@ -1,7 +1,7 @@
 import { firestore } from "firebase-admin";
 
 
-type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
+export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
 // type TripStatus = 'Open' | 'Closed' | 'In Progress' | 'Completed'
 
