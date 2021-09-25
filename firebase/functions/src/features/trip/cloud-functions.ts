@@ -2,7 +2,7 @@
 import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../auth/utils"
-import { newTripService } from '../../index'
+import { newTripService, newUserDao } from '../../index'
 import { validateDate, validateNumber, validateStringArray } from "../../utils/validation"
 import { validateAddTripData } from "./validation"
 
@@ -17,26 +17,30 @@ export const getCoordinates = functions.https.onCall((data, context) => {
 
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
-    await validateAuthorization(context)
+    const uid = await validateAuthorization(context)
 
-    const info = {
-        pickupLocation: {
-            x: validateNumber(data.pickupLocation.x),
-            y: validateNumber(data.pickupLocation.y)
-        },
-        dropoffLocation: {
-            x: validateNumber(data.dropoffLocation.x),
-            y: validateNumber(data.dropoffLocation.y)
-        },
-        passengerCount: validateNumber(data.passengerCount),
-        startDate: validateDate(data.startDate)
+    const user = await newUserDao().getAccountData(uid)
+
+    if (user.roles['Rider'] !== true) {
+        throw new HttpsError('permission-denied', `Only a rider may search for trips.`)
     }
 
-    //Cut off at the end of the day.
-    const endDate = new Date(info.startDate.getTime())
-    endDate.setUTCHours(23, 59, 59)
+    const pickupLocation = {
+        x: validateNumber(data.pickupLocation.x),
+        y: validateNumber(data.pickupLocation.y)
+    }
+    const dropoffLocation = {
+        x: validateNumber(data.dropoffLocation.x),
+        y: validateNumber(data.dropoffLocation.y)
+    }
+    const passengerCount = validateNumber(data.passengerCount)
+    const startAfter = validateDate(data.startDate)
 
-    return newTripService().searchTrips(info.pickupLocation, info.dropoffLocation, info.startDate, endDate, info.passengerCount)
+    //Cut off at the end of the day.
+    const startBefore = new Date(startAfter.getTime())
+    startBefore.setUTCHours(23, 59, 59)
+
+    return newTripService().searchTrips(pickupLocation, dropoffLocation, uid, passengerCount, startAfter, startBefore)
 
 })
 

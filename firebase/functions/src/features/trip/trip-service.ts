@@ -10,7 +10,7 @@ import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { autoID } from "../../data-access/utils/misc";
 import { RiderStatus } from "../../data-access/trip/schema";
-import { distance } from "../../utils/misc";
+import { GeoDistance } from "../../utils/misc";
 
 export class TripService {
 
@@ -118,11 +118,16 @@ export class TripService {
      * @param passengerNum 
      * @returns 
      */
-    async searchTrips(pickup: Point, dropoff: Point, after: Date, before: Date, passengerNum: number): Promise<{ trips: CreatedTripSchema[], estimatedFare: number }> {
+    async searchTrips(
+        pickup: Point,
+        dropoff: Point,
+        riderID: string,
+        passengerCount: number,
+        after: Date,
+        before: Date
+    ): Promise<{ trips: CreatedTripSchema[], estimatedFare: number }> {
 
-        //Get hash of pickup point
         const pickupHash = geohasher.encode(pickup.y, pickup.x, Constants.hashPrecision)
-
         const dropoffHash = geohasher.encode(dropoff.y, dropoff.x, Constants.hashPrecision)
 
         const [pickupPoints, dropoffPoints] = await Promise.all([
@@ -138,46 +143,40 @@ export class TripService {
             map[point.tripID] = point
         })
 
-        //TODO: Remove when done debugging
-        console.log(`Got ${pickupPoints.length} pickup points and ${dropoffPoints.length} dropoff points.`)
-        console.log(pickupPoints.map(p => p.tripID))
-        console.log(dropoffPoints.map(p => p.tripID))
-
         /**
          * Filter for trips that:
          * • Pass through both geoHash squares that contain the rider's pickup and dropoff location.
-         * • 
+         * • Are going in the same direction as the pickup and dropoff locations.
          */
         const validTripIDs = pickupPoints.filter(pickupPoint => {
-
             const dropoffPoint = map[pickupPoint.tripID]
-
-            if (dropoffPoint === undefined) { //Undefined dropoff means the trip does pass through both the geoHash squares that contain the rider's pickup and dropoff points.
+            if (dropoffPoint === undefined) { //Undefined dropoff means the trip does NOT pass through both the geoHash squares that contain the rider's pickup and dropoff points.
                 return false
             }
-
             const sameDirection = pickupPoint.index < dropoffPoint.index
-
             return sameDirection
-
         }).map(point => point.tripID)
 
-        console.log('VALID', validTripIDs)
-
-
         //Return all trips
-        const trips = await Promise.all(validTripIDs.map(tripID => this.tripDAO.getCreatedTrip(tripID)))
+        const queriedTrips = await Promise.all(validTripIDs.map(tripID => this.tripDAO.getCreatedTrip(tripID)))
 
-        const tripResults = trips.filter(trip => {
+        /**
+         * Filter trip documents that:
+         * • Have not rejected the rider.
+         * • Start within the target time interval.
+         * • Have enough seats
+         */
+        const tripResults = queriedTrips.filter(trip => {
             const startTime = trip.startTime.toDate().getTime()
             const isWithinTimeInterval = startTime > after.getTime() && startTime < before.getTime()
-            const hasEnoughSeats = trip.seatsAvailable >= passengerNum
-            return hasEnoughSeats && isWithinTimeInterval
+            const hasEnoughSeats = trip.seatsAvailable >= passengerCount
+            const isRejected = trip.riderStatus[riderID] !== 'Rejected'
+            return hasEnoughSeats && isWithinTimeInterval && !isRejected
         })
 
         return {
             trips: tripResults,
-            estimatedFare: calculateFare(0, 0, distance(pickup, dropoff), 1.50, 0.0)
+            estimatedFare: calculateFare(0, 0, GeoDistance(pickup, dropoff), 1.50, 0.0)
         }
 
     }
