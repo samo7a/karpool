@@ -18,7 +18,7 @@
        y: number
    }
    passengerCount: number
-   startDate: number
+   startDate: string 
 }
 ```
 

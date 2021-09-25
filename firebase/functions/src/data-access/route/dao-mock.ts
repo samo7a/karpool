@@ -5,7 +5,14 @@ import { Point, Route } from '../../models-shared/route';
 //TODO: Move to test folder working on unit tests.
 export class DirectionsDAOMock implements RouteDAOInterface {
 
-    getRoute(start: Point, end: Point, waypoints: Point[]): Promise<Route> {
+
+    getCoordinates(placeID: string): Promise<Point> {
+        throw new Error('Method not implemented.');
+    }
+
+
+
+    getRoute(tripID: string, start: Point, end: Point, waypoints: Point[]): Promise<Route> {
         throw new Error('Not implemented.')
         // return new Route(
         //     waypoints: 
