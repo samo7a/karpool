@@ -10,8 +10,7 @@ import { Constants } from "./constants";
 //Test with mock only.
 export const createRoute = functions.https.onCall(async (data, context) => {
 
-    const mock = new DirectionsDAOMock()
-
+    const mock = newRouteDAO()
     const arg: any = `The arguments don't matter for the mock since its static`
 
     const route = await mock.getRoute(arg, arg, arg, arg)
@@ -147,7 +146,6 @@ export const testCache = functions.https.onCall(async (data, context) => {
 // })
 
 import * as decoder from 'google-polyline'
-import { DirectionsDAOMock } from './data-access/route/dao-mock';
 import { newRouteDAO, newTripDAO, newTripService } from '.';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {

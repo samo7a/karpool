@@ -143,6 +143,7 @@ export class TripDAO implements TripDAOInterface {
         await this.db.collection(FirestoreKey.tripsCreated).doc(tripID).update(data)
     }
 
+    //TODO: Throw error if function.
     getCreatedTrip(tripID: string): Promise<CreatedTripSchema> {
         return this.db.collection(FirestoreKey.tripsCreated).doc(tripID)
             .get().then(doc => doc.data() as CreatedTripSchema)

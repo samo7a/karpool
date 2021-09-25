@@ -14,6 +14,7 @@
   },
   "compileOnSave": true,
   "include": [
-    "src"
+    "src",
+    "test/data-access/route/dao-mock.ts"
   ]
 }

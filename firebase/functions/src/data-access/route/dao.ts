@@ -116,7 +116,7 @@ export class RouteDAO implements RouteDAOInterface {
 
         const destination: LatLng = typeof end === 'string' ? end : [end.y, end.x]
 
-        const formattedWaypoints: LatLng[] | undefined = waypoints.length === 0 ? undefined : waypoints.map(p => typeof p === 'string' ? p : [p.y, p.x])
+        const formattedWaypoints: LatLng[] = waypoints.length === 0 ? [] : waypoints.map(p => typeof p === 'string' ? p : [p.y, p.x])
 
         //The googleSDK crashes if the optimize is set to true and waypoints is undefined.
         //Passing an empty for waypoints results in whacky route to Texas problem.

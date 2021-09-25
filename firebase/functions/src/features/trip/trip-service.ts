@@ -229,17 +229,14 @@ export class TripService {
 
     async cancelRidebyRider(riderID: string, tripID: string): Promise<void> {
 
-
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-        // Check if trip exist in the database
-        if (trip === undefined) {
-            throw new HttpsError('not-found', 'Trip does not exist')
-        }
         // Check if rider is part of the trip
         if (trip.riderStatus[riderID] === undefined) {
             throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+        } else if (trip.riderStatus[riderID] === 'Rejected') {
+            throw new HttpsError('invalid-argument', `Rider has already cancelled this ride.`)
         }
 
         // Cancel the rider by changing his status to Rejected. 
@@ -261,9 +258,6 @@ export class TripService {
         const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
         trip.polyline = (await newRoute).polyline
 
-        //Write to database
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
-
         //ToDO: delete rider info from trip
         const arr = trip.riderInfo
         arr.slice().reverse().forEach((element, i) => {
@@ -271,7 +265,10 @@ export class TripService {
                 arr.splice(i)
             }
         });
+        trip.riderInfo = arr
 
+        //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
         const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
         const currentTime = new Date().getTime()
@@ -282,7 +279,7 @@ export class TripService {
 
             console.log("Rider will be fined")
 
-            // Charge the rider $5 penality or add a field in user as debt and add the value 
+            //TODO: Charge the rider $5 penality or add a field in user as debt and add the value 
         }
     }
 
