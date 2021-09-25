@@ -60,6 +60,9 @@ export interface TripDAOInterface {
     getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]>
 
     getRiderCompletedTrips(riderID: string): Promise<ScheduleTripSchema[]>
+
+  //  riderRequestTrip(tripID: string,  riderID: string): Promise<void>
+
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -206,6 +209,10 @@ export class TripDAO implements TripDAOInterface {
 
     }
 
-
-
+    // async riderRequestTrip(tripID: string,  riderID: string): Promise<void>{
+    //     await this.db.collection(FirestoreKey.tripsCreated).doc(tripID).
+    //     //.set({riderStatus:riderID,'Requested'})
+    //     //this.db.collection(FirestoreKey.tripsCreated).doc(tripID).update({'riderStatus':FieldValue.arrayUnion([riderID,'Requested'])})
+       
+    // }
 }

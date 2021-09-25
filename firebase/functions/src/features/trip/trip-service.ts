@@ -10,6 +10,7 @@ import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { autoID } from "../../data-access/utils/misc";
 
+
 export class TripService {
 
     private tripDAO: TripDAOInterface
@@ -240,17 +241,16 @@ export class TripService {
         if (trip.riderStatus[riderID] === undefined) {
             throw new HttpsError('not-found', 'Rider hasnt requested a trip')
         }
-        //change status to rejected
+        //change status to rejected and update seatAvailble
         trip.riderStatus[riderID] = 'Accepted'
 
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
+        trip.seatsAvailable = trip.seatsAvailable - 1
+
         //TO DO BELOW
-        //const route = await this.directionsDAO.getRoute()
+        //Email rider and driver with notification
 
-        // this.setTripRoute(tripID)
-        // Charge the rider $5 penality or add a field in user as debt and add the value
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
-        //  }
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
@@ -275,5 +275,22 @@ export class TripService {
         else {
             return trips
         }
+    }
+
+    async riderRequestTrip(riderID: string, tripID: string): Promise<void>{
+        //get trip 
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
+        if (trip === undefined) {
+            throw new HttpsError('not-found', 'Trip does not exist')
+        }
+       
+        trip.riderStatus[riderID]='Requested'
+    
+        //TO DO BELOW
+        //get trip route based on current route and riders pickup location
+        //estimate rider fare
+
+
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
     }
 }
