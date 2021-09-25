@@ -32,9 +32,15 @@ export class TripService {
     async createAddedTrip(uid: string, data: TripCreationData): Promise<string> {
 
         //Address string => (x, y) via Google Api
-        const route = await this.directionsDAO.getRoute(data.startAddress, data.endAddress)
+
+        const [startPoint, endPoint] = await Promise.all([
+            this.directionsDAO.getCoordinates(data.startPlaceID),
+            this.directionsDAO.getCoordinates(data.endPlaceID)
+        ])
 
         const tripID = autoID()
+
+        const route = await this.directionsDAO.getRoute(tripID, startPoint, endPoint, [])
 
         await this.tripDAO.createAddedTrip(tripID, {
 
@@ -44,13 +50,19 @@ export class TripService {
 
             startTime: firestore.Timestamp.fromDate(new Date(data.startTime)),
 
-            startLocation: data.startAddress,
+            startAddress: data.startAddress,
 
-            endLocation: data.endAddress,
+            endAddress: data.endAddress,
+            //TODO: 
+            startLocation: new firestore.GeoPoint(0, 0),
+
+            endLocation: new firestore.GeoPoint(0, 0),
 
             riderStatus: {},
 
             isOpen: true,
+
+            riderInfo: [],
 
             estimatedDistance: route.distance,
 
@@ -58,7 +70,7 @@ export class TripService {
 
             estimatedDuration: route.duration,
 
-            seatsAvailable: data.seatCount,
+            seatsAvailable: data.seatsAvailable,
 
             polyline: route.polyline
 
@@ -197,36 +209,36 @@ export class TripService {
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-            // Check if trip exist in the database
-            if (trip === undefined) {
-                throw new HttpsError('not-found', 'Trip does not exist')
-            }
-            // Check if rider is part of the trip
-            if (trip.riderStatus[riderID] === undefined) {
-                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
-            }
+        // Check if trip exist in the database
+        if (trip === undefined) {
+            throw new HttpsError('not-found', 'Trip does not exist')
+        }
+        // Check if rider is part of the trip
+        if (trip.riderStatus[riderID] === undefined) {
+            throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+        }
 
-            // Cancel the rider by changing his status to Rejected. 
-            // This ride will not be shown in his search
-            trip.riderStatus[riderID] = 'Rejected'
+        // Cancel the rider by changing his status to Rejected. 
+        // This ride will not be shown in his search
+        trip.riderStatus[riderID] = 'Rejected'
 
-            //Write to database
-            await this.tripDAO.updateCreatedTrip(tripID, trip)
+        //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
-            // Call change route function to update route
-            console.log("Rider canceled, Route will be updated")
-           
-            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
-            const currentTime = new Date().getTime()
-            const calculatedTime = ((scheduleTime - currentTime)/1000 )  
-                console.log(scheduleTime, "=====", currentTime,"====", calculatedTime)
+        // Call change route function to update route
+        console.log("Rider canceled, Route will be updated")
 
-                if ((calculatedTime < 10800) && (calculatedTime > 0)){
+        const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+        const currentTime = new Date().getTime()
+        const calculatedTime = ((scheduleTime - currentTime) / 1000)
+        console.log(scheduleTime, "=====", currentTime, "====", calculatedTime)
 
-                    console.log("Rider will be fined")
+        if ((calculatedTime < 10800) && (calculatedTime > 0)) {
 
-                    // Charge the rider $5 penality or add a field in user as debt and add the value 
-                }    
+            console.log("Rider will be fined")
+
+            // Charge the rider $5 penality or add a field in user as debt and add the value 
+        }
     }
 
 

@@ -61,7 +61,10 @@ export function newTripDAO(): TripDAO {
 
 export function newRouteDAO(): RouteDAOInterface {
     // return new DirectionsDAOMock()
-    return new RouteDAO(getEnv().directions_api.private_key)
+    return new RouteDAO(
+        admin.firestore(),
+        getEnv().directions_api.private_key
+    )
 }
 
 export function newAccountService(): AccountService {
@@ -90,7 +93,7 @@ exports.trip = require('./features/trip/cloud-functions')
 
 
 import * as geohash from 'ngeohash'
-import { cacheID, hashesForPoints } from "./utils/route";
+import { hashesForPoints } from "./utils/route";
 import { Constants } from "./constants";
 
 //Test with mock only.
@@ -100,7 +103,7 @@ export const createRoute = functions.https.onCall(async (data, context) => {
 
     const arg: any = `The arguments don't matter for the mock since its static`
 
-    const route = await mock.getRoute(arg, arg, arg)
+    const route = await mock.getRoute(arg, arg, arg, arg)
 
     const allPoints: { x: number, y: number }[] = []
 
@@ -120,14 +123,20 @@ export const createRoute = functions.https.onCall(async (data, context) => {
 
 })
 
+import { Point } from "./models-shared/route";
+
 export const testRoute = functions.https.onCall((data, context) => {
 
-    return newTripService().createAddedTrip('Chris', {
-        startTime: '2021-09-16T03:30:05.075Z',
-        startAddress: '5600 Laura St Zephyrhills, FL 33542',
-        endAddress: '605 N Stella Ave, Lakeland, FL 33801',
-        seatCount: 4
-    })
+    const start = { y: 27.721337, x: - 82.663498 }
+    const end = { y: 27.905876, x: -82.292386 }
+
+    const waypoints: Point[] = [
+        { y: 27.888994, x: -82.313107 },
+        { y: 27.827675, x: -82.640423 }
+    ]
+
+    return newRouteDAO().getRoute('SomeTripID', start, end, waypoints)
+
 })
 
 /*
@@ -185,7 +194,7 @@ export const createTrips = functions.https.onCall(async (data, context) => {
 
 })
 
-import { Point } from "./models-shared/route";
+// import { Point } from "./models-shared/route";
 
 export const testCache = functions.https.onCall(async (data, context) => {
 
@@ -197,23 +206,23 @@ export const testCache = functions.https.onCall(async (data, context) => {
     //27.905876, -82.292386
 
 
-    const start = { y: 27.721337, x: - 82.663498 }
-    const end = { y: 27.905876, x: -82.292386 }
+    // const start = { y: 27.721337, x: - 82.663498 }
+    // const end = { y: 27.905876, x: -82.292386 }
 
-    const waypoints: Point[] = [
-        { y: 27.889591, x: -82.311503 },
-        { y: 27.827675, x: -82.640423 }
-    ]
+    // const waypoints: Point[] = [
+    //     { y: 27.889591, x: -82.311503 },
+    //     { y: 27.827675, x: -82.640423 }
+    // ]
 
-    const route = await newRouteDAO().getRoute(start, end, waypoints)
+    // const route = await newRouteDAO().getRoute(start, end, waypoints)
 
-    const arr: Point[] = [...waypoints]
-    arr.push(start)
-    arr.push(end)
+    // const arr: Point[] = [...waypoints]
+    // arr.push(start)
+    // arr.push(end)
 
-    await newTripDAO().cacheRoute('SomeTripID', cacheID(arr), route)
+    // await newTripDAO().cacheRoute('SomeTripID', cacheID(arr), route)
 
-    return route
+    // return route
 })
 
 export const searchTrips = functions.https.onCall((data, context) => {

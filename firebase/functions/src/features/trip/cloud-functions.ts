@@ -3,10 +3,17 @@ import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../auth/utils"
 import { newTripService } from '../../index'
-import { validateDate, validateNumber } from "../../utils/validation"
+import { validateDate, validateNumber, validateStringArray } from "../../utils/validation"
 import { validateAddTripData } from "./validation"
 
 
+export const getCoordinates = functions.https.onCall((data, context) => {
+
+    const coordinates = validateStringArray(data)
+
+    console.log(coordinates)
+
+})
 
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
