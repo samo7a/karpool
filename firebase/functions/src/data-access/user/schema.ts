@@ -100,6 +100,11 @@ export interface DriverInfoSchema {
     */
     routingNum: string
 
+    /**
+     * drvier account balance for weekly payment
+     */
+    accountBalance: number
+
 }
 
 

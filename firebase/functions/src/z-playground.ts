@@ -83,6 +83,8 @@ export const createTrips = functions.https.onCall(async (data, context) => {
         })
     }))
 
+    console.log(tripIDs)
+
 
     // const trips = await Promise.all(tripIDs.map(tripID => { return newTripDAO().getCreatedTrip(tripID) }))
 

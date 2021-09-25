@@ -77,6 +77,7 @@ export function newAccountService(): AccountService {
 
 export function newTripService(): TripService {
     return new TripService(
+        newUserDao(),
         newTripDAO(),
         newRouteDAO()
     )

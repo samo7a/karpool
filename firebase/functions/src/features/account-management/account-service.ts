@@ -51,7 +51,8 @@ export class AccountService {
                     licenseExpDate: driverInfo.licenseExpDate,
                     licenseNum: driverInfo.licenseNum,
                     accountNum: driverInfo.accountNum,
-                    routingNum: driverInfo.routingNum
+                    routingNum: driverInfo.routingNum,
+                    accountBalance: 0
                 }
             })
 
@@ -108,7 +109,8 @@ export class AccountService {
                 licenseExpDate: data.licenseExpDate!,
                 licenseNum: data.licenseNum!,
                 accountNum: data.accountNum!,
-                routingNum: data.routingNum!
+                routingNum: data.routingNum!,
+                accountBalance: 0
             }
 
             const riderInfo: RiderInfoSchema = {
