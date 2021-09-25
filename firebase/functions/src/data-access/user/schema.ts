@@ -103,7 +103,7 @@ export interface DriverInfoSchema {
     /**
      * drvier account balance for weekly payment
      */
-    accountBalance?: number
+    accountBalance: number
 
 }
 

@@ -84,7 +84,7 @@ export interface TripRiderInfo {
 
     dropoffLocation: firestore.GeoPoint
 
-    passengerNumber: number
+    passengerCount: number
 
     pickupIndex: number
 
