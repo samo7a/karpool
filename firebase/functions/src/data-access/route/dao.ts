@@ -1,6 +1,11 @@
 // import * as ngeo from 'ngeohash'
 import { Client, DirectionsRoute, DirectionsStep, LatLng, RouteLeg } from '@googlemaps/google-maps-services-js'
+import { firestore } from 'firebase-admin';
+import { FirestoreKey } from '../../constants';
 import { Point, Route, Leg, Step } from "../../models-shared/route";
+import { cacheID } from '../../utils/route';
+import { RouteSchema } from './schema';
+
 
 export interface RouteDAOInterface {
 
@@ -10,26 +15,108 @@ export interface RouteDAOInterface {
      * @param end A point or address string that specifies where the route will end.
      * @param waypoints An array of points or address strings the route must pass through.
      */
-    getRoute(start: Point | string, end: Point | string, waypoints?: (Point | string)[], departureTime?: Date): Promise<Route>
+    getRoute(tripID: string, start: Point, end: Point, waypoints: Point[], departureTime?: Date): Promise<Route>
+
+
+    getCoordinates(placeID: string): Promise<Point>
 
 }
 
-
+//GOOGLEDAO
 export class RouteDAO implements RouteDAOInterface {
 
     private apiKey: string
 
-    constructor(apiKey: string) {
+    private db: firestore.Firestore
+
+    constructor(
+        database: firestore.Firestore,
+        apiKey: string
+    ) {
         this.apiKey = apiKey
+        this.db = database
     }
 
-    getRoute(start: Point | string, end: Point | string, waypoints?: (Point | string)[], departureTime?: Date): Promise<Route> {
+
+    getCoordinates(placeID: string): Promise<Point> {
+        return new Client({}).placeDetails({
+            params: {
+                key: this.apiKey,
+                place_id: placeID,
+                fields: ['geometry']
+            }
+        }).then(res => {
+            const coords = res.data.result.geometry?.location
+            if (coords === undefined) {
+                throw new Error(`No coordinates for ${placeID}.`)
+            } else {
+                return { y: coords.lat, x: coords.lng }
+            }
+        })
+    }
+
+
+    /**
+     * Stores the route data so it can be retrieved later without needing to call the Google API.
+     * @param tripID The document id of the trip the given route is associated with.
+     * @param cacheID An id generated derived from start, end, and waypoints points the route passes through.
+     * @param route A route object.
+     */
+    private async cacheRoute(tripID: string, cacheID: string, route: Route): Promise<void> {
+        const data: RouteSchema = {
+            waypointOrder: route.waypointOrder,
+            tripID: tripID,
+            legs: route.legs,
+            distance: route.distance,
+            duration: route.duration,
+            polyline: route.polyline
+        }
+        await this.db.collection(FirestoreKey.cachedRoutes).doc(cacheID).create(data)
+    }
+
+
+
+    private getCachedRoute(points: Point[]): Promise<Route | undefined> {
+
+        const routeHash = cacheID(points)
+
+        return this.db.collection(FirestoreKey.cachedRoutes).doc(routeHash).get().then(doc => {
+            if (doc.exists) {
+                const rawRoute = doc.data() as RouteSchema
+                return new Route(
+                    rawRoute.waypointOrder,
+                    rawRoute.polyline,
+                    rawRoute.legs,
+                    rawRoute.distance, rawRoute.duration
+                )
+            } else {
+                return undefined
+            }
+        })
+    }
+
+
+
+
+    async getRoute(tripID: string, start: Point, end: Point, waypoints: Point[], departureTime?: Date): Promise<Route> {
+
+
+        const points: Point[] = [start, end]
+        waypoints.forEach(p => {
+            points.push(p)
+        })
+        const cachedRoute = await this.getCachedRoute(points)
+
+        if (cachedRoute !== undefined) {
+            console.log('Found route in the cache!')
+            return cachedRoute
+        }
 
         const origin: LatLng = typeof start === 'string' ? start : [start.y, start.x]
 
         const destination: LatLng = typeof end === 'string' ? end : [end.y, end.x]
 
-        const formattedWaypoints: LatLng[] | undefined = waypoints === undefined ? undefined : waypoints.map(p => typeof p === 'string' ? p : [p.y, p.x])
+        const formattedWaypoints: LatLng[] = waypoints.length === 0 ? [] : waypoints.map(p => typeof p === 'string' ? p : [p.y, p.x])
 
         //The googleSDK crashes if the optimize is set to true and waypoints is undefined.
         //Passing an empty for waypoints results in whacky route to Texas problem.
@@ -47,11 +134,14 @@ export class RouteDAO implements RouteDAOInterface {
                 destination: destination,
                 waypoints: formattedWaypoints
             }
-        }).then(res => {
+        }).then(async res => {
             if (res.data.routes.length === 0) {
                 return Promise.reject(`No routes found.`)
             } else {
-                return this.transformRoute(res.data.routes[0])
+                const newRoute = this.transformRoute(res.data.routes[0])
+                console.log(`Didn't find route in cache. Getting from Google!`)
+                await this.cacheRoute(tripID, cacheID(points), newRoute)
+                return newRoute
             }
         })
     }

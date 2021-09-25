@@ -1,7 +1,7 @@
 import { firestore } from "firebase-admin";
 
 
-type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
+export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
 // type TripStatus = 'Open' | 'Closed' | 'In Progress' | 'Completed'
 
@@ -22,18 +22,27 @@ export interface CreatedTripSchema {
     /**
      * 
      */
-    startLocation: string
+    startLocation: firestore.GeoPoint
+
+    endLocation: firestore.GeoPoint
+
+    startAddress: string
+
+
+    endAddress: string
 
     /**
  * 
  */
-    endLocation: string
 
 
     /**
      * Status list of riders who have interacted with the trip.
      */
     riderStatus: Record<string, RiderStatus>
+
+
+    riderInfo: TripRiderInfo[]
 
     /**
      * 
@@ -66,6 +75,28 @@ export interface CreatedTripSchema {
      */
     polyline: string
 
+
+}
+
+export interface TripRiderInfo {
+
+    pickupLocation: firestore.GeoPoint
+
+    dropoffLocation: firestore.GeoPoint
+
+    passengerCount: number
+
+    pickupIndex: number
+
+    dropoffIndex: number
+
+    riderID: string
+
+    pickupAddress: string
+
+    dropoffAddress: string
+
+    estimatedFare: number
 
 }
 
@@ -181,95 +212,4 @@ export interface GeoPointSchema {
     x: number
 
     y: number
-}
-
-
-
-
-interface Point {
-
-    /**
-     * Longitude
-     */
-    x: number
-
-    /**
-     * Latitude
-     */
-    y: number
-}
-
-
-export interface RouteSchema {
-
-    tripID: string //For queries
-
-    waypointOrder: number[]
-
-    polyline: string
-
-    legs: RouteLegSchema[]
-
-    /**
-     * Distance to travel the entire trip.
-     * (Meters)
-     */
-    distance: number
-
-    /**
-     * Duration to travel the entire trip.
-     * (Seconds)
-     */
-    duration: number
-
-}
-
-export interface RouteLegSchema {
-
-    /**
-     * Distance to travel the leg.
-     * (Meters)
-     */
-    distance: number
-
-    /**
-     * Duration to travel the leg.
-     * (Seconds)
-     */
-    duration: number
-
-
-    startPoint: Point
-
-
-    endPoint: Point
-
-
-    steps: RouteStepSchema[]
-}
-
-
-export interface RouteStepSchema {
-
-    /**
-     * Distance to travel the leg.
-     * (Meters)
-     */
-    distance: number
-
-    /**
-     * Duration to travel the leg.
-     * (Seconds)
-     */
-    duration: number
-
-
-    startPoint: Point
-
-
-    endPoint: Point
-
-
-    instruction: string
-
 }

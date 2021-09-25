@@ -15,4 +15,7 @@ admin.initializeApp()
 //Implement skeleton.
 //Check everything succeeds.
 
-require('./data-access/utils/unit.test')
+// require('./data-access/utils/unit.test')
+
+require('./features/trip/unit.test')
+
