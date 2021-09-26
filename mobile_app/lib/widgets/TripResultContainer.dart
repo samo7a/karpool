@@ -45,7 +45,7 @@ class TripResultContainer extends StatelessWidget {
           HeroDialogRoute(
             builder: (context) {
               return DriverModal(
-                show: true,
+                showButtons: true,
                 trip: trip,
                 driverId: trip.driverId,
               );

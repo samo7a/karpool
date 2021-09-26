@@ -107,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
       EasyLoading.showError("Signing in failed, please try agin!");
+      await prefs.setString("role", "norole");
       // EasyLoading.showError(e.toString());
       print(e.toString());
     }

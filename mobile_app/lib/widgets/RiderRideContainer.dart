@@ -43,7 +43,7 @@ class RiderRideContainer extends StatelessWidget {
               return DriverModal(
                 trip: trip,
                 driverId: trip.driverId,
-                show: true,
+                showButtons: false,
               );
             },
           ),
