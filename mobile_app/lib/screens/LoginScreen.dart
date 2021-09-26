@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login() async {
-    final user = await Provider.of<User?>(context, listen: false);
+    final user = Provider.of<User?>(context, listen: false);
     String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
     String password = passwordController.text.isEmpty ? "empty" : passwordController.text.trim();
     EasyLoading.show(status: 'Signing in...');
@@ -44,12 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString("role", "driver");
       else
         await prefs.setString("role", "rider");
-      ;
+
       final res = await context.read<Auth>().signIn(email, password);
       if (res != null) {
         bool verified = res.isVerified;
         if (!verified) {
-          user != null ? user.sendEmailVerification() : null;
+          user!.sendEmailVerification();
           context.read<Auth>().signOut();
           await prefs.setString("role", "norole");
           EasyLoading.dismiss();

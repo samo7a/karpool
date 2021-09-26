@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 
 class ModalButton extends StatelessWidget {

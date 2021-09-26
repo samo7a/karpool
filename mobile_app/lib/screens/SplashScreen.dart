@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
       final prefs = await SharedPreferences.getInstance();
-      String role = await prefs.getString("role") ?? 'norole';
+      String role = prefs.getString("role") ?? 'norole';
       if (role == 'norole') {
         Navigator.pushAndRemoveUntil(
           context,

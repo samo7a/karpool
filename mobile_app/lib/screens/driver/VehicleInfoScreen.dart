@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
+// import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 
 class VehicleInfoScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class VehicleInfoScreen extends StatefulWidget {
 class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
+    //final user = ModalRoute.of(context)!.settings.arguments as User;
     // final car = ModalRoute.of(context)!.settings.arguments as Car;
 
     // String email = user.email;  later;

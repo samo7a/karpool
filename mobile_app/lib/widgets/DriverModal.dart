@@ -6,7 +6,6 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
-import 'package:mobile_app/widgets/widgets.dart';
 
 class DriverModal extends StatefulWidget {
   const DriverModal({
@@ -104,8 +103,7 @@ class _DriverModalState extends State<DriverModal> {
                     ),
                     Center(
                       child: RatingBarIndicator(
-                        rating: driver.rating as double,
-                        // .ceilToDouble(), // remove the ceil function later
+                        rating: driver.rating,
                         itemCount: 5,
                         itemSize: size.BLOCK_WIDTH * 12,
                         direction: Axis.horizontal,

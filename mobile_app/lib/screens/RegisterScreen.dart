@@ -469,7 +469,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     RequiredValidator(errorText: "Driver License Number is Required!"),
                     PatternValidator(r"^(.*[A-Za-z]){1}.[0-9]{11}$",
                         errorText:
-                            "Please enter a valid driver river license number!"), // 11 but should be 12 numbers
+                            "Please enter a valid driver license number!"), // 11 but should be 12 numbers
                   ]),
                   onChanged: (value) => setState(() => driverLicense = value),
                   textInputAction: TextInputAction.next,
@@ -1261,12 +1261,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Center(
       child: Form(
           child: RoundedButton(
-            color: 0xFF0466CB,
+        color: 0xFF0466CB,
         buttonName: 'Register',
         onClick: () async {
           print(userValidate());
           print(driverValidate());
-          await Provider.of<User?>(context, listen: false);
+          Provider.of<User?>(context, listen: false);
           EasyLoading.show(status: "Signing up...");
           String img64;
           if (_imageFile == null) {
@@ -1274,13 +1274,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             EasyLoading.showError("Please upload a profile picture");
             return;
           } else {
-            final bytes = await Io.File(_imageFile!.path).readAsBytesSync();
+            final bytes = Io.File(_imageFile!.path).readAsBytesSync();
             img64 = base64Encode(bytes);
           }
           if (isDriver) {
             if (!userValidate() || !driverValidate()) {
               EasyLoading.dismiss();
-              EasyLoading.showError("Please fill up all required fields! Driver");
+              EasyLoading.showError("Please fill up all required fields!");
               return;
             }
           } else {
@@ -1341,11 +1341,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             };
 
           HttpsCallable register =
-              await FirebaseFunctions.instance.httpsCallable.call('account-registerUser');
+              FirebaseFunctions.instance.httpsCallable.call('account-registerUser');
           try {
             final result = await register(obj);
-            print("result: " + result.toString());
-            print("result.data: " + result.data.toString());
             if (result.data == null) {
               EasyLoading.dismiss();
               EasyLoading.showSuccess("Signed Up!");

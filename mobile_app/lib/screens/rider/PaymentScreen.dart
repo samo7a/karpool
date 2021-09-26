@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
+// import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreen extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
+    // final user = ModalRoute.of(context)!.settings.arguments as User;
     // final card = ModalRoute.of(context)!.settings.arguments as card;
 
     // String email = user.email;  later;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
-import 'package:mobile_app/models/User.dart';
+// import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TripResultContainer.dart';
@@ -94,7 +94,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
-
     ),
     RiderTrip(
       timestamp: "8888",
@@ -112,7 +111,6 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       estimatedDistance: 111,
       estimatedDuration: 111,
       estimatedFare: 11,
-
     ),
   ];
 
@@ -134,24 +132,22 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   }
 
   _onChanged() {
-    if (_sessionToken == null) {
-      setState(() {
-        _sessionToken = Uuid().v4();
-      });
-    }
+    setState(() {
+      _sessionToken = Uuid().v4();
+    });
     getSuggestion(_controller.text);
   }
 
   _onToChanged() {
-    if (_sessionToken == null) {
-      setState(() {
-        _sessionToken = Uuid().v4();
-      });
-    }
+    setState(() {
+      _sessionToken = Uuid().v4();
+    });
+
     getEndSuggestion(_endController.text);
   }
 
   void getSuggestion(String input) async {
+    // ignore: non_constant_identifier_names
     String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
@@ -167,10 +163,9 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   }
 
   void getEndSuggestion(String input) async {
-    String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
-    String type = '(regions)';
+    String kPLACESAPIKEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String request = '$baseURL?input=$input&key=$kPLACESAPIKEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
