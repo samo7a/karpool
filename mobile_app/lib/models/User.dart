@@ -34,11 +34,12 @@ class User {
     };
     HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
+    print(result.data);
     String firstName = result.data['firstName'] ?? "";
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
     String url = result.data['profileURL'] ?? "";
-    num rating = result.data['driverRating'] ?? 0.0; //change to 0.0
+    num rating = result.data['driverRating']; //change to 0.0
     print("rating from user");
     print(rating);
     print(rating.runtimeType);
@@ -68,7 +69,7 @@ class User {
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
     String url = result.data['profileURL'] ?? "";
-    double rating = result.data['riderRating'] as double; //change to 0.0
+    num rating = result.data['riderRating']; //change to 0.0
     var riderRole = result.data['roles']['Rider'] ?? false;
     var driverRole = result.data["roles"]["Driver"] ?? false;
     return User(
@@ -77,7 +78,7 @@ class User {
       lastName: lastName,
       phoneNumber: phone,
       profileURL: url,
-      rating: rating,
+      rating: rating as double,
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,

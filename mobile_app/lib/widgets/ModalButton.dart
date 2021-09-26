@@ -30,7 +30,7 @@ class ModalButton extends StatelessWidget {
         child: Text(
           buttonName,
           style: TextStyle(
-            fontSize: size.FONT_SIZE * 20,
+            fontSize: size.FONT_SIZE * 15,
             color: Colors.white,
             height: 1,
           ),

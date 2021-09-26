@@ -8,8 +8,8 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
 
 //TODO: add no. of seats left, car info (car make, color, maybe year)
-class DriverModal extends StatefulWidget {
-  const DriverModal({
+class RiderModal extends StatefulWidget {
+  const RiderModal({
     Key? key,
     // required this.profilePic,
     // required this.fullName,
@@ -17,9 +17,8 @@ class DriverModal extends StatefulWidget {
     // required this.date,
     // required this.time,
     // required this.estimatedPrice,
-    required this.show,
-    required this.trip,
-    required this.driverId,
+    // required this.trip,
+    required this.riderid,
   }) : super(key: key);
 
   // final String profilePic;
@@ -28,17 +27,16 @@ class DriverModal extends StatefulWidget {
   // final String date;
   // final double estimatedPrice;
   // final String time;
-  final bool show;
-  final RiderTrip trip;
-  final String driverId;
+  // final RiderTrip trip;
+  final String riderid;
 
   @override
-  _DriverModalState createState() => _DriverModalState();
+  _RiderModalState createState() => _RiderModalState();
 }
 
-class _DriverModalState extends State<DriverModal> {
+class _RiderModalState extends State<RiderModal> {
   // ignore: avoid_init_to_null
-  late User driver = User(
+  late User rider = User(
     uid: "",
     firstName: "",
     lastName: "",
@@ -51,19 +49,17 @@ class _DriverModalState extends State<DriverModal> {
   );
   late String driverId;
   late RiderTrip trip;
-  late bool show;
   void initState() {
     super.initState();
-    driverId = widget.driverId;
-    trip = widget.trip;
+    driverId = widget.riderid;
+    // trip = widget.trip;
     getDriverInfo();
-    show = widget.show;
   }
 
   void getDriverInfo() async {
-    User d = await User.getDriverFromFireBase(driverId);
+    User r = await User.getDriverFromFireBase(driverId);
     setState(() {
-      driver = d;
+      rider = r;
     });
   }
 
@@ -101,7 +97,7 @@ class _DriverModalState extends State<DriverModal> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: NetworkImage(
-                              driver.profileURL,
+                              rider.profileURL,
                             ),
                             fit: BoxFit.fill,
                           ),
@@ -112,7 +108,7 @@ class _DriverModalState extends State<DriverModal> {
                       children: [
                         Center(
                           child: Text(
-                            driver.firstName + " " + driver.lastName,
+                            rider.firstName + " " + rider.lastName,
                             style: TextStyle(
                               fontFamily: 'Glory',
                               fontSize: size.FONT_SIZE * 24,
@@ -126,7 +122,7 @@ class _DriverModalState extends State<DriverModal> {
                     ),
                     Center(
                       child: RatingBarIndicator(
-                        rating: driver.rating,
+                        rating: rider.rating,
                         itemCount: 5,
                         itemSize: size.BLOCK_WIDTH * 12,
                         direction: Axis.horizontal,
@@ -139,49 +135,11 @@ class _DriverModalState extends State<DriverModal> {
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 1,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.date_range_outlined,
-                        ),
-                        SizedBox(
-                          width: size.BLOCK_WIDTH * 3,
-                        ),
-                        Text(
-                          widget.trip.date,
-                          style: TextStyle(
-                            color: kWhite,
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 20,
-                          ),
-                        ),
-                      ],
-                    ),
+                    
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 1,
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.timelapse_outlined,
-                        ),
-                        SizedBox(
-                          width: size.BLOCK_WIDTH * 3,
-                        ),
-                        Text(
-                          widget.trip.time,
-                          style: TextStyle(
-                            color: kWhite,
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 20,
-                          ),
-                        ),
-                      ],
-                    ),
+                    
                     // SizedBox(
                     //   height: size.BLOCK_HEIGHT * 1,
                     // ),
@@ -252,40 +210,27 @@ class _DriverModalState extends State<DriverModal> {
                     //     ),
                     //   ],
                     // ),
-                    Center(
-                      child: Text(
-                        '\$ ' + widget.trip.estimatedPrice.toString(),
-                        style: TextStyle(
-                          color: Colors.green[400],
-                          fontFamily: 'Glory',
-                          fontWeight: FontWeight.bold,
-                          fontSize: size.FONT_SIZE * 20,
-                        ),
+                    Padding(
+                      padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ModalButton(
+                            buttonName: "Cancel",
+                            onClick: () {
+                              Navigator.pop(context);
+                            },
+                            color: 0xffF31818,
+                          ),
+                          ModalButton(
+                            buttonName: "Schedule",
+                            color: 0xff3CB032,
+                            onClick: schedule,
+                          ),
+                        ],
                       ),
                     ),
-                    show
-                        ? Padding(
-                            padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ModalButton(
-                                  buttonName: "Cancel",
-                                  onClick: () {
-                                    Navigator.pop(context);
-                                  },
-                                  color: 0xffF31818,
-                                ),
-                                ModalButton(
-                                  buttonName: "Schedule",
-                                  color: 0xff3CB032,
-                                  onClick: schedule,
-                                ),
-                              ],
-                            ),
-                          )
-                        : Container(),
                   ],
                 ),
               ),

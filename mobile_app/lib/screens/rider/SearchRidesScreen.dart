@@ -48,12 +48,12 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       timestamp: "8888",
       tripId: "1",
       date: "01/01/2021",
-      time: "04:30 PM",
+      time: "01:30 PM",
       fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
       status: "Pending",
       toAddress: "very long address that I cannot wrap unless I add an expanded widget",
       estimatedPrice: 32.34,
-      driverId: "23344",
+      driverId: "SgxafpVWoPOhmHfdrggJKYafxcc2",
       isOpen: true,
       polyLine: "polyLine",
       seatNumbers: 4,
@@ -63,8 +63,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     ),
     RiderTrip(
       tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
+      date: "01/02/2021",
+      time: "02:30 PM",
       fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
       status: "Pending",
       toAddress: "very long address that I cannot wrap unless I add an expanded widget",
@@ -81,8 +81,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     RiderTrip(
       timestamp: "8888",
       tripId: "1",
-      date: "01/01/2021",
-      time: "04:30 PM",
+      date: "01/03/2021",
+      time: "03:30 PM",
       fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
       status: "Pending",
       toAddress: "very long address that I cannot wrap unless I add an expanded widget",
@@ -98,7 +98,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     RiderTrip(
       timestamp: "8888",
       tripId: "1",
-      date: "01/01/2021",
+      date: "01/04/2021",
       time: "04:30 PM",
       fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
       status: "Pending",
@@ -233,7 +233,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Ex: 01/01/2021",
-                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
                         contentPadding: EdgeInsets.all(8),
                       ),
                       validator: MultiValidator(
@@ -279,7 +279,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Ex: 123 Sesame Street",
-                    hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                    hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
                     contentPadding: EdgeInsets.all(8),
                   ),
                   style: TextStyle(
@@ -309,7 +309,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         style: TextStyle(
                           fontFamily: 'Glory',
                           fontWeight: FontWeight.bold,
-                          fontSize: size.FONT_SIZE * 20,
+                          fontSize: size.FONT_SIZE * 15,
                         ),
                       ),
                       onTap: () {
@@ -346,7 +346,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Ex: 456 Sesame Street",
-                    hintStyle: TextStyle(fontSize: size.FONT_SIZE * 19),
+                    hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
                     contentPadding: EdgeInsets.all(8),
                   ),
                   style: TextStyle(
@@ -376,7 +376,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         style: TextStyle(
                           fontFamily: 'Glory',
                           fontWeight: FontWeight.bold,
-                          fontSize: size.FONT_SIZE * 20,
+                          fontSize: size.FONT_SIZE * 15,
                         ),
                       ),
                       onTap: () {
