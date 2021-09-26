@@ -21,8 +21,11 @@ import 'screens/driver/ScheduleScreen.dart';
 import 'screens/ForgotPassword.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'screens/rider/SearchRidesScreen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());

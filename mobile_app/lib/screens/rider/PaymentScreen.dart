@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreen extends State<PaymentScreen> {
+  String test = dotenv.get('test', fallback: "error");
   @override
   Widget build(BuildContext context) {
     // final user = ModalRoute.of(context)!.settings.arguments as User;
@@ -47,7 +49,7 @@ class _PaymentScreen extends State<PaymentScreen> {
               "Pass the card info here",
             ),
             Text(
-              'Add Init state',
+              'Add Init state $test',
             ),
           ],
         ),
