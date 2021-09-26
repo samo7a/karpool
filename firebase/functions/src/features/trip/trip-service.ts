@@ -11,6 +11,7 @@ import { Constants } from "../../constants";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { autoID } from "../../data-access/utils/misc";
 import { GeoDistance } from "../../utils/misc";
+import { UserSchema } from "../../data-access/user/schema";
 
 
 
@@ -290,12 +291,10 @@ export class TripService {
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
         // Check if trip exist in the database
-        if (trip === undefined) {
-            throw new HttpsError('not-found', 'Trip does not exist')
-        }
-        // Check if rider is part of the trip
         if (trip.riderStatus[riderID] === undefined) {
             throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+        } else if (trip.riderStatus[riderID] === 'Rejected') {
+            throw new HttpsError('invalid-argument', `Rider has already cancelled this ride.`)
         }
 
         // Cancel the rider by changing his status to Rejected. 
@@ -315,22 +314,30 @@ export class TripService {
         const endLoc = { x: trip.endLocation.longitude, y: trip.endLocation.latitude }
         const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
         trip.polyline = (await newRoute).polyline
+        
         //Write to database
         await this.tripDAO.updateCreatedTrip(tripID, trip)
 
         // Charge the driver cancelation fee  and store it in drivers account balance
-        const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+        const scheduleTime = trip.startTime.toDate().getTime()
         const currentTime = new Date().getTime()
-        const calculatedTime = ((scheduleTime - currentTime) / 1000)
-        //console.log(scheduleTime, "=====", currentTime,"====", calculatedTime)
+        const calculatedTime = ((scheduleTime - currentTime  ) / 1000)
+        console.log(scheduleTime, "=====", currentTime,"====", calculatedTime)
 
-        if ((calculatedTime < 10800) && (calculatedTime > 0)) {
+        if ((calculatedTime < 10800) && (calculatedTime >= 0)) {
 
             //Update the driver balance by applying a $5 penality
             const driver = await this.userDAO.getAccountData(driverID)
             if (driver.driverInfo?.accountBalance !== undefined) {
                 driver.driverInfo.accountBalance -= 5
+                console.log(driver.driverInfo)
+                const data: Partial<UserSchema> = {
+                    driverInfo: driver.driverInfo
+                }
+                await this.userDAO.updateAccountData(driverID, data)
             }
+        }else if(calculatedTime < 0){
+            throw new Error('Trip is overdue.')
         }
     }
 
@@ -341,12 +348,8 @@ export class TripService {
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
         // Check if trip exist in the database
-        if (trip === undefined) {
-            throw new HttpsError('not-found', 'Trip does not exist')
-        }
-        // Check if rider is part of the trip
-        if (trip.riderStatus[riderID] === undefined) {
-            throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+        if (trip.riderStatus[riderID] !== "Requested") {
+            throw new HttpsError('invalid-argument', `Can't decline a rider hasn't requested to join`)
         }
 
         // Cancel the rider by changing his status to Rejected. 
@@ -355,15 +358,12 @@ export class TripService {
 
         // chage the trip status to open
 
-        trip.isOpen = true
+        // trip.isOpen = true
 
-        const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
+        // const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
 
-        // UPdate available seats
-        trip.seatsAvailable += rider.passengerCount
-
-        //Write to database
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
+        // // UPdate available seats
+        // trip.seatsAvailable += rider.passengerCount
 
         // TODO: Delete rider-info from the database
 
@@ -373,6 +373,11 @@ export class TripService {
                 arr.splice(i)
             }
         });
+
+        trip.riderInfo = arr
+
+        //Write to database
+        await this.tripDAO.updateCreatedTrip(tripID, trip)
     }
 
 

@@ -2,7 +2,6 @@ import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "./schema"
 import * as admin from 'firebase-admin'
 import { FirestoreKey, RealtimeKey } from '../../constants'
 import { autoID } from "../utils/misc";
-import { _documentWithOptions } from "firebase-functions/lib/providers/firestore";
 
 
 export interface TripDAOInterface {

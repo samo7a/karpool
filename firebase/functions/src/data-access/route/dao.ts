@@ -3,7 +3,7 @@ import { Client, DirectionsRoute, DirectionsStep, LatLng, RouteLeg } from '@goog
 import { firestore } from 'firebase-admin';
 import { FirestoreKey } from '../../constants';
 import { Point, Route, Leg, Step } from "../../models-shared/route";
-import { cacheID } from '../../utils/route';
+import { cacheID as cacheIDMethod } from '../../utils/route';
 import { RouteSchema } from './schema';
 
 
@@ -78,7 +78,7 @@ export class RouteDAO implements RouteDAOInterface {
 
     private getCachedRoute(points: Point[]): Promise<Route | undefined> {
 
-        const routeHash = cacheID(points)
+        const routeHash = cacheIDMethod(points)
 
         return this.db.collection(FirestoreKey.cachedRoutes).doc(routeHash).get().then(doc => {
             if (doc.exists) {
@@ -140,7 +140,7 @@ export class RouteDAO implements RouteDAOInterface {
             } else {
                 const newRoute = this.transformRoute(res.data.routes[0])
                 console.log(`Didn't find route in cache. Getting from Google!`)
-                await this.cacheRoute(tripID, cacheID(points), newRoute)
+                await this.cacheRoute(tripID, cacheIDMethod(points), newRoute)
                 return newRoute
             }
         })
