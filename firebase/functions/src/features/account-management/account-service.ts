@@ -254,8 +254,8 @@ export class AccountService {
            email: email ? email : user.email,
            profileURL: pic ? pic : user.profileURL
        }
-        //await this.userDAO.updateUserProfile(uid,data)
-       //updateUserAccount(uid: string, info: UserSchema): Promise<void>
+        
+       this.userDAO.updateUserAccount(uid,data)
          
     }
 
