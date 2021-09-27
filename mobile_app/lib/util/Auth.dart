@@ -74,13 +74,19 @@ class Auth {
   Future<void> signOut() async {
     await _auth.signOut();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('counter', "norole");
+    await prefs.setString('role', "norole");
   }
 
   // current user
   Future<User?> currentUser() async {
     return await userFromFirebase(_auth.currentUser);
   }
+
+  //update email
+  Future<void> updateEmail(String email) async {
+    await _auth.currentUser!.updateEmail(email);
+  }
+
 
   // auth change user stream
   Stream<Future<User?>?> get user => _auth.authStateChanges().map(userFromFirebase);
