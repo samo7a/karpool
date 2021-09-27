@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 // Secondary Font for Subtitles & etc...: Glory
 
 const TextStyle kBodyText =
-    TextStyle(fontSize: 22, color: Colors.white, height: 1.5); 
+    TextStyle(fontSize: 22, color: Colors.white, height: 1.5);
 
 // Login, SignUp, Register, NewUser, ... buttons:
 const Color kButtonColor = Color(0xFF0466CB);
@@ -21,6 +21,12 @@ const Color kDrawerColor = Color(0xFF001845);
 // Stars color -> gold/yellow
 const Color kStarsColor = Color(0xFFFFD700);
 const Color kIconColor = Color(0xFF33415C); // Icon color on Register Page
+
+const Color kDashboardColor =
+    Color(0xff33415C); // Dashboard-History background color
+
+// container color
+const Color kTripContainerColor = Color(0xFF979DAC);
 
 const Color kWhite = Colors.white;
 const Color kBlack = Colors.black;
