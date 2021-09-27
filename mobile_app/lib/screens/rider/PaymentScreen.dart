@@ -57,7 +57,9 @@ class _PaymentScreen extends State<PaymentScreen> {
           children: [
             GestureDetector(
               onTap: () async {
-                var response = await StripeService.payWithNewCard(amount: "19", currency: "USD");
+                var response = await StripeService.payWithNewCard(amount: "21", currency: "USD");
+                print(response.message);
+                print(response.success);
                 if (response.success == true) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(

@@ -84,7 +84,7 @@ class StripeService {
       PaymentMethod stripePaymentMethod = await StripePayment.paymentRequestWithCardForm(
         CardFormPaymentRequest(),
       ).then((PaymentMethod paymentMethod) {
-        print("payment method: $paymentMethod");
+        print("payment method: ${jsonEncode(paymentMethod)}");
         return paymentMethod;
       }).catchError((e) {
         print('Errore Card: ${e.toString()}');

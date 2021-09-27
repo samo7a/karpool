@@ -11,7 +11,6 @@ import 'package:mobile_app/screens/rider/DriverApplication.dart';
 import 'package:mobile_app/screens/rider/PaymentScreen.dart';
 import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
-import 'package:mobile_app/util/Stripe.dart';
 import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
 import './screens/RegisterScreen.dart';
@@ -28,7 +27,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
-  // StripeService.init();
   runApp(MyApp());
   configLoading();
 }
