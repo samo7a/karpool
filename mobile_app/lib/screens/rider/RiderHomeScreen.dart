@@ -25,6 +25,7 @@ class RiderHomeScreen extends StatefulWidget {
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
   User? user;
   late Future<List<RiderTrip>> trips;
+
   void initState() {
     super.initState();
     user = widget.user;
@@ -54,7 +55,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startLocation"];

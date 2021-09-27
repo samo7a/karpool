@@ -38,11 +38,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final obj = <String, dynamic>{
       "driverID": uid,
     };
+    print("obj");
+    print(obj);
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
     List<DriverTrip> tripList = [];
     final result;
     final data;
     int length;
+
     try {
       result = await getTrips(obj);
       data = result.data;
@@ -53,25 +56,44 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
+        print("tripId");
+        print(tripId);
         String driverId = data[i]["driverID"];
+        print("driverId");
+        print(driverId);
         dynamic timestamp = data[i]["startTime"];
+        print("timestamp");
+        print(timestamp);
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        print("ts");
+        print(ts);
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+        print("date");
+        print(date);
         String time = DateFormat('hh:mm a').format(ts);
-        String startAddress = data[i]["startLocation"];
-        String endAddress = data[i]["endLocation"] ?? " ";
+        print("time");
+        print(time);
+        String startAddress = data[i]["startAddress"] ?? " ";
+        print("startAddress");
+        print(startAddress);
+        String endAddress = data[i]["endAddress"] ?? " ";
+        print("endAddress");
+        print(endAddress);
         int seatCount = data[i]["seatsAvailable"];
+        print("seatCount");
+        print(seatCount);
 
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
         rider.forEach((k, v) => {
               riders.add({
-                "uid": k,
-                "status": v,
+                "uid": k.toString(),
+                "status": v.toString(),
               })
             });
 
-        double estimatedPrice = double.parse((data[i]["estimatedFare"].toString()));
+        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =

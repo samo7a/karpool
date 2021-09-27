@@ -21,8 +21,7 @@ class Auth {
         "driver": isDriver,
       };
       String email = user.email ?? "";
-      HttpsCallable getUser =
-          FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+      HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
       String firstName = result.data['firstName'] ?? "";
       String lastName = result.data['lastName'] ?? "";
@@ -57,15 +56,13 @@ class Auth {
 
   //sign in
   Future<User?> signIn(String email, String password) async {
-    final credential = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
+    final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
     return await userFromFirebase(credential.user);
   }
 
   //register
   Future<String?> signup(String email, String password) async {
-    final credential = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
+    final credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     await credential.user!.sendEmailVerification();
     return credential.user!.uid;
   }
@@ -79,7 +76,7 @@ class Auth {
   Future<void> signOut() async {
     await _auth.signOut();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('counter', "norole");
+    await prefs.setString('role', "norole");
   }
 
   // current user
@@ -94,6 +91,5 @@ class Auth {
   }
 
   // auth change user stream
-  Stream<Future<User?>?> get user =>
-      _auth.authStateChanges().map(userFromFirebase);
+  Stream<Future<User?>?> get user => _auth.authStateChanges().map(userFromFirebase);
 }

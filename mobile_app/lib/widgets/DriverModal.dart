@@ -17,7 +17,7 @@ class DriverModal extends StatefulWidget {
     // required this.date,
     // required this.time,
     // required this.estimatedPrice,
-    required this.show,
+    required this.showButtons,
     required this.trip,
     required this.driverId,
   }) : super(key: key);
@@ -28,7 +28,7 @@ class DriverModal extends StatefulWidget {
   // final String date;
   // final double estimatedPrice;
   // final String time;
-  final bool show;
+  final bool showButtons;
   final RiderTrip trip;
   final String driverId;
 
@@ -46,19 +46,19 @@ class _DriverModalState extends State<DriverModal> {
     isRider: true,
     isVerified: true,
     rating: 0,
-    profileURL: "",
+    profileURL: "https://wallpapercave.com/wp/wp7632684.jpg",
     phoneNumber: "",
     email: "",
   );
   late String driverId;
   late RiderTrip trip;
-  late bool show;
+  late bool showButtons;
   void initState() {
     super.initState();
     driverId = widget.driverId;
     trip = widget.trip;
     getDriverInfo();
-    show = widget.show;
+    showButtons = widget.showButtons;
   }
 
   void getDriverInfo() async {
@@ -264,7 +264,7 @@ class _DriverModalState extends State<DriverModal> {
                         ),
                       ),
                     ),
-                    show
+                    showButtons
                         ? Padding(
                             padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
                             child: Row(
