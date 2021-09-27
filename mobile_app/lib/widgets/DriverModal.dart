@@ -48,6 +48,7 @@ class _DriverModalState extends State<DriverModal> {
     rating: 0,
     profileURL: "",
     phoneNumber: "",
+    email: "",
   );
   late String driverId;
   late RiderTrip trip;

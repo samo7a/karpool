@@ -4,8 +4,8 @@ class User {
   final String uid;
   final String firstName;
   final String lastName;
-  // final String email;
-  final String phoneNumber;
+  String email;
+  String phoneNumber;
   // final String dateOfBirth;
   // final String gender;
   final bool isDriver;
@@ -24,7 +24,7 @@ class User {
     required this.isVerified,
     required this.rating,
     required this.profileURL,
-    // required this.email,
+    required this.email,
     required this.phoneNumber,
   });
   static Future<User> getDriverFromFireBase(String uid) async {
@@ -32,12 +32,14 @@ class User {
       "uid": uid,
       "driver": true,
     };
-    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    HttpsCallable getUser =
+        FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
     print(result.data);
     String firstName = result.data['firstName'] ?? "";
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
+    String email = "";
     String url = result.data['profileURL'] ?? "";
     num rating = result.data['driverRating']; //change to 0.0
     print("rating from user");
@@ -55,6 +57,7 @@ class User {
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,
+      email: email,
     );
   }
 
@@ -63,11 +66,13 @@ class User {
       "uid": uid,
       "driver": false,
     };
-    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    HttpsCallable getUser =
+        FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
     String firstName = result.data['firstName'] ?? "";
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
+    String email = result.data['email'] ?? "";
     String url = result.data['profileURL'] ?? "";
     num rating = result.data['riderRating']; //change to 0.0
     var riderRole = result.data['roles']['Rider'] ?? false;
@@ -82,6 +87,7 @@ class User {
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,
+      email: email,
     );
   }
 }

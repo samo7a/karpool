@@ -35,7 +35,7 @@ class ForgotPassword extends StatelessWidget {
             ),
           ),
           title: Text(
-            'Forgot Password',
+            'Reset Password',
             style: kBodyText,
           ),
         ),
@@ -50,7 +50,7 @@ class ForgotPassword extends StatelessWidget {
                   right: size.BLOCK_WIDTH * 10,
                 ),
                 child: Text(
-                  'Enter your email we will send a code to reset your password',
+                  'Enter your email here and we will send a link to your email to reset your password.',
                   style: TextStyle(
                     fontSize: size.FONT_SIZE * 30,
                     color: Colors.white,

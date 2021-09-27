@@ -943,7 +943,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
-                      hintText: "Email Address"),
+                      hintText: "Email Address"
+                  ),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),

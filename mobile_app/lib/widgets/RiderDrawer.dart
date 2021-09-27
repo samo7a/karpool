@@ -83,7 +83,7 @@ class _RiderDrawerState extends State<RiderDrawer> {
             ),
           ),
           Container(
-            height: 8,
+            height: size.BLOCK_HEIGHT * 3,
             color: kDrawerColor,
           ),
           user.isDriver && user.isRider

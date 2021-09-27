@@ -46,6 +46,7 @@ class _RiderModalState extends State<RiderModal> {
     rating: 0,
     profileURL: "",
     phoneNumber: "",
+    email: "",
   );
   late String driverId;
   late RiderTrip trip;

@@ -35,8 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     final user = Provider.of<User?>(context, listen: false);
-    String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
-    String password = passwordController.text.isEmpty ? "empty" : passwordController.text.trim();
+    String email =
+        emailController.text.isEmpty ? "empty" : emailController.text.trim();
+    String password = passwordController.text.isEmpty
+        ? "empty"
+        : passwordController.text.trim();
     EasyLoading.show(status: 'Signing in...');
     final prefs = await SharedPreferences.getInstance();
     try {
@@ -104,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
     } catch (e) {
+      await prefs.setString("role", "norole");
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
       EasyLoading.showError("Signing in failed, please try agin!");
@@ -169,7 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
+                padding: EdgeInsets.only(
+                    top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
                 child: GestureDetector(
                   onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
                   child: Text(
