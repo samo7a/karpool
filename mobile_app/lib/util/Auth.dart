@@ -87,6 +87,12 @@ class Auth {
     return await userFromFirebase(_auth.currentUser);
   }
 
+  //update email
+  Future<void> updateEmail(String email) async {
+    await _auth.currentUser!.updateEmail(email);
+    await _auth.currentUser!.sendEmailVerification();
+  }
+
   // auth change user stream
   Stream<Future<User?>?> get user =>
       _auth.authStateChanges().map(userFromFirebase);

@@ -5,10 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
+import 'package:mobile_app/util/Auth.dart';
 import 'dart:io' as Io;
 import 'dart:ui';
-
 import 'package:provider/provider.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:mobile_app/screens/MainScreen.dart';
 
 class EditProfilScreen extends StatefulWidget {
   const EditProfilScreen({Key? key}) : super(key: key);
@@ -19,6 +21,8 @@ class EditProfilScreen extends StatefulWidget {
 
 class _EditProfilScreenState extends State<EditProfilScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String newEmail = "";
+  String newPhone = "";
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
@@ -28,8 +32,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     String phone = user.phoneNumber;
     String email = user.email;
     String profilePic = user.profileURL;
-    String newEmail = "";
-    String newPhone = "";
 
     final ImagePicker _picker = ImagePicker();
     XFile? _imageFile;
@@ -44,15 +46,26 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
       // TODO: Link image change to backend
     }
 
-    void updateEmail(String value) {
-      // TODO: call firebase update email function
-      // final currentUser = Provider.of<User?>(context, listen: false);
+    void updateEmail(String value) async {
+      try {
+        await context.read<Auth>().updateEmail(value);
+        EasyLoading.showInfo("Verify your new email and log back in.");
+        await context.read<Auth>().signOut();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(),
+          ),
+          (Route<dynamic> route) => false,
+        );
+      } catch (e) {
+        EasyLoading.showInfo(e.toString());
+      }
     }
 
     Widget bottomSheet() {
       return Container(
         height: 100,
-        // width: ,
         margin: EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 20,
@@ -222,12 +235,16 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                         validator: MultiValidator(
                           [
                             RequiredValidator(
-                                errorText: "Email address is required!"),
+                              errorText: "Email address is required!",
+                            ),
                             EmailValidator(
-                                errorText: "Please enter a valid email!"),
-                            MaxLengthValidator(50,
-                                errorText:
-                                    "Email should not exceed 50 characters!"),
+                              errorText: "Please enter a valid email!",
+                            ),
+                            MaxLengthValidator(
+                              50,
+                              errorText:
+                                  "Email should not exceed 50 characters!",
+                            ),
                           ],
                         ),
                       ),
@@ -255,11 +272,13 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                         ),
                       ),
                       onPressed: () {
-                        // TODO: call firebase function for change email
-                        if (newEmail == email)
-                          print("Nothing changed");
-                        else 
+                        if (newEmail == email) 
+                          EasyLoading.showInfo("Email does not differ from initial email.");
+                        else if (newEmail == "")
+                          EasyLoading.showInfo("Email has not been changed.");
+                        else {
                           updateEmail(newEmail);
+                        }
                       },
                     ),
                   ),
