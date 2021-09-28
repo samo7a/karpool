@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:mobile_app/models/User.dart';
-import 'package:mobile_app/util/Stripe.dart';
+// import 'package:mobile_app/util/Stripe.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
 import 'package:mobile_app/models/CreditCard.dart' as card;
-import 'package:stripe_payment/stripe_payment.dart';
+// import 'package:stripe_payment/stripe_payment.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _PaymentScreen extends State<PaymentScreen> {
 
   @override
   void initState() {
-    StripeService.init();
+    // StripeService.init();
     super.initState();
   }
 
@@ -57,17 +57,17 @@ class _PaymentScreen extends State<PaymentScreen> {
           children: [
             GestureDetector(
               onTap: () async {
-                var response = await StripeService.payWithNewCard(amount: "21", currency: "USD");
-                print(response.message);
-                print(response.success);
-                if (response.success == true) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(response.message),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
+                // var response = await StripeService.payWithNewCard(amount: "21", currency: "USD");
+                // print(response.message);
+                // print(response.success);
+                // if (response.success == true) {
+                //   Scaffold.of(context).showSnackBar(
+                //     SnackBar(
+                //       content: Text(response.message),
+                //       duration: Duration(seconds: 2),
+                //     ),
+                //   );
+                // }
                 // CreditCard card = CreditCard(
                 //   number: "4242424242424242",
                 //   expMonth: 2,
