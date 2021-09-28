@@ -27,11 +27,12 @@ class Auth {
       String lastName = result.data['lastName'] ?? "";
       String phone = result.data['phone'] ?? "";
       String url = result.data['profileURL'] ?? "";
-      num rating;
+      // double weight = (json['weight'] as num).toDouble();
+      double rating;
       if (isDriver)
-        rating = result.data['driverRating'] ?? 0.0; //change to 0.0
+        rating = (result.data['driverRating'] as num).toDouble();
       else
-        rating = result.data['riderRating'] ?? 0.0; //change to 0.0
+        rating = (result.data['riderRating'] as num).toDouble();
       print("rating from auth");
       print(rating);
       print(rating.runtimeType);
@@ -43,7 +44,7 @@ class Auth {
         lastName: lastName,
         phoneNumber: phone,
         profileURL: url,
-        rating: rating as double,
+        rating: rating,
         isVerified: user.emailVerified,
         isDriver: driverRole,
         isRider: riderRole,

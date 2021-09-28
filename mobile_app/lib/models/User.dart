@@ -32,8 +32,7 @@ class User {
       "uid": uid,
       "driver": true,
     };
-    HttpsCallable getUser =
-        FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
     print(result.data);
     String firstName = result.data['firstName'] ?? "";
@@ -41,7 +40,7 @@ class User {
     String phone = result.data['phone'] ?? "";
     String email = "";
     String url = result.data['profileURL'] ?? "";
-    num rating = result.data['driverRating']; //change to 0.0
+    double rating = (result.data['driverRating'] as num).toDouble(); //change to 0.0
     print("rating from user");
     print(rating);
     print(rating.runtimeType);
@@ -53,7 +52,7 @@ class User {
       lastName: lastName,
       phoneNumber: phone,
       profileURL: url,
-      rating: rating as double,
+      rating: rating,
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,
@@ -66,15 +65,14 @@ class User {
       "uid": uid,
       "driver": false,
     };
-    HttpsCallable getUser =
-        FirebaseFunctions.instance.httpsCallable.call('account-getUser');
+    HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
     final result = await getUser(obj);
     String firstName = result.data['firstName'] ?? "";
     String lastName = result.data['lastName'] ?? "";
     String phone = result.data['phone'] ?? "";
     String email = result.data['email'] ?? "";
     String url = result.data['profileURL'] ?? "";
-    num rating = result.data['riderRating']; //change to 0.0
+    double rating = (result.data['riderRating'] as num).toDouble(); //change to 0.0
     var riderRole = result.data['roles']['Rider'] ?? false;
     var driverRole = result.data["roles"]["Driver"] ?? false;
     return User(
@@ -83,7 +81,7 @@ class User {
       lastName: lastName,
       phoneNumber: phone,
       profileURL: url,
-      rating: rating as double,
+      rating: rating,
       isVerified: true,
       isDriver: driverRole,
       isRider: riderRole,
