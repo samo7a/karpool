@@ -88,6 +88,7 @@ class Auth {
   //update email
   Future<void> updateEmail(String email) async {
     await _auth.currentUser!.updateEmail(email);
+    print(_auth.currentUser!.email);
     await _auth.currentUser!.sendEmailVerification();
   }
 

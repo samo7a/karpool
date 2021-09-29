@@ -1265,8 +1265,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         color: 0xFF0466CB,
         buttonName: 'Register',
         onClick: () async {
-          print(userValidate());
-          print(driverValidate());
           Provider.of<User?>(context, listen: false);
           EasyLoading.show(status: "Signing up...");
           String img64;

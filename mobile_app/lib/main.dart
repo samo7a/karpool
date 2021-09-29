@@ -47,41 +47,42 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          Provider<Auth>(
-            create: (_) => Auth(FirebaseAuth.instance),
-          ),
-          StreamProvider(
-            initialData: null,
-            create: (context) => context.read<Auth>().user,
-          ),
-          // ChangeNotifierProvider<>(
-          //   create: (context) => user(),
-          // ), // need it later, do not delete it.
-        ],
-        builder: (context, child) {
-          return MaterialApp(
-            builder: EasyLoading.init(),
-            debugShowCheckedModeBanner: false,
-            initialRoute: SplashScreen.id,
-            routes: {
-              SplashScreen.id: (context) => SplashScreen(),
-              MainScreen.id: (context) => MainScreen(),
-              LoginScreen.id: (context) => LoginScreen(),
-              RegisterScreen.id: (context) => RegisterScreen(),
-              ForgotPassword.id: (context) => ForgotPassword(),
-              DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
-              RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
-              EditProfilScreen.id: (context) => EditProfilScreen(),
-              ScheduleScreen.id: (context) => ScheduleScreen(),
-              SearchRidesScreen.id: (context) => SearchRidesScreen(),
-              BankInfoScreen.id: (context) => BankInfoScreen(),
-              VehicleInfoScreen.id: (context) => VehicleInfoScreen(),
-              PaymentScreen.id: (context) => PaymentScreen(),
-              AddCreditCardScreen.id: (context) => AddCreditCardScreen(),
-              DriverApplication.id: (context) => DriverApplication(),
-            },
-          );
-        });
+      providers: [
+        Provider<Auth>(
+          create: (_) => Auth(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          initialData: null,
+          create: (context) => context.read<Auth>().user,
+        ),
+        // ChangeNotifierProvider<>(
+        //   create: (context) => user(),
+        // ), // need it later, do not delete it.
+      ],
+      builder: (context, child) {
+        return MaterialApp(
+          builder: EasyLoading.init(),
+          debugShowCheckedModeBanner: false,
+          initialRoute: SplashScreen.id,
+          routes: {
+            SplashScreen.id: (context) => SplashScreen(),
+            MainScreen.id: (context) => MainScreen(),
+            LoginScreen.id: (context) => LoginScreen(),
+            RegisterScreen.id: (context) => RegisterScreen(),
+            ForgotPassword.id: (context) => ForgotPassword(),
+            DriverDashboardScreen.id: (context) => DriverDashboardScreen(),
+            RiderDashboardScreen.id: (context) => RiderDashboardScreen(),
+            EditProfilScreen.id: (context) => EditProfilScreen(),
+            ScheduleScreen.id: (context) => ScheduleScreen(),
+            SearchRidesScreen.id: (context) => SearchRidesScreen(),
+            BankInfoScreen.id: (context) => BankInfoScreen(),
+            VehicleInfoScreen.id: (context) => VehicleInfoScreen(),
+            PaymentScreen.id: (context) => PaymentScreen(),
+            AddCreditCardScreen.id: (context) => AddCreditCardScreen(),
+            DriverApplication.id: (context) => DriverApplication(),
+          },
+        );
+      },
+    );
   }
 }
