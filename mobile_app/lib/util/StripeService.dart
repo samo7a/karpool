@@ -1,95 +1,60 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
-// class StripeResponse {
-//   late String message;
-//   late bool success;
+class StripeResponse {
+  late String message;
+  late bool success;
 
-//   StripeResponse({required this.message, required this.success});
-// }
+  StripeResponse({required this.message, required this.success});
+}
 
-// class StripePayment {
-//   static String publicApiKey = dotenv.get("PUBLIC_STRIPE_API_KEY");
-//   static String secretApiKey = dotenv.get("PRIVATE_STRIPE_API_KEY");
-//   static String apiURL = 'https://api.stripe.com/v1';
-//   static String paymentApiUrl = '$apiURL/payment_intents';
-//   static Map<String, String> headers = {
-//     'Authorization': 'Bearer $secretApiKey',
-//     'Content-Type': 'application/x-www-form-urlencoded'
-//   };
-//   static Future<Map<String, dynamic>> createTestPaymentSheet() async {
-//     final url = Uri.parse('$apiURL/payment-sheet');
-//     final response = await http.post(
-//       url,
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded',
-//         "Authorization": "Bearer $secretApiKey",
-//       },
-//       body: json.encode({
-//         'a': 'a',
-//       }),
-//     );
-//     final body = json.decode(response.body);
+class StripeService {
+  static String publicApiKey = dotenv.get("PUBLIC_STRIPE_API_KEY");
+  static String secretApiKey = dotenv.get("PRIVATE_STRIPE_API_KEY");
+  static String apiURL = 'https://api.stripe.com/v1';
+  static String paymentApiUrl = '$apiURL/payment_intents';
+  static Map<String, String> headers = {
+    'Authorization': 'Bearer $secretApiKey',
+    'Content-Type': 'application/json'
+  };
+  static void init() {
+    StripePayment.setOptions(
+      StripeOptions(
+          publishableKey: dotenv.get("PUBLIC_STRIPE_API_KEY"),
+          merchantId: "Test",
+          androidPayMode: 'test'),
+    );
+  }
 
-//     if (body['error'] != null) {
-//       throw Exception('Error code: ${body['error']}');
-//     }
-
-//     return body;
-//   }
-
-//   static Future<void> presentPaymentSheet(BuildContext context) async {
-//     try {
-//       final data = await createTestPaymentSheet();
-
-//       // 2. initialize the payment sheet
-//       await Stripe.instance.initPaymentSheet(
-//         paymentSheetParameters: SetupPaymentSheetParameters(
-//           // Enable custom flow
-//           customFlow: true,
-//           // Main params
-//           merchantDisplayName: 'Flutter Stripe Store Demo',
-//           paymentIntentClientSecret: data['paymentIntent'],
-//           // Customer keys
-//           customerEphemeralKeySecret: data['ephemeralKey'],
-//           customerId: data['customer'],
-//           // Extra options
-//           testEnv: true,
-//           applePay: true,
-//           googlePay: true,
-//           style: ThemeMode.dark,
-//           merchantCountryCode: 'DE',
-//         ),
-//       );
-//       // 3. display the payment sheet.
-//       await Stripe.instance.presentPaymentSheet();
-
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text('Payment option selected'),
-//         ),
-//       );
-//     } on Exception catch (e) {
-//       if (e is StripeException) {
-//         print('Error from Stripe: ${e.error.localizedMessage}');
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(
-//             content: Text('Error from Stripe: ${e.error.localizedMessage}'),
-//           ),
-//         );
-//       } else {
-//         print('Unforeseen error: $e');
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(
-//             content: Text('Unforeseen error: $e'),
-//           ),
-//         );
-//       }
-//     }
-//   }
-// }
+  static Future<Map<String, dynamic>?> createPaymentMethod({
+    required String number,
+    required int month,
+    required int year,
+    required String cvc,
+    required String name,
+  }) async {
+    CreditCard card = CreditCard(
+      number: number,
+      expMonth: month,
+      expYear: year,
+      country: "US",
+      name: name,
+      cvc: cvc,
+    );
+    try {
+      var request =  PaymentMethodRequest(card: card);
+      final token = await StripePayment.createPaymentMethod(request);
+      //send token to backend, save it
+      print(jsonEncode(token));
+    } catch (e) {
+      print(e);
+    }
+    
+    return null;
+  }
+}
   
 
 

@@ -29,6 +29,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
 
   @override
   void initState() {
+    StripeService.init();
     border = OutlineInputBorder(
       borderSide: BorderSide(
         color: Colors.grey.withOpacity(0.7),
@@ -51,7 +52,8 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
     });
   }
 
-  Future<void> addCard() async {
+  Future<CreditCardObject.CreditCard?> addCard() async {
+    FocusScope.of(context).unfocus();
     if (!formKey.currentState!.validate()) {
       print('invalid!');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,8 +61,39 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
           content: Text('Please Add a Valid Credit Card!'),
         ),
       );
-      return;
+      return null;
     }
+    // print(expiryDate);
+    String monthString = expiryDate.substring(0, 2);
+    String yearString = "20" + expiryDate.substring(3, 5);
+    int month = int.parse(monthString);
+    int year = int.parse(yearString);
+
+    // print("$month - $year");
+
+    try {
+      final result = await StripeService.createPaymentMethod(
+        number: cardNumber,
+        cvc: cvvCode,
+        month: month,
+        year: year,
+        name: cardHolderName,
+      );
+      print("result: $result");
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+    return CreditCardObject.CreditCard(
+      nameOnCard: "",
+      cvv: "cvv",
+      expDate: "expDate",
+      paymentMethodId: "paymentMethodId",
+      cardNumber: "cardNumber",
+    );
   }
 
   @override
