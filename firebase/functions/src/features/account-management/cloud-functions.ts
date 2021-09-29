@@ -95,4 +95,10 @@ export const getUser = functions.https.onCall(async (data, context) => {
             return JSON.parse(JSON.stringify(fields))
         })
 
+   
+
+})
+
+export const editUserProfile = functions.https.onCall(async (data, context) =>{
+    return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
 })

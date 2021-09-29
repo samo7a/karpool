@@ -43,6 +43,8 @@ export interface UserDAOInterface {
      */
     deleteAccountData(uid: string): Promise<void>
 
+
+    updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void>
 }
 
 
@@ -98,7 +100,7 @@ export class UserDAO implements UserDAOInterface {
         await ref.create(fireEncode(data))
     }
 
-    async updateUserAccount(uid: string, info: UserSchema): Promise<void> {
+    async updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
 
         if (info.driverInfo) {

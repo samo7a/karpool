@@ -242,5 +242,21 @@ export class AccountService {
         return Promise.reject(new Error('Unimplemented.'))
     }
 
+    async editUserProfile(uid: string, phoneNum ?: string, email ?: string, pic ?: string): Promise<void>{
+        /**
+         * Check if user exist
+         * edit fields where necessary
+         * assuming pic is given as string
+        */
+       const user = await this.userDAO.getAccountData(uid)
+       const data: Partial<UserSchema> = {
+           phone: phoneNum ? phoneNum : user.phone,
+           email: email ? email : user.email,
+           profileURL: pic ? pic : user.profileURL
+       }
+        
+       this.userDAO.updateUserAccount(uid,data)
+         
+    }
 
 }
