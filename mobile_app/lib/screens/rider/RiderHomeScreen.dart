@@ -322,8 +322,12 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, SearchRidesScreen.id);
+        onPressed: () async {
+          
+          final result =
+              await Navigator.pushNamed(context, SearchRidesScreen.id, arguments: user!.uid);
+          if (result == null) return;
+          trips = tripFromFireBase();
         },
         child: Icon(
           Icons.search,

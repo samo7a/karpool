@@ -33,7 +33,7 @@ class _PaymentScreen extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
-    final user = ModalRoute.of(context)!.settings.arguments as User;
+    final user = ModalRoute.of(context)!.settings.arguments as User; 
 
     // final card = ModalRoute.of(context)!.settings.arguments as card;
 

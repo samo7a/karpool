@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -22,15 +26,15 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   GlobalKey<FormState> scheduleKey = GlobalKey<FormState>();
 
-  String get cancelButtonName => "Add a Ride";
-  String get addButtonName => "Cancel";
+  String get cancelButtonName => "Cancel";
+  String get addButtonName => "Add a Ride";
   String date = '';
   String time = '';
-  String seats = '';
+  double seats = 1;
   String startAddress = '';
   String endAddress = '';
-  //String startLocation = '';
-  //String endLocation = '';
+  String startPlaceId = '';
+  String endPlaceId = '';
 
 //search ride code start
   final _controller = TextEditingController();
@@ -67,11 +71,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   void getSuggestion(String input) async {
     // ignore: non_constant_identifier_names
-    String kPLACES_API_KEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String kPLACES_API_KEY = dotenv.get("GOOGLE_API_KEY");
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       setState(() {
@@ -84,11 +86,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void getEndSuggestion(String input) async {
-    String kPLACESAPIKEY = "AIzaSyDPY8DgggKHLJBU_G2TGI5KYcr_kYVq4jo";
-    String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request =
-        '$baseURL?input=$input&key=$kPLACESAPIKEY&sessiontoken=$_sessionToken';
+    String kPLACESAPIKEY = dotenv.get("GOOGLE_API_KEY");
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACESAPIKEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
@@ -100,11 +100,38 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       throw Exception('Failed to load predictions');
     }
   }
+
 // search ride code end
+  void addRide(String? uid) async {
+    EasyLoading.show(status: "Adding Ride");
+    HttpsCallable addRide = FirebaseFunctions.instance.httpsCallable("trip-createAddedTrip");
+    Map<String, dynamic> obj = {
+      // "userID": uid,
+      "startTime": date + "Z",
+      "startAddress": startAddress,
+      "endAddress": endAddress,
+      "startPlaceID": startPlaceId,
+      "endPlaceID": endPlaceId,
+      "seatsAvailable": seats.ceil(),
+    };
+    print(obj);
+    try {
+      await addRide(obj);
+      EasyLoading.dismiss();
+      Navigator.pop(context);
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Network Error")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -137,6 +164,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   _getScheduleWidget(Size size, BuildContext context) {
+    final uid = ModalRoute.of(context)!.settings.arguments as String?;
     return Center(
       child: Form(
         autovalidateMode: AutovalidateMode.always, // Auto Validation Check
@@ -156,13 +184,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               padding: EdgeInsets.only(top: 10.0),
               child: FormBuilderDateTimePicker(
                 name: 'date',
-                onChanged: (value) => setState(() => date = value.toString()),
+                onChanged: (value) {
+                  print(value);
+                  setState(() => date = value.toString());
+                },
                 inputType: InputType.date,
                 decoration: InputDecoration(
                     fillColor: kWhite.withOpacity(0.4),
                     filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
+                    prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
                     enabledBorder: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: kGreen, width: 5),
@@ -190,87 +220,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             Padding(
               padding: EdgeInsets.only(top: 25.0),
               child: Text(
-                'Time',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: FormBuilderDateTimePicker(
-                name: 'time',
-                onChanged: (value) => setState(() => time = value.toString()),
-                inputType: InputType.time,
-                decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
-                    enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    errorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    focusedErrorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    hintStyle: TextStyle(color: kIconColor),
-                    hintText: "Time"),
-                style: TextStyle(fontWeight: FontWeight.bold),
-                initialTime: TimeOfDay(hour: 8, minute: 0),
-                initialValue: DateTime.now(),
-                enabled: true,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: Text(
                 'Number of Seats Available',
                 style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: TextFormField(
-                  decoration: InputDecoration(
-                      fillColor: kWhite.withOpacity(0.4),
-                      filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.chair, color: kIconColor),
-                      enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      focusedErrorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      hintStyle: TextStyle(color: kIconColor),
-                      hintText: "Number of Seats Available"),
-                  validator: MultiValidator([
-                    RequiredValidator(errorText: "Number of Seats Required!"),
-                    MinLengthValidator(1, errorText: "Minimum of 1 Seat"),
-                    MaxLengthValidator(5, errorText: "Maximum of 5 Seats")
-                  ]),
-                  onChanged: (value) => setState(() => seats = value),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+            Slider(
+              activeColor: Color(0xff0466C8),
+              inactiveColor: Color(0xff979DAC),
+              value: seats,
+              min: 1,
+              max: 5,
+              divisions: 4,
+              label: seats.round().toString(),
+              onChanged: (double value) {
+                setState(() {
+                  seats = value;
+                });
+              },
             ),
             Padding(
               padding: EdgeInsets.only(top: 25.0),
@@ -287,8 +253,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.mapPin, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -308,8 +273,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       hintStyle: TextStyle(color: kIconColor),
                       hintText: "Address for Starting Location"),
                   validator: MultiValidator([
-                    RequiredValidator(
-                        errorText: "Starting Location is Required!"),
+                    RequiredValidator(errorText: "Starting Location is Required!"),
                   ]),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.text,
@@ -337,6 +301,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     onTap: () {
                       setState(() {
                         startAddress = _placeList[index]["description"];
+                        startPlaceId = _placeList[index]["place_id"];
                         _controller.text = _placeList[index]["description"];
                         _placeList = [];
                       });
@@ -360,8 +325,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      suffixIcon:
-                          Icon(FontAwesomeIcons.mapPin, color: kIconColor),
+                      suffixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: kGreen, width: 5),
@@ -381,8 +345,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       hintStyle: TextStyle(color: kIconColor),
                       hintText: "Address for Ending Location"),
                   validator: MultiValidator([
-                    RequiredValidator(
-                        errorText: "Ending Location is Required!"),
+                    RequiredValidator(errorText: "Ending Location is Required!"),
                   ]),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.text,
@@ -410,8 +373,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     onTap: () {
                       setState(() {
                         endAddress = _toPlaceList[index]["description"];
-                        _endController.text =
-                            _toPlaceList[index]["description"];
+                        endPlaceId = _toPlaceList[index]["place_id"];
+                        _endController.text = _toPlaceList[index]["description"];
                         _toPlaceList = [];
                       });
                     },
@@ -429,13 +392,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   color: Colors.green,
                 ),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => addRide(uid),
                   child: Text(
-                    cancelButtonName,
-                    style: TextStyle(
-                        fontSize: size.FONT_SIZE * 20,
-                        color: Colors.white,
-                        height: 1),
+                    addButtonName,
+                    style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
                   ),
                 ),
               ),
@@ -450,13 +410,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   color: Colors.red,
                 ),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pop(context, null),
                   child: Text(
-                    addButtonName,
-                    style: TextStyle(
-                        fontSize: size.FONT_SIZE * 20,
-                        color: Colors.white,
-                        height: 1),
+                    cancelButtonName,
+                    style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
                   ),
                 ),
               ),
