@@ -18,8 +18,8 @@ import { UserSchema } from "../../data-access/user/schema";
 export class TripService {
 
     private tripDAO: TripDAOInterface
-    private userDAO: UserDAOInterface
     private directionsDAO: RouteDAOInterface
+    userDAO: any;
 
     constructor(
         userDAO: UserDAOInterface,
@@ -285,38 +285,10 @@ export class TripService {
         }
     }
 
-    async cancelRidebyDriver(driverID: string, riderID: string, tripID: string): Promise<void> {
+    async cancelRidebyDriver(driverID: string, tripID: string): Promise<void> {
 
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
-
-        // Check if trip exist in the database
-        if (trip.riderStatus[riderID] === undefined) {
-            throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
-        } else if (trip.riderStatus[riderID] === 'Rejected') {
-            throw new HttpsError('invalid-argument', `Rider has already cancelled this ride.`)
-        }
-
-        // Cancel the rider by changing his status to Rejected. 
-        // This ride will not be shown in his search
-        trip.riderStatus[riderID] = 'Rejected'
-
-        // chage the trip status to open
-        trip.isOpen = true
-
-        const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
-        // UPdate available seats
-        trip.seatsAvailable += rider.passengerCount
-
-        // Call change route function to update route
-        const wayPoints = this.getWaypoints(trip, 'Accepted')
-        const startLoc = { x: trip.startLocation.longitude, y: trip.startLocation.latitude }
-        const endLoc = { x: trip.endLocation.longitude, y: trip.endLocation.latitude }
-        const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
-        trip.polyline = (await newRoute).polyline
-        
-        //Write to database
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
 
         // Charge the driver cancelation fee  and store it in drivers account balance
         const scheduleTime = trip.startTime.toDate().getTime()
@@ -330,16 +302,18 @@ export class TripService {
             const driver = await this.userDAO.getAccountData(driverID)
             if (driver.driverInfo?.accountBalance !== undefined) {
                 driver.driverInfo.accountBalance -= 5
-                console.log(driver.driverInfo)
+                //console.log(driver.driverInfo)
                 const data: Partial<UserSchema> = {
                     driverInfo: driver.driverInfo
                 }
                 await this.userDAO.updateAccountData(driverID, data)
             }
-        }else if(calculatedTime < 0){
+        }
+        else if(calculatedTime < 0){
             throw new Error('Trip is overdue.')
         }
-    }
+        await this.tripDAO.deleteCreatedTrip(tripID)   
+}
 
 
     async declineRideRequest(driverID: string, riderID: string, tripID: string): Promise<void> {
@@ -356,16 +330,7 @@ export class TripService {
         // This ride will not be shown in his search
         trip.riderStatus[riderID] = 'Rejected'
 
-        // chage the trip status to open
-
-        // trip.isOpen = true
-
-        // const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
-
-        // // UPdate available seats
-        // trip.seatsAvailable += rider.passengerCount
-
-        // TODO: Delete rider-info from the database
+        // Delete rider-info from the database
 
         const arr = trip.riderInfo
         arr.slice().reverse().forEach((element, i) => {

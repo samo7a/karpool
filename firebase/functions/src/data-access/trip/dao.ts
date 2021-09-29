@@ -46,6 +46,8 @@ export interface TripDAOInterface {
 
   //  riderRequestTrip(tripID: string,  riderID: string): Promise<void>
 
+    deleteCreatedTrip(docID: string): Promise<void>
+
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -162,6 +164,10 @@ export class TripDAO implements TripDAOInterface {
         const completedTrips = await this.db.collection(FirestoreKey.tripsScheduled).where(`riderStatus.${riderID}`, '==', 'COMPLETED').get()
         return completedTrips.docs.map(doc => doc.data()) as ScheduleTripSchema[]
 
+    }
+
+    async deleteCreatedTrip(docID: string): Promise<void> {
+        await this.db.collection(FirestoreKey.tripsCreated).doc(docID).delete()
     }
 
     // async riderRequestTrip(tripID: string,  riderID: string): Promise<void>{

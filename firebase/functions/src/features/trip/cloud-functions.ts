@@ -93,7 +93,7 @@ export const getRiderTrips = functions.https.onCall(async (data, context) => {
  */
 export const cancelRidebyRider = functions.https.onCall(async (data, context) => {
 
-    const uid = "P6XgCtvUksX42QoH484Oy27SV6O2"//validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     if (uid === data.riderID) {
         return newTripService().cancelRidebyRider(data.riderID, data.tripID)
@@ -105,10 +105,8 @@ export const cancelRidebyRider = functions.https.onCall(async (data, context) =>
 export const cancelRidebyDriver = functions.https.onCall(async (data, context) => {
 
     const uid = "SgxafpVWoPOhmHfdrggJKYafxcc2" //validateAuthorization(context)
-    console.log( '108')
     if (uid === data.driverID) {
-        console.log(110)
-        return newTripService().cancelRidebyDriver(data.driverID, data.riderID, data.tripID)
+        return newTripService().cancelRidebyDriver(data.driverID, data.tripID)
     } else {
         throw new HttpsError('failed-precondition', 'Invalid user')
     }
@@ -116,7 +114,7 @@ export const cancelRidebyDriver = functions.https.onCall(async (data, context) =
 
 export const declineRideRequest = functions.https.onCall(async (data, context) => {
 
-    const uid = "SgxafpVWoPOhmHfdrggJKYafxcc2" //validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     if (uid === data.driverID) {
         return newTripService().declineRideRequest(data.driverID, data.riderID, data.tripID)
