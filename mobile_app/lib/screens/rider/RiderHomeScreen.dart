@@ -57,8 +57,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
-        String startAddress = data[i]["startLocation"];
-        String endAddress = data[i]["endLocation"] ?? " ";
+        String startAddress = data[i]["startAddress"] ?? " ";
+        String endAddress = data[i]["endAddress"] ?? " ";
         int seatCount = data[i]["seatsAvailable"];
 
         dynamic rider = data[i]["riderStatus"];
@@ -130,9 +130,25 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
-                      onDismissed: (direction) {
+                      onDismissed: (direction) async {
                         // TODO: API call to delete scheduled ride
-                        snapshot.data!.removeAt(index);
+                        EasyLoading.show(status: "Deleting ...");
+                        Map<String, String> obj = {
+                          "riderID": user!.uid,
+                          "tripID": trip.tripId,
+                        };
+                        HttpsCallable cancelRide =
+                            FirebaseFunctions.instance.httpsCallable("trip-cancelRidebyRider");
+                        try {
+                          await cancelRide(obj);
+                          EasyLoading.dismiss();
+                          EasyLoading.showSuccess("Ride Deleted");
+                          snapshot.data!.removeAt(index);
+                        } catch (e) {
+                          EasyLoading.dismiss();
+                          EasyLoading.showError(e.toString());
+                          print(e.toString());
+                        }
                       },
                       confirmDismiss: (direction) async {
                         return await showDialog(
@@ -148,13 +164,47 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                                   color: Color(0xffffffff),
                                 ),
                               ),
-                              content: Text(
-                                "Are you sure you want to cancel your ride?",
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontFamily: 'Glory',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.FONT_SIZE * 22,
+                              content: Container(
+                                height: size.BLOCK_HEIGHT * 25,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning,
+                                          color: Colors.yellow,
+                                        ),
+                                        SizedBox(
+                                          width: size.BLOCK_WIDTH * 4,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            "If the ride is within 3 hrs before starting time, you will be charged \$5.",
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                            ),
+                                            maxLines: 10,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      "Are you sure you want to cancel your ride?",
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               actions: [
@@ -184,7 +234,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                                 Padding(
                                   padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                                   child: TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
+                                    onPressed: () => Navigator.of(context).pop(true),
                                     child: Container(
                                       height: size.BLOCK_HEIGHT * 7,
                                       width: size.BLOCK_WIDTH * 30,
