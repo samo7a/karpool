@@ -54,6 +54,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+    _endController.dispose();
+  }
+
   _onChanged() {
     setState(() {
       _sessionToken = Uuid().v4();
@@ -112,7 +119,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       "endAddress": endAddress,
       "startPlaceID": startPlaceId,
       "endPlaceID": endPlaceId,
-      "seatsAvailable": seats.ceil(),
+      "seatsAvailable": seats,
     };
     print(obj);
     try {
