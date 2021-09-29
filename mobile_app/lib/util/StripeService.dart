@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:mobile_app/models/CreditCard.dart' as CreditCardObject;
 
 class StripeResponse {
   late String message;
@@ -28,7 +29,7 @@ class StripeService {
     );
   }
 
-  static Future<Map<String, dynamic>?> createPaymentMethod({
+  static Future<CreditCardObject.CreditCard?> createPaymentMethod({
     required String number,
     required int month,
     required int year,
@@ -44,15 +45,25 @@ class StripeService {
       cvc: cvc,
     );
     try {
-      var request =  PaymentMethodRequest(card: card);
+      var request = PaymentMethodRequest(card: card);
       final token = await StripePayment.createPaymentMethod(request);
-      //send token to backend, save it
-      print(jsonEncode(token));
+      print("token: " + jsonEncode(token));
+      if (token.id == null) {
+        return null;
+      }
+      return CreditCardObject.CreditCard(
+        last4: token.card!.last4 ?? " ",
+        expMonth: token.card!.expMonth ?? 0,
+        expYear: token.card!.expYear ?? 0,
+        nameOnCard: token.card!.name ?? " ",
+        cvc: cvc,
+        paymentMethodId: token.id ?? " ",
+        brand: token.card!.brand ?? null,
+      );
     } catch (e) {
       print(e);
+      return null;
     }
-    
-    return null;
   }
 }
   

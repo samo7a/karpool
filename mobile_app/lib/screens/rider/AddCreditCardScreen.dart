@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_form.dart';
@@ -63,13 +65,10 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
       );
       return null;
     }
-    // print(expiryDate);
     String monthString = expiryDate.substring(0, 2);
     String yearString = "20" + expiryDate.substring(3, 5);
     int month = int.parse(monthString);
     int year = int.parse(yearString);
-
-    // print("$month - $year");
 
     try {
       final result = await StripeService.createPaymentMethod(
@@ -79,21 +78,46 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
         year: year,
         name: cardHolderName,
       );
-      print("result: $result");
+      print(result!.nameOnCard);
+      print(result.cvc);
+      print(result.expMonth);
+      print(result.expYear);
+      print(result.paymentMethodId);
+      print(result.last4);
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Process Cancelled!"),
+          ),
+        );
+        Navigator.pop(context, null);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Card Added Successfully"),
+          ),
+        );
+        Navigator.pop(
+          context,
+          CreditCardObject.CreditCard(
+            nameOnCard: cardHolderName,
+            cvc: result.cvc,
+            expMonth: result.expMonth,
+            expYear: result.expYear,
+            paymentMethodId: result.paymentMethodId,
+            last4: result.last4,
+            brand: result.brand,
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
         ),
       );
+      Navigator.pop(context, null);
     }
-    return CreditCardObject.CreditCard(
-      nameOnCard: "",
-      cvv: "cvv",
-      expDate: "expDate",
-      paymentMethodId: "paymentMethodId",
-      cardNumber: "cardNumber",
-    );
   }
 
   @override
@@ -110,7 +134,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
           elevation: 0,
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, null);
             },
             icon: Icon(
               Icons.arrow_back_ios,
