@@ -158,9 +158,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
-                      onDismissed: (direction) {
-                        // TODO: API call to delete scheduled trip
-                        snapshot.data!.removeAt(index);
+                      onDismissed: (direction) async {
+                        // TODO: API call to delete scheduled ride
+                        EasyLoading.show(status: "Deleting ...");
+                        Map<String, String> obj = {
+                          "driverID": user!.uid,
+                          "tripID": trip.tripId,
+                        };
+                        HttpsCallable cancelRide =
+                            FirebaseFunctions.instance.httpsCallable("trip-cancelRidebyDriver");
+                        try {
+                          await cancelRide(obj);
+                          EasyLoading.dismiss();
+                          EasyLoading.showSuccess("Ride Deleted");
+                          snapshot.data!.removeAt(index);
+                        } catch (e) {
+                          EasyLoading.dismiss();
+                          EasyLoading.showError(
+                              "Error Occured while deleting your ride, Please try agian!");
+                          print(e.toString());
+                        }
                       },
                       confirmDismiss: (direction) async {
                         return await showDialog(
@@ -176,13 +193,47 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                   color: Color(0xffffffff),
                                 ),
                               ),
-                              content: Text(
-                                "Are you sure you want to cancel your trip?",
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontFamily: 'Glory',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.FONT_SIZE * 22,
+                              content: Container(
+                                height: size.BLOCK_HEIGHT * 25,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning,
+                                          color: Colors.yellow,
+                                        ),
+                                        SizedBox(
+                                          width: size.BLOCK_WIDTH * 4,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            "If the ride is within 3 hrs before starting time, you will be charged \$5.",
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                            ),
+                                            maxLines: 10,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      "Are you sure you want to cancel your trip?",
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               actions: [
@@ -212,7 +263,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                 Padding(
                                   padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                                   child: TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
+                                    onPressed: () => Navigator.of(context).pop(true),
                                     child: Container(
                                       height: size.BLOCK_HEIGHT * 7,
                                       width: size.BLOCK_WIDTH * 30,
