@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
@@ -19,26 +20,31 @@ class SearchRidesScreen extends StatefulWidget {
 }
 
 class _SearchRidesScreenState extends State<SearchRidesScreen> {
-  String dateTime = "";
+  // String dateTime = "";
   String startLoc = 'Address 1';
   String destination = 'Address 2';
   String rideDate = '';
+  String startPlaceId = '';
+  String endPlaceId = '';
 
   TextEditingController _dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
   _selectRideDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: selectedDate,
-        lastDate: DateTime(2022, 12, 31)); // end of 2022
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2022),
+    ); // end of 2022
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        String rideDate =
+        rideDate = picked.toIso8601String() + "Z";
+        String date =
             "${picked.toLocal().month}/${picked.toLocal().day}/${picked.toLocal().year}"; //MM/DD/YYY
-        _dateController.text = rideDate;
+        _dateController.text = date;
+        // print(picked.toIso8601String());
         print(rideDate);
       });
   }
@@ -317,6 +323,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         setState(() {
                           startLoc = _placeList[index]["description"];
                           _controller.text = _placeList[index]["description"];
+                          startPlaceId = _placeList[index]["place_id"] ?? " ";
                           _placeList = [];
                         });
                       },
@@ -384,6 +391,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         setState(() {
                           destination = _toPlaceList[index]["description"];
                           _endController.text = _toPlaceList[index]["description"];
+                          endPlaceId = _toPlaceList[index]["place_id"] ?? " ";
                           _toPlaceList = [];
                         });
                       },
@@ -407,8 +415,40 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                     fontSize: size.FONT_SIZE * 22,
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   // TODO: Link search to backend & retrieve trips map/data
+                  Map<String, String> obj = {
+                    "startPlaceID": startPlaceId,
+                    "endPlaceID": endPlaceId,
+                  };
+                  print("start : " + startPlaceId);
+                  print("end : $endPlaceId");
+                  HttpsCallable getCoordinates =
+                      FirebaseFunctions.instance.httpsCallable("trip-getStartEndCoordinates");
+
+                  HttpsCallable search =
+                      FirebaseFunctions.instance.httpsCallable("trip-searchTrips");
+                  try {
+                    final result = await getCoordinates(obj);
+
+                    Map<String, dynamic> obj2 = {
+                      "pickupLocation": {
+                        "x": result.data["startLocation"]["longitude"],
+                        "y": result.data["startLocation"]["latitude"],
+                      },
+                      "dropoffLocation": {
+                        "x": result.data["endLocation"]["longitude"],
+                        "y": result.data["endLocation"]["latitude"],
+                      },
+                      "passengerCount": 1,
+                      "startDate": "2021-10-28T00:00:00.000Z"
+                    };
+                    print(obj2);
+                    final result2 = await search(obj2);
+                    print(result2.data);
+                  } catch (e) {
+                    print(e.toString());
+                  }
                 },
               ),
               SizedBox(

@@ -114,7 +114,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     HttpsCallable addRide = FirebaseFunctions.instance.httpsCallable("trip-createAddedTrip");
     Map<String, dynamic> obj = {
       // "userID": uid,
-      "startTime": date + "Z",
+      "startTime": date + "Z", //TODO: change this to ISO
       "startAddress": startAddress,
       "endAddress": endAddress,
       "startPlaceID": startPlaceId,
