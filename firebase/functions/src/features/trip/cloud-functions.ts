@@ -112,12 +112,22 @@ export const cancelRidebyDriver = functions.https.onCall(async (data, context) =
     }
 })
 
+export const cancelRiderbyDriver = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
+    if (uid === data.driverID) {
+        return newTripService().cancelRiderbyDriver(data.driverID,data.riderID, data.tripID)
+    } else {
+        throw new HttpsError('failed-precondition', 'Invalid user')
+    }
+})
+
 export const declineRideRequest = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)
 
     if (uid === data.driverID) {
-        return newTripService().declineRideRequest(data.driverID, data.riderID, data.tripID)
+        return newTripService().declineRiderRequest(data.driverID, data.riderID, data.tripID)
     } else {
         throw new HttpsError('failed-precondition', 'Invalid user')
     }
