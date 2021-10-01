@@ -40,20 +40,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
 
-  Widget bottomSheet() {
+  Widget bottomSheet(BuildContext context) {
+    Size size = Size(Context: context);
     return Container(
-      height: 100,
-      // width: ,
+      height: size.BLOCK_HEIGHT * 13,
       margin: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
+        vertical: size.BLOCK_HEIGHT * 3,
       ),
       child: Column(
         children: <Widget>[
           Text(
             "Choose profile photo",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: size.FONT_SIZE * 15,
             ),
           ),
           Row(
@@ -823,7 +822,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
-                          builder: (_) => bottomSheet(),
+                          builder: (_) => bottomSheet(context),
                         );
                       },
                       child: Icon(
@@ -943,8 +942,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
-                      hintText: "Email Address"
-                  ),
+                      hintText: "Email Address"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),
