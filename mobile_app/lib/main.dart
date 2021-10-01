@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,12 +24,14 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'screens/rider/SearchRidesScreen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import "package:mobile_app/util/Notification.dart" as notification;
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
-  notification.Notification.init();
+  await notification.Notification.init();
+  
   runApp(MyApp());
   configLoading();
 }
