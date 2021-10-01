@@ -166,7 +166,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           "tripID": trip.tripId,
                         };
                         HttpsCallable cancelRide =
-                            FirebaseFunctions.instance.httpsCallable("trip-cancelRidebyDriver");
+                            FirebaseFunctions.instance.httpsCallable("trip-deleteRidebyDriver");
                         try {
                           await cancelRide(obj);
                           EasyLoading.dismiss();
