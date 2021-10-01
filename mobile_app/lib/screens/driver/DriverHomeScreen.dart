@@ -10,6 +10,7 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ScheduleScreen.dart';
+import 'package:mobile_app/screens/driver/DriverNavScreen.dart';
 import 'package:intl/intl.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -384,7 +385,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, ScheduleScreen.id);
+            Navigator.pushNamed(context, DriverNavScreen.id); // ScheduleScreen.id
           },
           child: Icon(
             Icons.add,

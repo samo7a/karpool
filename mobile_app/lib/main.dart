@@ -22,6 +22,7 @@ import 'screens/driver/ScheduleScreen.dart';
 import 'screens/ForgotPassword.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'screens/rider/SearchRidesScreen.dart';
+import 'screens/driver/DriverNavScreen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
@@ -79,6 +80,7 @@ class MyApp extends StatelessWidget {
               VehicleInfoScreen.id: (context) => VehicleInfoScreen(),
               PaymentScreen.id: (context) => PaymentScreen(),
               DriverApplication.id: (context) => DriverApplication(),
+              DriverNavScreen.id: (context) => DriverNavScreen(),
             },
           );
         });
