@@ -441,7 +441,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                         "y": result.data["endLocation"]["latitude"],
                       },
                       "passengerCount": 1,
-                      "startDate": "2021-10-28T00:00:00.000Z"
+                      "startDate": "2021-10-02T00:00:00.000Z"
                     };
                     print(obj2);
                     final result2 = await search(obj2);
