@@ -255,7 +255,7 @@ export class AccountService {
            profileURL: pic ? pic : user.profileURL
        }
         
-       this.userDAO.updateUserAccount(uid,data)
+      return this.userDAO.updateUserAccount(uid,data)
          
     }
 

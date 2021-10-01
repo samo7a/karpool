@@ -336,7 +336,7 @@ export class TripService {
                 }    
     }
 
-    async cancelRidebyDriver(driverID: string, tripID: string): Promise<void> {
+    async deleteRidebyDriver(driverID: string, tripID: string): Promise<void> {
 
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
