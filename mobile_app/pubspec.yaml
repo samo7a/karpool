@@ -47,6 +47,7 @@ dependencies:
   awesome_card: ^1.1.5
   flutter_credit_card: ^3.0.0
   stripe_payment: ^1.1.4
+  firebase_messaging: ^10.0.8
 
 dev_dependencies:
   flutter_test:

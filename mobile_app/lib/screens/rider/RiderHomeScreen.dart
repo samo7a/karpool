@@ -32,6 +32,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
     trips = tripFromFireBase();
   }
 
+  
+
   Future<List<RiderTrip>> tripFromFireBase() async {
     String uid = user!.uid;
     final obj = <String, dynamic>{
@@ -323,7 +325,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          
           final result =
               await Navigator.pushNamed(context, SearchRidesScreen.id, arguments: user!.uid);
           if (result == null) return;
