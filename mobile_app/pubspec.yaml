@@ -49,6 +49,7 @@ dependencies:
   stripe_payment: ^1.1.4
   firebase_messaging: ^10.0.8
   awesome_notifications: ^0.0.6+10
+  flutter_local_notifications: ^8.2.0
 
 dev_dependencies:
   flutter_test:
