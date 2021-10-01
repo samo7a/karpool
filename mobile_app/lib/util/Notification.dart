@@ -29,6 +29,8 @@ class Notification {
       alert: true,
       criticalAlert: true,
     );
+    // await FirebaseMessaging.instance.
+    // await FirebaseMessaging.instance.getAPNSToken();
 
     print("token from Notification object: ${await _getToken()}");
     await AwesomeNotifications().initialize(
