@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema, CreditCardSchema } from './schema'
+import { UserSchema, CreditCardSchema, tokenSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
@@ -45,6 +45,10 @@ export interface UserDAOInterface {
 
 
     updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void>
+
+    storeUserDeviceToken(uid: string, data:tokenSchema): Promise<void>
+
+    updateDeviceTokenList(uid: string, data:tokenSchema): Promise <void>
 }
 
 
@@ -115,7 +119,24 @@ export class UserDAO implements UserDAOInterface {
         await userRef.update(info)
     }
 
+    async storeUserDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void>{
 
+        const data = {
+                tokenIDs: tokenIDs
+        }
+        const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
+        await doc.create(data)
+    }
+
+    async updateDeviceTokenList(uid: string, data: tokenSchema): Promise <void>{
+
+        // const ref = this.db.collection(FirestoreKey.FCMTokens).doc(uid).get().then(child => child.data() as tokenSchema)
+      
+        // const arr = data.tokenIDs
+
+        const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
+        await doc.update(data)  
+    }
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {

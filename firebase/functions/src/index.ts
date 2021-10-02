@@ -18,6 +18,7 @@ import { RouteDAO, RouteDAOInterface } from "./data-access/route/dao";
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
+import { NotificationsDAO } from './features/notifications/notificationsDAO';
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -53,6 +54,10 @@ export function newTripDAO(): TripDAO {
     return new TripDAO(admin.firestore(), admin.database())
 }
 
+export function newNotificationDAO(): NotificationsDAO {
+    return new NotificationsDAO(admin.firestore())
+}
+
 export function newRouteDAO(): RouteDAOInterface {
     // return new DirectionsDAOMock()
     return new RouteDAO(
@@ -67,7 +72,8 @@ export function newAccountService(): AccountService {
         newAuthDAO(),
         newCloudStorageDAO(),
         newVehicleDAO(),
-        newPaymentDAO()
+        newPaymentDAO(),
+        newNotificationDAO()
     )
 }
 
@@ -75,7 +81,8 @@ export function newTripService(): TripService {
     return new TripService(
         newUserDao(),
         newTripDAO(),
-        newRouteDAO()
+        newRouteDAO(),
+        newNotificationDAO()
     )
 }
 
@@ -85,5 +92,8 @@ export function newTripService(): TripService {
 exports.trip = require('./features/trip/cloud-functions')
 
 exports.account = require('./features/account-management/cloud-functions')
+
+exports.notification = require('./utils/notifications')
+
 
 
