@@ -93,7 +93,7 @@ exports.trip = require('./features/trip/cloud-functions')
 
 exports.account = require('./features/account-management/cloud-functions')
 
-exports.notification = require('./utils/notifications')
+exports.notification = require('./features/notifications/notifications')
 
 
 

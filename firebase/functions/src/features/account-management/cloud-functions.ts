@@ -25,7 +25,7 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 
 export const storeDeviceToken = functions.https.onCall(async (data, context) => {
 
-    const uid = "BpYTsfWsznPG0tcmu37TqMMbtFJ2"//validateAuthorization(context)
+    const uid = validateAuthorization(context)
     // const registrationData = validateString(data)
 
     return newAccountService().storeDeviceToken(uid, data).catch(err => {

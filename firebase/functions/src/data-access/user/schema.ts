@@ -148,6 +148,6 @@ export interface CreditCardSchema {
 
 export interface tokenSchema{
 
-    tokenIDs: string[]
+    tokenIDs:  string[]
     
 }

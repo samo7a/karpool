@@ -101,17 +101,20 @@ export class AccountService {
 
         const tokens = await this.notificationsDAO.getTokenList([uid])
 
-       
+       console.log(tokens)
+
+
+       //const arr = tokenIDs.tokenIDs
+
+       //console.log(arr)
         
         if(tokens.length === 0){
             await this.userDAO.storeUserDeviceToken(uid, tokenIDs)
         }else{
 
-            tokens.forEach( async e =>{
-                if(e === tokenIDs.tokenIDs[0] ){
-                    return
-                }else{
-                    tokens.push(tokenIDs.tokenIDs[0])
+            if(!tokens.includes(tokenIDs.tokenIDs[0])){
+            
+                 tokens.push(tokenIDs.tokenIDs[0])
 
                     const data: tokenSchema = {
 
@@ -119,9 +122,9 @@ export class AccountService {
                     }
 
                     await this.userDAO.updateDeviceTokenList(uid, data)
-                }
-
-            })
+            }else{
+                console.log("Token already exist in the list")
+            }
         }
     }
 

@@ -121,18 +121,12 @@ export class UserDAO implements UserDAOInterface {
 
     async storeUserDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void>{
 
-        const data = {
-                tokenIDs: tokenIDs
-        }
-        const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
-        await doc.create(data)
+        //console.log(tokenIDs)
+
+       await this.db.collection(FirestoreKey.FCMTokens).doc(uid).create(fireEncode(tokenIDs))
     }
 
     async updateDeviceTokenList(uid: string, data: tokenSchema): Promise <void>{
-
-        // const ref = this.db.collection(FirestoreKey.FCMTokens).doc(uid).get().then(child => child.data() as tokenSchema)
-      
-        // const arr = data.tokenIDs
 
         const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
         await doc.update(data)  

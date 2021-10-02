@@ -122,7 +122,7 @@ export const cancelRiderbyDriver = functions.https.onCall(async (data, context) 
     }
 })
 
-export const declineRideRequest = functions.https.onCall(async (data, context) => {
+export const declineRiderRequest = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)
 
