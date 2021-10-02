@@ -19,6 +19,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   String name = 'Hussein Noureddine';
   String from = '123 Sesame Street';
   String to = '456 UCF Street';
+  String moneyTitle = 'Profit';
   double money = 10.5;
   double rating = 4.5;
 
@@ -50,7 +51,8 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
         rating: rating,
         source: from,
         destination: to,
-        fullname: name,  
+        fullname: name,
+        moneyTitle: moneyTitle,  
       ),
     );
   }

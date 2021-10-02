@@ -6,20 +6,22 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class SlidePanel extends StatelessWidget {
   const SlidePanel({
-    Key? key, 
-    required this.title, 
+    Key? key,
+    required this.title,
     required this.role,
     required this.profileURL,
     required this.fullname,
     required this.rating,
     required this.source,
-    required this.destination, 
+    required this.destination,
     required this.money,
+    required this.moneyTitle
   }) : super(key: key);
 
-  final String title;
-  final String role;
-  final String profileURL;
+  final String title; // Trip Summary or Ride Summary
+  final String moneyTitle; // Profit or Fee
+  final String role; // Rider or Driver
+  final String profileURL; 
   final String fullname;
   final double rating;
   final String source;
@@ -65,9 +67,7 @@ class SlidePanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: NetworkImage(
-                          profileURL
-                        ),
+                        image: NetworkImage(profileURL),
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -134,7 +134,7 @@ class SlidePanel extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    'Profit',
+                    moneyTitle,
                     style: TextStyle(
                       fontFamily: 'Glory',
                       fontWeight: FontWeight.bold,
