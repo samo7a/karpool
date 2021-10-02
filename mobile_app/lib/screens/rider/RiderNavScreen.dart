@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/SlidePanel.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class RiderNavScreen extends StatefulWidget {
   static const String id = 'driverNavigationScreen';
@@ -21,7 +19,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
   String from = '123 Sesame Street';
   String to = '456 UCF Street';
   String moneyTitle = 'Fee';
-  double money = 10.5;
+  double money = 6.75;
   double rating = 4.5;
 
   @override
@@ -31,7 +29,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
       backgroundColor: Color(0xff33415C),
       appBar: AppBar(
         backgroundColor: Color(0xff33415C),
-        title: Text("Trip Navigation"),
+        title: Text("Ride Navigation"),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -44,16 +42,20 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
           ),
         ),
       ),
-      body: SlidePanel(
-        title: title,
-        role: role,
-        profileURL: profileURL,
-        money: money,
-        rating: rating,
-        source: from,
-        destination: to,
-        fullname: name,
-        moneyTitle: moneyTitle,
+      body: Stack(
+        children: [
+          SlidePanel(
+            title: title,
+            role: role,
+            profileURL: profileURL,
+            money: money,
+            rating: rating,
+            source: from,
+            destination: to,
+            fullname: name,
+            moneyTitle: moneyTitle,  
+          ),
+        ],
       ),
     );
   }

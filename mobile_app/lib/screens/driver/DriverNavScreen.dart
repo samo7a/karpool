@@ -43,16 +43,20 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
           ),
         ),
       ),
-      body: SlidePanel(
-        title: title,
-        role: role,
-        profileURL: profileURL,
-        money: money,
-        rating: rating,
-        source: from,
-        destination: to,
-        fullname: name,
-        moneyTitle: moneyTitle,  
+      body: Stack(
+        children: [
+          SlidePanel(
+            title: title,
+            role: role,
+            profileURL: profileURL,
+            money: money,
+            rating: rating,
+            source: from,
+            destination: to,
+            fullname: name,
+            moneyTitle: moneyTitle,  
+          ),
+        ],
       ),
     );
   }
