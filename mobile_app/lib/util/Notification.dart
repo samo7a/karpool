@@ -6,24 +6,24 @@ import 'package:flutter/material.dart';
 class Message {
   String? title;
   String? body;
-  // Map<dynamic, dynamic>? payLoad;
+  dynamic data;
 
   Message({
     this.title,
     this.body,
-    // this.payLoad,
+    this.data,
   });
 }
 
 class Notification {
   static late final String? token;
-  static late final String? iosToken;
 
   static final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
   static List<Message> messages = [];
 
   static init() async {
+    // print("token : " + await getToken());
     firebaseMessaging.requestPermission(
       sound: true,
       badge: true,
@@ -36,16 +36,9 @@ class Notification {
       badge: true,
       sound: true,
     );
-    // await FirebaseMessaging.instance.
-    iosToken = await FirebaseMessaging.instance.getAPNSToken();
-
-    print("ios token from Notification object: $iosToken");
-
-    print("token from Notification object: ${await _getToken()}");
 
     await AwesomeNotifications().initialize(
-      // set the icon to null if you want to use the default app icon
-      null,
+      'resource://drawable/res_app_icon',
       [
         NotificationChannel(
           channelKey: 'basic_channel',
@@ -56,19 +49,16 @@ class Notification {
         )
       ],
     );
-    await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        // Insert here your friendly dialog box before call the request method
-        // This is very important to not harm the user experience
-        AwesomeNotifications().requestPermissionToSendNotifications();
-      }
-    });
+
+    //when the app is terminated
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
       print('A new getInitialMessage event was published! $message');
     });
 
+    //when the app is on the foreground. works only on android
     FirebaseMessaging.onMessage.listen(_firebaseMessagingFrontgroundHandler);
 
+    //when the app is in the background not terminated.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) async {
       Message m = Notification._getMessage(message);
       await AwesomeNotifications().createNotification(
@@ -86,20 +76,19 @@ class Notification {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  static _getToken() async {
+  static getToken() async {
     token = await firebaseMessaging.getToken();
     return token;
   }
 
   static _getMessage(RemoteMessage? message) {
     final notification = message!.notification;
-    // final data = message.data;
+    print(message.data.toString());
     String? title = notification!.title;
     String? body = notification.body;
     print(title);
     print(body);
     return Message(title: title, body: body);
-    // Map<dynamic, dynamic>? payLoad = message
   }
 }
 
@@ -126,8 +115,10 @@ Future<void> _firebaseMessagingFrontgroundHandler(RemoteMessage? message) async 
       channelKey: 'basic_channel',
       title: m.title,
       body: m.body,
-      // notificationLayout: NotificationLayout.BigText,
+      notificationLayout: NotificationLayout.BigText,
     ),
   );
-  print('a message from firebase: ${message!.data}');
+  print(m.title);
+  print(m.body);
+  print('a data from firebase: ${message!.data}');
 }
