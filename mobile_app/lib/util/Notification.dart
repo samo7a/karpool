@@ -2,7 +2,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Message {
   String? title;
@@ -21,17 +20,10 @@ class Notification {
   static late final String? iosToken;
 
   static final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   static List<Message> messages = [];
 
   static init() async {
-    var android = AndroidInitializationSettings('mipmap/ic_launcher');
-    var ios = IOSInitializationSettings();
-    var platform = InitializationSettings(android: android, iOS: ios);
-    flutterLocalNotificationsPlugin.initialize(platform);
-
     firebaseMessaging.requestPermission(
       sound: true,
       badge: true,
@@ -122,18 +114,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage? message) async {
       // notificationLayout: NotificationLayout.BigText,
     ),
   );
-  print('A new onBackgroundMessage event was published! $message');
+  print('A new onBackgroundMessage event was published! ${message!.data}');
 }
 
 Future<void> _firebaseMessagingFrontgroundHandler(RemoteMessage? message) async {
-  var android = new AndroidNotificationDetails(
-    'sdffds dsffds',
-    "CHANNLE NAME",
-    "channelDescription",
-  );
-  var iOS = new IOSNotificationDetails();
-  var platform = new NotificationDetails(android: android, iOS: iOS);
-  Notification.flutterLocalNotificationsPlugin.show(0, "This is title", "this is demo", platform);
   print("foreground notification triggered");
   Message m = Notification._getMessage(message);
   await AwesomeNotifications().createNotification(
@@ -145,5 +129,5 @@ Future<void> _firebaseMessagingFrontgroundHandler(RemoteMessage? message) async 
       // notificationLayout: NotificationLayout.BigText,
     ),
   );
-  print('a message from firebase: $message');
+  print('a message from firebase: ${message!.data}');
 }
