@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
-import 'package:mobile_app/models/User.dart' as user; //I will need it later
+import 'package:mobile_app/models/User.dart' as user;
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';

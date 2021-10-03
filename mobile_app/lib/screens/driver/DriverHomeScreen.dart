@@ -13,10 +13,8 @@ import 'ScheduleScreen.dart';
 import 'package:intl/intl.dart';
 
 class DriverHomeScreen extends StatefulWidget {
-  final User user;
   const DriverHomeScreen({
     Key? key,
-    required this.user,
   }) : super(key: key);
 
   @override
@@ -29,7 +27,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   void initState() {
     super.initState();
-    user = widget.user;
     trips = tripFromFireBase();
   }
 

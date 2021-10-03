@@ -26,9 +26,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
         backgroundColor: kDashboardColor,
         centerTitle: true,
       ),
-      drawer: DriverDrawer(
-        user: user,
-      ),
+      drawer: DriverDrawer(),
       body: DefaultTabController(
         length: 2,
         child: Builder(
@@ -51,7 +49,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  DriverHomeScreen(user: user),
+                  DriverHomeScreen(),
                   DriverHistoryScreen(),
                 ],
               ),

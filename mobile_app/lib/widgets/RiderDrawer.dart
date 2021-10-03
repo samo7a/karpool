@@ -26,7 +26,7 @@ class RiderDrawer extends StatefulWidget {
 }
 
 class _RiderDrawerState extends State<RiderDrawer> {
-  late bool isDriver; 
+  bool isDriver = false;
 
   @override
   void initState() {
