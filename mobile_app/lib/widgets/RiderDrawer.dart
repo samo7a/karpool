@@ -18,24 +18,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RiderDrawer extends StatefulWidget {
   const RiderDrawer({
-    required this.user,
     Key? key,
   }) : super(key: key);
-  final User user;
 
   @override
   _RiderDrawerState createState() => _RiderDrawerState();
 }
 
 class _RiderDrawerState extends State<RiderDrawer> {
-  late User user;
   late bool isDriver;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    isDriver = user.isDriver;
     getCurrentRole();
   }
 
@@ -53,14 +48,9 @@ class _RiderDrawerState extends State<RiderDrawer> {
       isDriver = !isDriver;
     });
     return new Timer(new Duration(seconds: 1), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => DriverDashboardScreen(),
-          settings: RouteSettings(
-            arguments: user,
-          ),
-        ),
+        DriverDashboardScreen.id,
         (Route<dynamic> route) => false,
       );
     });
@@ -68,6 +58,7 @@ class _RiderDrawerState extends State<RiderDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -76,11 +67,7 @@ class _RiderDrawerState extends State<RiderDrawer> {
         children: [
           Container(
             height: size.BLOCK_HEIGHT * 45,
-            child: TopDrawer(
-              starRating: user.rating,
-              fullName: user.firstName + " " + user.lastName,
-              profilePic: user.profileURL,
-            ),
+            child: TopDrawer(),
           ),
           Container(
             height: size.BLOCK_HEIGHT * 3,
@@ -269,7 +256,10 @@ class _RiderDrawerState extends State<RiderDrawer> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(context, EditProfilScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  EditProfilScreen.id,
+                );
               },
             ),
           ),
@@ -301,7 +291,10 @@ class _RiderDrawerState extends State<RiderDrawer> {
               ),
               onTap: () {
                 // remove user, add card, Card model under construction
-                Navigator.pushNamed(context, PaymentScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  PaymentScreen.id,
+                );
               },
             ),
           ),

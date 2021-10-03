@@ -79,11 +79,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
         children: [
           Container(
             height: size.BLOCK_HEIGHT * 45,
-            child: TopDrawer(
-              starRating: user.rating,
-              fullName: user.firstName + " " + user.lastName,
-              profilePic: user.profileURL,
-            ),
+            child: TopDrawer(),
           ),
           Container(
             height: size.BLOCK_HEIGHT * 3,

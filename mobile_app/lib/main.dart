@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/models/User.dart' as user; //I will need it later
 import 'package:mobile_app/screens/MainScreen.dart';
@@ -24,7 +23,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'screens/rider/SearchRidesScreen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import "package:mobile_app/util/Notification.dart" as notification;
-import 'package:awesome_notifications/awesome_notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
