@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
 
-import { AuthenticationDAO } from "./auth/dao";
+import { AuthenticationDAO } from "./data-access/auth/dao";
 import { UserDAO } from "./data-access/user/dao";
 import { PaymentDAO } from "./data-access/payment-dao/dao";
 import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
@@ -45,7 +45,7 @@ export function newVehicleDAO(): VehicleDAO {
 
 export function newPaymentDAO(): PaymentDAO {
     const stripe = getEnv().stripe
-    return new PaymentDAO(stripe.public_key, stripe.private_key)
+    return new PaymentDAO(stripe.public_key, stripe.private_key, admin.firestore())
 }
 
 

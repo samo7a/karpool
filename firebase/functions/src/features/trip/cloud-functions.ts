@@ -1,17 +1,38 @@
 
 import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
-import { validateAuthorization } from "../../auth/utils"
-import { newTripService, newUserDao } from '../../index'
-import { validateDate, validateNumber, validateStringArray } from "../../utils/validation"
+import { validateAuthorization } from "../../data-access/auth/utils"
+import { newRouteDAO, newTripService, newUserDao } from '../../index'
+import { validateDate, validateNumber, validateString } from "../../utils/validation"
 import { validateAddTripData } from "./validation"
 
+/*
 
-export const getCoordinates = functions.https.onCall((data, context) => {
+trip.getStartEndCoordinates({
+    startPlaceID: 'EisxMDAxMDAgRWFzdCA3dGggU3RyZWV0LCBGcm9zdHByb29mLCBGTCwgVVNBIi4qLAoUChIJaS3ZL70A3YgREM-K-xXkZoUSFAoSCREHOJewAN2IEczFXw8obS9Y',
+    endPlaceID: 'EihFYXN0IERyaXZlLCBNYW5oYXR0YW4sIE5ldyBZb3JrLCBOWSwgVVNBIi4qLAoUChIJq2ZCyZhYwokRQ9WxRi873TMSFAoSCWHmbgSPWMKJEYzA7PyBMgsK'
+})
 
-    const coordinates = validateStringArray(data)
 
-    console.log(coordinates)
+*/
+
+
+export const getStartEndCoordinates = functions.https.onCall(async (data, context) => {
+
+    await validateAuthorization(context)
+
+    const startPlaceID = validateString(data.startPlaceID)
+    const endPlaceID = validateString(data.endPlaceID)
+
+    const dao = newRouteDAO()
+
+    const startLocation = await dao.getCoordinates(startPlaceID)
+    const endLocation = await dao.getCoordinates(endPlaceID)
+
+    return {
+        startLocation: { latitude: startLocation.y, longitude: startLocation.x },
+        endLocation: { latitude: endLocation.y, longitude: endLocation.x }
+    }
 
 })
 
@@ -44,6 +65,19 @@ export const searchTrips = functions.https.onCall(async (data, context) => {
 
 })
 
+/*
+
+
+trip.createAddedTrip({
+    startTime: '2021-09-30 00:00:00.000Z', 
+    startAddress: '1000 South Semoran Boulevard, Winter Park, FL, USA', 
+    endAddress: 'UCF, Central Florida Blvd, Orlando, FL, USA', 
+    startPlaceID: 'ChIJuT3NIohv54gR4RH6boD36So', 
+    endPlaceID: 'ChIJX0kKal1o54gRq5vHs5Kb1V8', 
+    seatsAvailable: 3
+})
+
+*/
 
 /**
  * 
@@ -105,7 +139,7 @@ export const cancelRidebyRider = functions.https.onCall(async (data, context) =>
 export const cancelRidebyDriver = functions.https.onCall(async (data, context) => {
 
     const uid = "SgxafpVWoPOhmHfdrggJKYafxcc2" //validateAuthorization(context)
-    console.log( '108')
+    console.log('108')
     if (uid === data.driverID) {
         console.log(110)
         return newTripService().cancelRidebyDriver(data.driverID, data.riderID, data.tripID)
@@ -128,13 +162,13 @@ export const declineRideRequest = functions.https.onCall(async (data, context) =
 
 
 export const acceptRiderRequest = functions.https.onCall(async (data, context) => {
-     const uid = validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
-     if (uid) {
-         return newTripService().acceptRiderRequest(data.riderID, data.tripID)
-     }
-     else {
-         throw new HttpsError('failed-precondition', 'Invalid User')
+    if (uid) {
+        return newTripService().acceptRiderRequest(data.riderID, data.tripID)
+    }
+    else {
+        throw new HttpsError('failed-precondition', 'Invalid User')
     }
 })
 
@@ -163,14 +197,14 @@ export const getRiderCompletedTrips = functions.https.onCall(async (data, contex
 
 })
 
-export const riderRequestTrip = functions.https.onCall(async (data, context) =>{
+export const riderRequestTrip = functions.https.onCall(async (data, context) => {
     const uid = validateAuthorization(context)
 
     if (uid) {
-        return newTripService().riderRequestTrip(data.riderID,data.tripID)
+        return newTripService().riderRequestTrip(data.riderID, data.tripID)
     }
     else {
         throw new HttpsError('failed-precondition', 'Invalid User')
-   }
-    
+    }
+
 })

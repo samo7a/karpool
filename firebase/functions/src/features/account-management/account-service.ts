@@ -1,4 +1,4 @@
-import { AuthenticationDAOInterface } from "../../auth/dao";
+import { AuthenticationDAOInterface } from "../../data-access/auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
 import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
 import { UserFieldsExternal, UserRegistrationData, DriverAddRoleInfo } from './types'

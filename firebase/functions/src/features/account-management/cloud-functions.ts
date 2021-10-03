@@ -4,7 +4,7 @@ import * as functions from 'firebase-functions'
 import { newAccountService } from '../../index'
 import { validateRegistrationData } from './validation'
 import { validateBool, validateString } from '../../utils/validation'
-import { validateAuthorization } from '../../auth/utils'
+import { validateAuthorization } from '../../data-access/auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
 
 

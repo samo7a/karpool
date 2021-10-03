@@ -126,22 +126,3 @@ export interface RiderInfoSchema {
      */
     stripeCustomerID: string
 }
-
-
-
-
-export interface CreditCardSchema {
-
-    cardNum: number
-
-    cvc: number
-
-    /**
-     * Expiration date in form of MM/YY
-     */
-    expDate: string
-
-    uid: string
-
-
-}
