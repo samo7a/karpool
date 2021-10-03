@@ -18,7 +18,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
-
+import 'package:mobile_app/util/Notification.dart' as not;
 import 'LoginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -1265,6 +1265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         buttonName: 'Register',
         onClick: () async {
           Provider.of<User>(context, listen: false);
+
           EasyLoading.show(status: "Signing up...");
           String img64;
           if (_imageFile == null) {
@@ -1340,11 +1341,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           HttpsCallable register =
               FirebaseFunctions.instance.httpsCallable.call('account-registerUser');
+          HttpsCallable storeToken =
+              FirebaseFunctions.instance.httpsCallable("account-storeDeviceToken");
+          String token = await not.Notification.getToken();
           try {
             final result = await register(obj);
             if (result.data == null) {
               EasyLoading.dismiss();
               EasyLoading.showSuccess("Signed Up!");
+
+              Map<String, List<String>> obj = {
+                "tokenIDs": [token]
+              };
+              await storeToken(obj);
               await context.read<Auth>().signOut();
               Navigator.popAndPushNamed(context, LoginScreen.id);
               return;

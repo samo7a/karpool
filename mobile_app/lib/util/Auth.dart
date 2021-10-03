@@ -86,6 +86,10 @@ class Auth {
     return await userFromFirebase(_auth.currentUser);
   }
 
+  sendEmailVerificagtion() async {
+    await _auth.currentUser!.sendEmailVerification();
+  }
+
   //update email
   Future<void> updateEmail(String email) async {
     await _auth.currentUser!.updateEmail(email);

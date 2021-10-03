@@ -16,7 +16,7 @@ class Message {
 }
 
 class Notification {
-  static late final String? token;
+  // static late final String? token;
 
   static final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
@@ -77,8 +77,7 @@ class Notification {
   }
 
   static getToken() async {
-    token = await firebaseMessaging.getToken();
-    return token;
+    return await firebaseMessaging.getToken();
   }
 
   static _getMessage(RemoteMessage? message) {

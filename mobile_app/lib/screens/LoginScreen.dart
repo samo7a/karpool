@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'driver/DriverDashboardScreen.dart';
 import 'package:mobile_app/models/User.dart' as u;
+import 'package:mobile_app/util/Notification.dart' as not;
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'loginScreen';
@@ -37,10 +39,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login() async {
-    final user = Provider.of<User>(context, listen: false);
     String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
     String password = passwordController.text.isEmpty ? "empty" : passwordController.text.trim();
     EasyLoading.show(status: 'Signing in...');
+    HttpsCallable storeToken = FirebaseFunctions.instance.httpsCallable("account-storeDeviceToken");
+    String token = await not.Notification.getToken();
     final prefs = await SharedPreferences.getInstance();
     try {
       if (isDriver)
@@ -49,12 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString("role", "rider");
 
       final res = await context.read<Auth>().signIn(email, password);
+
       u.User currentUser = Provider.of<u.User>(context, listen: false);
 
       if (res != null) {
         bool verified = res.isVerified;
         if (!verified) {
-          user.sendEmailVerification();
+          context.read<Auth>().sendEmailVerificagtion();
           context.read<Auth>().signOut();
           await prefs.setString("role", "norole");
           EasyLoading.dismiss();
@@ -73,11 +77,17 @@ class _LoginScreenState extends State<LoginScreen> {
           currentUser.setProfileURL = res.profileURL;
           bool driverRole = res.isDriver;
           bool riderRole = res.isRider;
+          print("token : $token");
+          Map<String, List<String>> obj = {
+            "tokenIDs": [token]
+          };
+          await storeToken(obj);
           if (isDriver && driverRole) {
             //the user is driver
             await prefs.setString("role", "driver");
             EasyLoading.dismiss();
             EasyLoading.showSuccess("Logged in!");
+
             Navigator.pushNamedAndRemoveUntil(
               context,
               DriverDashboardScreen.id,
@@ -97,7 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
             //has no roles
             EasyLoading.dismiss();
             context.read<Auth>().signOut();
-            EasyLoading.showError("Signing in failed, please try again!");
+            await prefs.setString("role", "norole");
+            EasyLoading.showInfo("Signing in failed, please try again!");
             return;
           }
         }

@@ -9,6 +9,7 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'ScheduleScreen.dart';
 import 'package:intl/intl.dart';
 
@@ -22,16 +23,17 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
-  User? user;
+  late User user;
   late Future<List<DriverTrip>> trips;
 
   void initState() {
     super.initState();
     trips = tripFromFireBase();
+    user = Provider.of<User>(context, listen: false);
   }
 
   Future<List<DriverTrip>> tripFromFireBase() async {
-    String uid = user!.uid;
+    String uid = user.uid;
     final obj = <String, dynamic>{
       "driverID": uid,
     };
@@ -159,7 +161,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         // TODO: API call to delete scheduled ride
                         EasyLoading.show(status: "Deleting ...");
                         Map<String, String> obj = {
-                          "driverID": user!.uid,
+                          "driverID": user.uid,
                           "tripID": trip.tripId,
                         };
                         HttpsCallable cancelRide =
@@ -433,7 +435,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final result =
-                await Navigator.pushNamed(context, ScheduleScreen.id, arguments: user!.uid);
+                await Navigator.pushNamed(context, ScheduleScreen.id, arguments: user.uid);
             if (result == null) return;
             trips = tripFromFireBase();
           },
