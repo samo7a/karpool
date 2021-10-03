@@ -6,7 +6,9 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:mobile_app/widgets/widgets.dart';
+import 'package:mobile_app/widgets/PasswordField.dart';
+import 'package:mobile_app/widgets/TextField.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
 
 class ReLoginScreen extends StatefulWidget {

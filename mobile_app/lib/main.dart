@@ -11,7 +11,6 @@ import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/AddCreditCardScreen.dart';
 import 'package:mobile_app/screens/rider/DriverApplication.dart';
 import 'package:mobile_app/screens/rider/PaymentScreen.dart';
-import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';

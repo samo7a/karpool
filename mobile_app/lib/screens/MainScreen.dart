@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/LoginScreen.dart';
 import 'package:mobile_app/screens/RegisterScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
-import 'package:mobile_app/widgets/widgets.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/src/provider.dart';
 import '../util/Size.dart';
 import 'package:mobile_app/util/constants.dart';

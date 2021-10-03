@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/User.dart';
-import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
@@ -19,6 +18,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
+
+import 'LoginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registerScreen';
