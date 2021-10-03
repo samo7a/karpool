@@ -12,6 +12,7 @@ import 'package:mobile_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'driver/DriverDashboardScreen.dart';
+import 'package:mobile_app/models/User.dart' as u;
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'loginScreen';
@@ -34,12 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login() async {
-    final user = Provider.of<User?>(context, listen: false);
-    String email =
-        emailController.text.isEmpty ? "empty" : emailController.text.trim();
-    String password = passwordController.text.isEmpty
-        ? "empty"
-        : passwordController.text.trim();
+    final user = Provider.of<User>(context, listen: false);
+    String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
+    String password = passwordController.text.isEmpty ? "empty" : passwordController.text.trim();
     EasyLoading.show(status: 'Signing in...');
     final prefs = await SharedPreferences.getInstance();
     try {
@@ -49,16 +47,28 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString("role", "rider");
 
       final res = await context.read<Auth>().signIn(email, password);
+      u.User currentUser = Provider.of<u.User>(context, listen: false);
+
       if (res != null) {
         bool verified = res.isVerified;
         if (!verified) {
-          user!.sendEmailVerification();
+          user.sendEmailVerification();
           context.read<Auth>().signOut();
           await prefs.setString("role", "norole");
           EasyLoading.dismiss();
           EasyLoading.showInfo("Unverified user");
           return;
         } else {
+          currentUser.setFirstName = res.firstName;
+          currentUser.setLastName = res.lastName;
+          currentUser.setEmail = res.email;
+          currentUser.setUid = res.uid;
+          currentUser.setIsDriver = res.isDriver;
+          currentUser.setIsRider = res.isRider;
+          currentUser.setIsVerified = res.isVerified;
+          currentUser.setPhoneNumber = res.phoneNumber;
+          currentUser.setRating = res.rating;
+          currentUser.setProfileURL = res.profileURL;
           bool driverRole = res.isDriver;
           bool riderRole = res.isRider;
           if (isDriver && driverRole) {
@@ -66,14 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
             await prefs.setString("role", "driver");
             EasyLoading.dismiss();
             EasyLoading.showSuccess("Logged in!");
-            Navigator.pushAndRemoveUntil(
+            Navigator.pushNamedAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => DriverDashboardScreen(),
-                settings: RouteSettings(
-                  arguments: res,
-                ),
-              ),
+              DriverDashboardScreen.id,
               (Route<dynamic> route) => false,
             );
           } else if (!isDriver && riderRole) {
@@ -81,14 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
             await prefs.setString("role", "rider");
             EasyLoading.dismiss();
             EasyLoading.showSuccess("Logged in!");
-            Navigator.pushAndRemoveUntil(
+            Navigator.pushNamedAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => RiderDashboardScreen(),
-                settings: RouteSettings(
-                  arguments: res,
-                ),
-              ),
+              RiderDashboardScreen.id,
               (Route<dynamic> route) => false,
             );
           } else {
@@ -174,8 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
                 child: GestureDetector(
                   onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
                   child: Text(
