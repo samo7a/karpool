@@ -1,9 +1,11 @@
 
 import * as admin from 'firebase-admin'
-import { NotificationData } from '../../data-access/trip/schema'
+import { CreatedTripSchema, NotificationData } from '../../data-access/trip/schema'
 import { FirestoreKey } from '../../constants'
 import * as functions from 'firebase-functions'
-import { NotificationsDAOInterface } from './notificationsDAO'
+import { newNotificationDAO } from '../..'
+
+
 
 
 
@@ -12,14 +14,14 @@ export function sendCustomNotification( tokenIDs:string[], data: NotificationDat
         tokenIDs.forEach(function(token){
             const message = {
                 notification: { 
-                    title: 'Karpol Notification', 
-                    body: "Driver ID:"+ data.driverID + "Trip number:" + data.tripID
+                    title: 'Karpool Notification', 
+                    body: data.subject
                 },
 
                 token: token,
 
                 data:{
-                    body:data.subject
+                    body:"Driver ID: "+ data.driverID + "Trip number: " + data.tripID
                 }
 
             }
@@ -40,9 +42,36 @@ export const sendTripThreeHoursNotifiction = functions.pubsub.schedule('* * * * 
     const currentTime = new Date().getTime()
     const query = await admin.firestore().collection(FirestoreKey.tripsCreated).where('startTime', '==', (currentTime - 10800000)).get()
     console.log("start query display: " )
-    //const arr = query.riderStatus
-    query.forEach(function(element){
-        console.log(element.data)
-    })
 
+    const trips = query.docs.map(doc => doc.data()) as CreatedTripSchema[]
+
+    console.log(trips)
+
+    if(trips.length === 0){
+        console.log("No available trips")
+    }else{
+
+            trips.forEach(async e =>{
+                const tripIDs : string[] = []
+                const snapshot = e.riderInfo
+
+                snapshot.forEach((element)=>{
+                    tripIDs.push(element.riderID)
+                })
+                tripIDs.push(e.driverID)
+
+                const tokens =  await newNotificationDAO().getTokenList(tripIDs)
+
+                console.log(tokens)
+                    const message  = {
+                        subject: "Your scheduled trip will start in three(3) hours",
+                        driverID : e.driverID,
+                        tripID: e.docID,
+                        notificationID: 2
+                    }
+            
+                    sendCustomNotification(tokens, message)
+            })
+        }
+   
 })

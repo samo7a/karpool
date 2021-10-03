@@ -121,8 +121,6 @@ export class UserDAO implements UserDAOInterface {
 
     async storeUserDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void>{
 
-        //console.log(tokenIDs)
-
        await this.db.collection(FirestoreKey.FCMTokens).doc(uid).create(fireEncode(tokenIDs))
     }
 

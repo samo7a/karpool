@@ -404,7 +404,7 @@ export class TripService {
             snapshot.forEach((element)=>{
                 tripIDs.push(element.riderID)
             })
-            tripIDs.push(driverID)
+            //tripIDs.push(driverID)
 
                 console.log(tripIDs)
 
@@ -421,7 +421,7 @@ export class TripService {
         
                 sendCustomNotification(tokens, message)
 
-      //  await this.tripDAO.deleteCreatedTrip(tripID)
+       await this.tripDAO.deleteCreatedTrip(tripID)
 }
 
 

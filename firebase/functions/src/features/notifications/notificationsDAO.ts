@@ -8,7 +8,7 @@ import { FCMTokens } from '../../data-access/trip/schema'
 export interface NotificationsDAOInterface{
 
     // createToken(userID: string, data: FCMTokens): Promise < string >
-    getTokenList(userIDs:string[]) : Promise <string[]>
+     getTokenList(userIDs:string[]) : Promise <string[]>
 
 }
 
@@ -30,7 +30,7 @@ constructor(db: admin.firestore.Firestore){
 // }
 
 
-async getTokenList(userIDs: string[]): Promise<string[]>{
+     async getTokenList(userIDs: string[]): Promise<string[]>{
 
     const arr: string[] = []
     let i:number = 0
@@ -38,11 +38,14 @@ async getTokenList(userIDs: string[]): Promise<string[]>{
 
           const query = await this.db.collection(FirestoreKey.FCMTokens).doc(userIDs[i]).get()
 
+
+
             if (query.exists) {
-                const Array = query.data() as FCMTokens
-                Array.tokenIDs.forEach((e)=>{
+                const Arr2 = query.data() as FCMTokens
+                console.log(Arr2)
+                Arr2.tokenIDs.forEach((e)=>{
                     arr.push(e)
-                    //console.log(arr) 
+                    console.log(arr) 
                 })      
             } else {
                 // doc.data() will be undefined in this case
