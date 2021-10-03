@@ -127,7 +127,7 @@ export const getRiderTrips = functions.https.onCall(async (data, context) => {
  */
 export const cancelRidebyRider = functions.https.onCall(async (data, context) => {
 
-    const uid = "P6XgCtvUksX42QoH484Oy27SV6O2"//validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     if (uid === data.riderID) {
         return newTripService().cancelRidebyRider(data.riderID, data.tripID)
@@ -136,24 +136,32 @@ export const cancelRidebyRider = functions.https.onCall(async (data, context) =>
     }
 })
 
-export const cancelRidebyDriver = functions.https.onCall(async (data, context) => {
+export const deleteRidebyDriver = functions.https.onCall(async (data, context) => {
 
-    const uid = "SgxafpVWoPOhmHfdrggJKYafxcc2" //validateAuthorization(context)
-    console.log('108')
+    const uid = validateAuthorization(context)
     if (uid === data.driverID) {
-        console.log(110)
-        return newTripService().cancelRidebyDriver(data.driverID, data.riderID, data.tripID)
+        return newTripService().deleteRidebyDriver(data.driverID, data.tripID)
     } else {
         throw new HttpsError('failed-precondition', 'Invalid user')
     }
 })
 
-export const declineRideRequest = functions.https.onCall(async (data, context) => {
+export const cancelRiderbyDriver = functions.https.onCall(async (data, context) => {
 
-    const uid = "SgxafpVWoPOhmHfdrggJKYafxcc2" //validateAuthorization(context)
+    const uid = validateAuthorization(context)
+    if (uid === data.driverID) {
+        return newTripService().cancelRiderbyDriver(data.driverID, data.riderID, data.tripID)
+    } else {
+        throw new HttpsError('failed-precondition', 'Invalid user')
+    }
+})
+
+export const declineRiderRequest = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
 
     if (uid === data.driverID) {
-        return newTripService().declineRideRequest(data.driverID, data.riderID, data.tripID)
+        return newTripService().declineRiderRequest(data.driverID, data.riderID, data.tripID)
     } else {
         throw new HttpsError('failed-precondition', 'Invalid user')
     }

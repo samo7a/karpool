@@ -12,7 +12,9 @@ export const FirestoreKey = {
 
     creditCards: 'credit-cards',
 
-    cachedRoutes: 'routes-cached'
+    cachedRoutes: 'routes-cached',
+
+    FCMTokens: 'FCMTokens'
 
 }
 

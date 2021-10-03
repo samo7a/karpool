@@ -23,7 +23,16 @@ export const registerUser = functions.https.onCall(async (data, context) => {
 
 })
 
+export const storeDeviceToken = functions.https.onCall(async (data, context) => {
 
+    const uid = validateAuthorization(context)
+    // const registrationData = validateString(data)
+
+    return newAccountService().storeDeviceToken(uid, data).catch(err => {
+        throw new HttpsError('internal', err.message)
+    })
+
+})
 /**
  * Adds a role to the user's account after they have register
  * Params: 
@@ -95,4 +104,10 @@ export const getUser = functions.https.onCall(async (data, context) => {
             return JSON.parse(JSON.stringify(fields))
         })
 
+   
+
+})
+
+export const editUserProfile = functions.https.onCall(async (data, context) =>{
+    return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
 })

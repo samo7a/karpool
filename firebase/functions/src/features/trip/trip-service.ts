@@ -12,23 +12,32 @@ import { HttpsError } from "firebase-functions/lib/providers/https";
 import { autoID } from "../../data-access/utils/misc";
 import { GeoDistance } from "../../utils/misc";
 import { UserSchema } from "../../data-access/user/schema";
+import { sendCustomNotification } from "../../features/notifications/notifications";
+import {  NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
 
+//TODO:  
+//  create a cloud function to add deviceToken to FCMTokens collection
+//       finish the notification for delete, add, join, decline and, cancel a ride
 
+//Later: ad notificatrions for 3, 1h  and time hour to start the trip
 
 export class TripService {
 
     private tripDAO: TripDAOInterface
-    private userDAO: UserDAOInterface
     private directionsDAO: RouteDAOInterface
+    private notificationsDAO: NotificationsDAOInterface
+    userDAO: any;
 
     constructor(
         userDAO: UserDAOInterface,
         tripDAO: TripDAOInterface,
-        directionsDAO: RouteDAOInterface
+        directionsDAO: RouteDAOInterface,
+        notificationsDAO: NotificationsDAOInterface
     ) {
         this.userDAO = userDAO
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
+        this.notificationsDAO = notificationsDAO
     }
 
     /**
@@ -260,7 +269,7 @@ export class TripService {
         const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
         trip.polyline = (await newRoute).polyline
 
-        //ToDO: delete rider info from trip
+        //delete rider info from trip
         const arr = trip.riderInfo
         arr.slice().reverse().forEach((element, i) => {
             if (element.riderID === riderID) {
@@ -283,40 +292,87 @@ export class TripService {
 
             //TODO: Charge the rider $5 penality or add a field in user as debt and add the value 
         }
+
+        const token = await this.notificationsDAO.getTokenList([trip.driverID])
+
+        const message  = {
+            subject: "One of the riders canceled your trip",
+            driverID : trip.driverID,
+            tripID : tripID,
+            notificationID: 1
+        }
+
+        sendCustomNotification(token, message)
+
+
     }
 
-    async cancelRidebyDriver(driverID: string, riderID: string, tripID: string): Promise<void> {
+    async cancelRiderbyDriver(driverID: string, riderID: string, tripID: string): Promise<void> {
 
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
-        // Check if trip exist in the database
-        if (trip.riderStatus[riderID] === undefined) {
-            throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
-        } else if (trip.riderStatus[riderID] === 'Rejected') {
-            throw new HttpsError('invalid-argument', `Rider has already cancelled this ride.`)
-        }
+            // Check if trip exist in the database
+            if (trip === undefined) {
+                throw new HttpsError('not-found', 'Trip does not exist')
+            }
+            // Check if rider is part of the trip
+            if (trip.riderStatus[riderID] === undefined) {
+                throw new HttpsError('invalid-argument', `Rider isn't part of this ride.`)
+            }
 
-        // Cancel the rider by changing his status to Rejected. 
-        // This ride will not be shown in his search
-        trip.riderStatus[riderID] = 'Rejected'
+            // Cancel the rider by changing his status to Rejected. 
+            // This ride will not be shown in his search
+            trip.riderStatus[riderID] = 'Rejected'
 
-        // chage the trip status to open
-        trip.isOpen = true
+             // chage the trip status to open
+             trip.isOpen = true
 
-        const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
-        // UPdate available seats
-        trip.seatsAvailable += rider.passengerCount
+             const rider = trip.riderInfo.filter(e =>e.riderID === riderID)[0]
+            // UPdate available seats
+            trip.seatsAvailable += rider.passengerCount       
 
-        // Call change route function to update route
-        const wayPoints = this.getWaypoints(trip, 'Accepted')
-        const startLoc = { x: trip.startLocation.longitude, y: trip.startLocation.latitude }
-        const endLoc = { x: trip.endLocation.longitude, y: trip.endLocation.latitude }
-        const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
-        trip.polyline = (await newRoute).polyline
+            // Call change route function to update route
+            const wayPoints = this.getWaypoints(trip,'Accepted')
+            const startLoc = { x: trip.startLocation.longitude, y: trip.startLocation.latitude }
+            const endLoc = { x: trip.endLocation.longitude, y: trip.endLocation.latitude }
+            const newRoute = this.directionsDAO.getRoute(tripID, startLoc, endLoc, wayPoints)
+            trip.polyline = (await newRoute).polyline
+            //Write to database
+            await this.tripDAO.updateCreatedTrip(tripID, trip)           
+                
+            // Charge the driver cancelation fee  and store it in drivers account balance
+            const scheduleTime = new Date(trip.startTime.seconds * 1000).getTime()
+            const currentTime = new Date().getTime()
+            const calculatedTime = ((scheduleTime - currentTime)/1000 )  
+                //console.log(scheduleTime, "=====", currentTime,"====", calculatedTime)
+
+                if ((calculatedTime < 10800) && (calculatedTime > 0)){
+
+                    //Update the driver balance by applying a $5 penality
+                    const driver =  await this.userDAO.getAccountData(driverID)
+                    if(  driver.driverInfo?.accountBalance !== undefined){
+                    driver.driverInfo.accountBalance -= 5 
+                }
+                } 
         
-        //Write to database
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
+                const tokens = await this.notificationsDAO.getTokenList([riderID])
+
+                const message  = {
+                    subject: "Your trip had been canceled by the driver",
+                    driverID : driverID,
+                    tripID : tripID,
+                    notificationID: 1
+                }
+        
+                sendCustomNotification(tokens, message)
+        
+    }
+
+    async deleteRidebyDriver(driverID: string, tripID: string): Promise<void> {
+
+        //Get trip from the database
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
 
         // Charge the driver cancelation fee  and store it in drivers account balance
         const scheduleTime = trip.startTime.toDate().getTime()
@@ -330,19 +386,46 @@ export class TripService {
             const driver = await this.userDAO.getAccountData(driverID)
             if (driver.driverInfo?.accountBalance !== undefined) {
                 driver.driverInfo.accountBalance -= 5
-                console.log(driver.driverInfo)
+                //console.log(driver.driverInfo)
                 const data: Partial<UserSchema> = {
                     driverInfo: driver.driverInfo
                 }
                 await this.userDAO.updateAccountData(driverID, data)
             }
-        }else if(calculatedTime < 0){
-            throw new Error('Trip is overdue.')
         }
-    }
+            else if(calculatedTime < 0){
+                throw new Error('Trip is overdue.')
+        }
+        
+
+            const tripIDs : string[] = []
+            const snapshot = trip.riderInfo
+
+            snapshot.forEach((element)=>{
+                tripIDs.push(element.riderID)
+            })
+            //tripIDs.push(driverID)
+
+                console.log(tripIDs)
 
 
-    async declineRideRequest(driverID: string, riderID: string, tripID: string): Promise<void> {
+            const tokens = await this.notificationsDAO.getTokenList(tripIDs) 
+        
+            //console.log(tokens)
+                const message  = {
+                    subject: "Your trip had been canceled by the driver",
+                    driverID : driverID,
+                    tripID : tripID,
+                    notificationID: 1
+                }
+        
+                sendCustomNotification(tokens, message)
+
+       await this.tripDAO.deleteCreatedTrip(tripID)
+}
+
+
+    async declineRiderRequest(driverID: string, riderID: string, tripID: string): Promise<void> {
 
         //Get trip from the database
         const trip = await this.tripDAO.getCreatedTrip(tripID)
@@ -356,16 +439,7 @@ export class TripService {
         // This ride will not be shown in his search
         trip.riderStatus[riderID] = 'Rejected'
 
-        // chage the trip status to open
-
-        // trip.isOpen = true
-
-        // const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
-
-        // // UPdate available seats
-        // trip.seatsAvailable += rider.passengerCount
-
-        // TODO: Delete rider-info from the database
+        // Delete rider-info from the database
 
         const arr = trip.riderInfo
         arr.slice().reverse().forEach((element, i) => {
@@ -378,6 +452,20 @@ export class TripService {
 
         //Write to database
         await this.tripDAO.updateCreatedTrip(tripID, trip)
+
+        const token = await this.notificationsDAO.getTokenList([riderID])
+
+        //console.log(token)
+
+        const message  = {
+            subject: "Your request to join a trip has been declined by the driver",
+            driverID : driverID,
+            tripID : tripID,
+            notificationID: 1
+        }
+
+        sendCustomNotification(token, message)
+
     }
 
 

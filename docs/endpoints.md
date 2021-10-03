@@ -5,8 +5,25 @@
   
 
   
+## trip-getStartEndCoordinates
 
-  
+### Request Data
+
+```typescript
+{
+    startPlaceID: string
+    endPlaceID: string
+}
+```
+
+### Returns
+
+```typescript
+{
+    startLocation: { longitude: number, latitude: number }
+    endLocation: { longitude: number, latitude: number }
+}
+```  
 
   
 

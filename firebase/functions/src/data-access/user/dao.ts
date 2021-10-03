@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema } from './schema'
+import { UserSchema, CreditCardSchema, tokenSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
@@ -44,6 +44,12 @@ export interface UserDAOInterface {
      */
     deleteAccountData(uid: string): Promise<void>
 
+
+    updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void>
+
+    storeUserDeviceToken(uid: string, data: tokenSchema): Promise<void>
+
+    updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void>
 }
 
 
@@ -99,7 +105,7 @@ export class UserDAO implements UserDAOInterface {
         await ref.create(fireEncode(data))
     }
 
-    async updateUserAccount(uid: string, info: UserSchema): Promise<void> {
+    async updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
 
         if (info.driverInfo) {
@@ -114,7 +120,16 @@ export class UserDAO implements UserDAOInterface {
         await userRef.update(info)
     }
 
+    async storeUserDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void> {
 
+        await this.db.collection(FirestoreKey.FCMTokens).doc(uid).create(fireEncode(tokenIDs))
+    }
+
+    async updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void> {
+
+        const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
+        await doc.update(data)
+    }
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {

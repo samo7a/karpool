@@ -1,12 +1,13 @@
 import { AuthenticationDAOInterface } from "../../data-access/auth/dao";
 import { UserDAOInterface } from '../../data-access/user/dao'
-import { DriverInfoSchema, RiderInfoSchema, UserSchema } from "../../data-access/user/schema";
+import { DriverInfoSchema, RiderInfoSchema, tokenSchema, UserSchema } from "../../data-access/user/schema";
 import { UserFieldsExternal, UserRegistrationData, DriverAddRoleInfo } from './types'
 import { CloudStorageDAOInterface } from "../../data-access/cloud-storage/dao";
 import { HttpsError } from "firebase-functions/lib/providers/https";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 import { PaymentDAO } from "../../data-access/payment-dao/dao";
 import { Role } from '../../data-access/user/types';
+import { NotificationsDAO } from "../notifications/notificationsDAO";
 
 export class AccountService {
 
@@ -22,18 +23,22 @@ export class AccountService {
 
     private paymentDAO: PaymentDAO
 
+    private notificationsDAO: NotificationsDAO
+
     constructor(
         userDAO: UserDAOInterface,
         authDAO: AuthenticationDAOInterface,
         storageDAO: CloudStorageDAOInterface,
         vehicleDAO: VehicleDAOInterface,
-        paymentDAO: PaymentDAO
+        paymentDAO: PaymentDAO,
+        notificationsDAO: NotificationsDAO
     ) {
         this.userDAO = userDAO
         this.authDAO = authDAO
         this.cloudStorageDAO = storageDAO
         this.vehicleDAO = vehicleDAO
         this.paymentDAO = paymentDAO
+        this.notificationsDAO = notificationsDAO
     }
 
     async addRole(uid: string, driverInfo: DriverAddRoleInfo, role: Role): Promise<void> {
@@ -88,6 +93,38 @@ export class AccountService {
 
         } else {
             throw new Error(`Invalid role ${role}.`)
+        }
+    }
+
+    async storeDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void>{
+
+
+        const tokens = await this.notificationsDAO.getTokenList([uid])
+
+       console.log(tokens)
+
+
+       //const arr = tokenIDs.tokenIDs
+
+       //console.log(arr)
+        
+        if(tokens.length === 0){
+            await this.userDAO.storeUserDeviceToken(uid, tokenIDs)
+        }else{
+
+            if(!tokens.includes(tokenIDs.tokenIDs[0])){
+            
+                 tokens.push(tokenIDs.tokenIDs[0])
+
+                    const data: tokenSchema = {
+
+                        tokenIDs: tokens
+                    }
+
+                    await this.userDAO.updateDeviceTokenList(uid, data)
+            }else{
+                console.log("Token already exist in the list")
+            }
         }
     }
 
@@ -242,5 +279,21 @@ export class AccountService {
         return Promise.reject(new Error('Unimplemented.'))
     }
 
+    async editUserProfile(uid: string, phoneNum ?: string, email ?: string, pic ?: string): Promise<void>{
+        /**
+         * Check if user exist
+         * edit fields where necessary
+         * assuming pic is given as string
+        */
+       const user = await this.userDAO.getAccountData(uid)
+       const data: Partial<UserSchema> = {
+           phone: phoneNum ? phoneNum : user.phone,
+           email: email ? email : user.email,
+           profileURL: pic ? pic : user.profileURL
+       }
+        
+      return this.userDAO.updateUserAccount(uid,data)
+         
+    }
 
 }

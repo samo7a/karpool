@@ -3,6 +3,11 @@ import { firestore } from "firebase-admin";
 
 export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
+
+export interface FCMTokens{
+    tokenIDs: string[]
+}
+
 // type TripStatus = 'Open' | 'Closed' | 'In Progress' | 'Completed'
 
 export interface CreatedTripSchema {
@@ -212,4 +217,16 @@ export interface GeoPointSchema {
     x: number
 
     y: number
+}
+
+
+export interface NotificationData {
+
+    subject: string,
+
+    tripID: string,
+
+    driverID: string,
+
+    notificationID: number
 }
