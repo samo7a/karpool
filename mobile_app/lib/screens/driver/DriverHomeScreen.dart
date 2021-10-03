@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -23,13 +22,12 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
-  late User user;
+  late User user = Provider.of<User>(context, listen: false);
   late Future<List<DriverTrip>> trips;
 
   void initState() {
     super.initState();
     trips = tripFromFireBase();
-    user = Provider.of<User>(context, listen: false);
   }
 
   Future<List<DriverTrip>> tripFromFireBase() async {
@@ -37,8 +35,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     final obj = <String, dynamic>{
       "driverID": uid,
     };
-    print("obj");
-    print(obj);
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
     List<DriverTrip> tripList = [];
     final result;
@@ -55,32 +51,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
-        print("tripId");
-        print(tripId);
         String driverId = data[i]["driverID"];
-        print("driverId");
-        print(driverId);
         dynamic timestamp = data[i]["startTime"];
-        print("timestamp");
-        print(timestamp);
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-        print("ts");
-        print(ts);
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
-        print("date");
-        print(date);
         String time = DateFormat('hh:mm a').format(ts);
-        print("time");
-        print(time);
         String startAddress = data[i]["startAddress"] ?? " ";
-        print("startAddress");
-        print(startAddress);
         String endAddress = data[i]["endAddress"] ?? " ";
-        print("endAddress");
-        print(endAddress);
         int seatCount = data[i]["seatsAvailable"];
-        print("seatCount");
-        print(seatCount);
 
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
@@ -170,7 +148,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           await cancelRide(obj);
                           EasyLoading.dismiss();
                           EasyLoading.showSuccess("Ride Deleted");
-                          snapshot.data!.removeAt(index);
+                          setState(() {
+                            snapshot.data!.removeAt(index);
+                          });
                         } catch (e) {
                           EasyLoading.dismiss();
                           EasyLoading.showError(

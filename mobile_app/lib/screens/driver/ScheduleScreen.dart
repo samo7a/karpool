@@ -28,8 +28,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   String get cancelButtonName => "Cancel";
   String get addButtonName => "Add a Ride";
-  String date = '';
-  String time = '';
+
+  DateTime date = DateTime.now();
+
+  late String time = getTime(DateTime.now());
   double seats = 1;
   String startAddress = '';
   String endAddress = '';
@@ -46,6 +48,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   void initState() {
     super.initState();
+    print("print date: " + date.toString());
+    print("print time: " + time.toString());
     _controller.addListener(() {
       _onChanged();
     });
@@ -74,6 +78,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
 
     getEndSuggestion(_endController.text);
+  }
+
+  String getTime(DateTime dt) {
+    String iso = dt.toIso8601String();
+    String time = iso.split("T")[1];
+    return time;
   }
 
   void getSuggestion(String input) async {
@@ -109,12 +119,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
 // search ride code end
-  void addRide(String? uid) async {
+  void addRide() async {
     EasyLoading.show(status: "Adding Ride");
     HttpsCallable addRide = FirebaseFunctions.instance.httpsCallable("trip-createAddedTrip");
+    print("addRide: date: " + date.toString());
+    var array = date.toIso8601String().split("T");
+    String d = array[0] + "T" + time + "Z";
+    print(d);
     Map<String, dynamic> obj = {
-      // "userID": uid,
-      "startTime": date + "Z", //TODO: change this to ISO
+      "startTime": d,
       "startAddress": startAddress,
       "endAddress": endAddress,
       "startPlaceID": startPlaceId,
@@ -192,8 +205,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: FormBuilderDateTimePicker(
                 name: 'date',
                 onChanged: (value) {
-                  print(value);
-                  setState(() => date = value.toString());
+                  setState(() {
+                    date = value!;
+                  });
+                  print(date);
                 },
                 inputType: InputType.date,
                 decoration: InputDecoration(
@@ -218,6 +233,63 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                     hintStyle: TextStyle(color: kIconColor),
                     hintText: "Date"),
+                style: TextStyle(fontWeight: FontWeight.bold),
+                initialTime: TimeOfDay(hour: 8, minute: 0),
+                initialValue: DateTime.now(),
+                enabled: true,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 25.0),
+              child: Text(
+                'Time',
+                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0),
+              child: FormBuilderDateTimePicker(
+                name: 'time',
+                onChanged: (value) {
+                  String t = getTime(value!);
+                  // String hh;
+                  // String mm;
+                  // if (value.hour < 10)
+                  //   hh = "0" + value.hour.toString();
+                  // else
+                  //   hh = value.hour.toString();
+                  // if (value.minute < 10)
+                  //   mm = "0" + value.minute.toString();
+                  // else
+                  //   mm = value.minute.toString();
+                  // String t = hh + ":" + mm + ":00.000";
+                  print(value);
+                  setState(() => time = t);
+                  print(time);
+                },
+                inputType: InputType.time,
+                decoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kGreen, width: 5),
+                    ),
+                    focusedErrorBorder: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: kRed, width: 5),
+                    ),
+                    hintStyle: TextStyle(color: kIconColor),
+                    hintText: "Time"),
                 style: TextStyle(fontWeight: FontWeight.bold),
                 initialTime: TimeOfDay(hour: 8, minute: 0),
                 initialValue: DateTime.now(),
@@ -399,7 +471,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   color: Colors.green,
                 ),
                 child: TextButton(
-                  onPressed: () => addRide(uid),
+                  onPressed: () => addRide(),
                   child: Text(
                     addButtonName,
                     style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
