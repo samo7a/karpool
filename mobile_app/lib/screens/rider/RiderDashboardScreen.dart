@@ -25,9 +25,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
         backgroundColor: kDashboardColor,
         centerTitle: true,
       ),
-      drawer: RiderDrawer(
-        user: user,
-      ),
+      drawer: RiderDrawer(),
       body: DefaultTabController(
         length: 2,
         child: Builder(

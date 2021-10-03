@@ -27,7 +27,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  // late User user;
   String profilePic = "";
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -121,7 +120,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
   @override
   void initState() {
     super.initState();
-    // getCurrentUser();
     _imageFile = null;
   }
 
@@ -131,13 +129,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     emailController.dispose();
     phoneController.dispose();
   }
-
-  // void getCurrentUser()  {
-  //   User u =  Provider.of<User>(context, listen: false);
-  //   setState(() {
-  //     user = u;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Auth {
   final auth.FirebaseAuth _auth;
   Auth(this._auth);
-  //final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
   Future<User?> userFromFirebase(auth.User? user) async {
     if (user == null)

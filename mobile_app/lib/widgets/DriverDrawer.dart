@@ -21,24 +21,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DriverDrawer extends StatefulWidget {
   DriverDrawer({
-    required this.user,
     Key? key,
   }) : super(key: key);
-  final User user;
 
   @override
   _DriverDrawerState createState() => _DriverDrawerState();
 }
 
 class _DriverDrawerState extends State<DriverDrawer> {
-  late User user;
   late bool isRider;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    isRider = user.isRider;
     getCurrentRole();
   }
 
@@ -56,14 +51,9 @@ class _DriverDrawerState extends State<DriverDrawer> {
       isRider = !isRider;
     });
     return new Timer(new Duration(seconds: 1), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => RiderDashboardScreen(),
-          settings: RouteSettings(
-            arguments: user,
-          ),
-        ),
+        RiderDashboardScreen.id,
         (Route<dynamic> route) => false,
       );
     });
@@ -71,6 +61,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -284,7 +275,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(context, EditProfilScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  EditProfilScreen.id,
+                );
               },
             ),
           ),
@@ -316,7 +310,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add car object. Car model under construction
-                Navigator.pushNamed(context, VehicleInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  VehicleInfoScreen.id,
+                );
               },
             ),
           ),
@@ -349,7 +346,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add Bank object. Bank model under construction
-                Navigator.pushNamed(context, BankInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  BankInfoScreen.id,
+                );
               },
             ),
           ),

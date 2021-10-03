@@ -1,16 +1,13 @@
-import 'dart:convert';
-
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_form.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/StripeService.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/models/CreditCard.dart' as CreditCardObject;
-import 'package:mobile_app/widgets/widgets.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
 
 class AddCreditCardScreen extends StatefulWidget {
   const AddCreditCardScreen({Key? key}) : super(key: key);
@@ -104,7 +101,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
             cvc: result.cvc,
             expMonth: result.expMonth,
             expYear: result.expYear,
-            paymentMethodId: result.paymentMethodId, 
+            paymentMethodId: result.paymentMethodId,
             last4: result.last4,
             brand: result.brand,
           ),
