@@ -1,7 +1,9 @@
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
 
 class TopDrawer extends StatelessWidget {
   const TopDrawer({
@@ -72,7 +74,7 @@ class TopDrawer extends StatelessWidget {
           ),
           Center(
             child: RatingBarIndicator(
-              rating: starRating, // remove the ceil function later
+              rating: starRating,
               itemCount: 5,
               itemSize: size.BLOCK_WIDTH * 12,
               direction: Axis.horizontal,

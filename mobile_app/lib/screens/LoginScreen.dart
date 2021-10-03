@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
             //has no roles
             EasyLoading.dismiss();
             context.read<Auth>().signOut();
-            EasyLoading.showError("Signing in failed, please try agin!");
+            EasyLoading.showError("Signing in failed, please try again!");
             return;
           }
         }
@@ -103,14 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
         EasyLoading.dismiss();
         context.read<Auth>().signOut();
         await prefs.setString("role", "norole");
-        EasyLoading.showInfo("Signing in failed, please try agin!");
+        EasyLoading.showInfo("Signing in failed, please try again!");
         return;
       }
     } catch (e) {
       await prefs.setString("role", "norole");
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
-      EasyLoading.showError("Signing in failed, please try agin!");
+      EasyLoading.showError("Signing in failed, please try again!");
       await prefs.setString("role", "norole");
       // EasyLoading.showError(e.toString());
       print(e.toString());
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: kBackgroundColor,
         appBar: AppBar(
           backgroundColor: kBackgroundColor,
-          title: Text("SIGN IN"),
+          title: Text("Sign In"),
           centerTitle: true,
           elevation: 0,
           leading: IconButton(

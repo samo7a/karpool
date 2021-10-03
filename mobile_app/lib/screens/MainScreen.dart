@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/LoginScreen.dart';
 import 'package:mobile_app/screens/RegisterScreen.dart';
+import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/widgets/widgets.dart';
+import 'package:provider/src/provider.dart';
 import '../util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
@@ -12,6 +14,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<Auth>().signOut();
     Size size = Size(Context: context);
     return Scaffold(
       backgroundColor: kBackgroundColor,

@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/models/User.dart' as u;
+import 'package:mobile_app/screens/ReLoginScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/Auth.dart';
@@ -13,7 +13,8 @@ import 'dart:io' as Io;
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:mobile_app/screens/MainScreen.dart';
+
+import 'MainScreen.dart';
 
 class EditProfilScreen extends StatefulWidget {
   const EditProfilScreen({Key? key}) : super(key: key);
@@ -24,50 +25,31 @@ class EditProfilScreen extends StatefulWidget {
 
 class _EditProfilScreenState extends State<EditProfilScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
-  late User? user;
-  String newEmail = "";
-  String email = "";
-  String phone = "";
-  String newPhone = "";
-  String password = "";
-  String newPassword = "";
-  String fname = "";
-  String lname = "";
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  // late User user;
   String profilePic = "";
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
 
-  void getCurrentUser() async {
-    user = await Provider.of<Auth>(context, listen: false).currentUser();
-    setState(() {
-      email = user!.email;
-      phone = user!.phoneNumber;
-      fname = user!.firstName;
-      lname = user!.lastName;
-      profilePic = user!.profileURL;
-      emailController.text = email;
-      phoneController.text = phone;
-    });
-  }
-
-  void updateEmail(String value) async {
+  Future<void> updateEmail(String value, u.User user) async {
     try {
-      await context.read<Auth>().updateEmail(value);
+      await context.read<Auth>().updateEmail(value.trim());
       EasyLoading.showInfo("Verify your new email and log back in.");
-      //await context.read<Auth>().signOut();
-      // Navigator.pushAndRemoveUntil(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => MainScreen(),
-      //   ),
-      //   (Route<dynamic> route) => false,
-      // );
+      setState(() {
+        user.setEmail = value;
+      });
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+        (Route<dynamic> route) => false,
+      );
     } catch (e) {
       print("error in update email");
       print(e.toString());
-      EasyLoading.showInfo(e.toString());
+      EasyLoading.showInfo("Error updating your email");
     }
   }
 
@@ -136,16 +118,33 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     );
   }
 
-  initState() {
+  @override
+  void initState() {
     super.initState();
-    getCurrentUser();
+    // getCurrentUser();
     _imageFile = null;
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+  }
+
+  // void getCurrentUser()  {
+  //   User u =  Provider.of<User>(context, listen: false);
+  //   setState(() {
+  //     user = u;
+  //   });
+  // }
+
+  @override
   Widget build(BuildContext context) {
+    final user = Provider.of<u.User>(context, listen: false);
     Size size = Size(Context: context);
 
+    phoneController.text = user.phoneNumber;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -170,13 +169,13 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
             child: Padding(
               padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 4),
               child: Form(
-                autovalidateMode: AutovalidateMode.always, // Auto Validation Check
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "$fname $lname",
+                      "${user.firstName} ${user.lastName}",
                       style: TextStyle(
                         fontFamily: 'Glory',
                         fontSize: size.FONT_SIZE * 32,
@@ -190,16 +189,15 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                     Stack(
                       children: [
                         CircleAvatar(
-                          radius: 80,
-                          backgroundColor: Colors.transparent,
-                          backgroundImage: _imageFile != null
-                              ? FileImage(Io.File(_imageFile!.path))
-                              : !profilePic.isEmpty
-                                  ? NetworkImage(
-                                      profilePic,
-                                    ) as ImageProvider
-                                  : AssetImage("images/chris.jpg"),
-                        ),
+                            radius: 80,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: _imageFile != null
+                                ? FileImage(Io.File(_imageFile!.path))
+                                : NetworkImage(
+                                    user.getProfileURL,
+                                  ) as ImageProvider
+                            // : AssetImage("images/chris.jpg"),
+                            ),
                         Positioned(
                           bottom: 20,
                           right: 20,
@@ -258,15 +256,50 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                       height: size.BLOCK_HEIGHT,
                     ),
                     Container(
+                      child: TextFormField(
+                        enabled: false,
+                        initialValue: user.email,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Email Address",
+                          hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
+                          contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
+                          errorBorder: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(7),
+                            borderSide: BorderSide(
+                              color: kRed,
+                              width: size.BLOCK_WIDTH,
+                            ),
+                          ),
+                        ),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      height: size.BLOCK_HEIGHT * 6,
+                      width: size.BLOCK_WIDTH * 65,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                        color: kWhite,
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.BLOCK_HEIGHT,
+                    ),
+                    Container(
                         child: TextFormField(
                           controller: emailController,
-                          onChanged: (value) => setState(() => newEmail = value),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: "Email Address",
-                            hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
-                            contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
+                            hintText: "New Email Address",
+                            hintStyle: TextStyle(
+                              fontSize: size.FONT_SIZE * 15,
+                            ),
+                            contentPadding: EdgeInsets.all(
+                              size.BLOCK_WIDTH * 2,
+                            ),
                             errorBorder: UnderlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
                               borderSide: BorderSide(
@@ -280,9 +313,9 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                           ),
                           validator: MultiValidator(
                             [
-                              RequiredValidator(
-                                errorText: "Email address is required!",
-                              ),
+                              // RequiredValidator(
+                              //   errorText: "Email address is required!",
+                              // ),
                               EmailValidator(
                                 errorText: "Please enter a valid email!",
                               ),
@@ -316,13 +349,22 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                             fontSize: size.FONT_SIZE * 18,
                           ),
                         ),
-                        onPressed: () {
-                          if (newEmail.trim() == email.trim())
+                        onPressed: () async {
+                          String? email = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              fullscreenDialog: true,
+                              builder: (context) => ReLoginScreen(),
+                            ),
+                          );
+                          if (email == null) {
+                            return;
+                          }
+                          print(emailController.text);
+                          if (email.trim() == emailController.text.trim())
                             EasyLoading.showInfo("Email does not differ from initial email.");
-                          else if (newEmail == "")
-                            EasyLoading.showInfo("Email has not been changed.");
                           else {
-                            updateEmail(newEmail.trim());
+                            await updateEmail(emailController.text.trim(), user);
                           }
                         },
                       ),
@@ -345,38 +387,40 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                       height: size.BLOCK_HEIGHT,
                     ),
                     Container(
-                        child: TextFormField(
-                          controller: phoneController,
-                          onChanged: (value) => setState(() => newPhone = value),
-                          keyboardType: TextInputType.emailAddress,
-                          // initialValue: phone,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Phone Number",
-                            hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
-                            contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
-                            errorBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(7),
-                              borderSide: BorderSide(
-                                color: kRed,
-                                width: size.BLOCK_WIDTH,
+                        child: Consumer<u.User>(
+                          builder: (context, value, child) {
+                            return TextFormField(
+                              controller: phoneController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Phone Number",
+                                hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
+                                contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
+                                errorBorder: UnderlineInputBorder(
+                                  borderRadius: BorderRadius.circular(7),
+                                  borderSide: BorderSide(
+                                    color: kRed,
+                                    width: size.BLOCK_WIDTH,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          validator: MultiValidator(
-                            [
-                              RequiredValidator(errorText: "Phone number is required!"),
-                              MaxLengthValidator(10,
-                                  errorText: "Phone number should not exceed 10 digits!"),
-                              MinLengthValidator(10,
-                                  errorText: "Phone number should not be less than 10 digits!"),
-                              PatternValidator(r"^[0-9]{10}$",
-                                  errorText: "Please enter a valid phone number!"),
-                            ],
-                          ),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              validator: MultiValidator(
+                                [
+                                  RequiredValidator(errorText: "Phone number is required!"),
+                                  MaxLengthValidator(10,
+                                      errorText: "Phone number should not exceed 10 digits!"),
+                                  MinLengthValidator(10,
+                                      errorText: "Phone number should not be less than 10 digits!"),
+                                  PatternValidator(r"^[0-9]{10}$",
+                                      errorText: "Please enter a valid phone number!"),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                         height: size.BLOCK_HEIGHT * 6,
                         width: size.BLOCK_WIDTH * 65,
@@ -401,8 +445,18 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                             fontSize: size.FONT_SIZE * 18,
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          String phoneNumber = user.getPhoneNumber;
+                          String newPhoneNumber = phoneController.text;
+                          if (phoneNumber.trim() == newPhoneNumber.trim()) {
+                            return;
+                          }
                           // TODO: call api for changing phone number
+                          // HttpsCallable changePhoneNumber =
+                          //     FirebaseFunctions.instance.httpsCallable("function name");
+                          // if (true) {
+                          //   user.setPhoneNumber = newPhoneNumber;
+                          // }
                         },
                       ),
                     ),

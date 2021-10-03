@@ -15,6 +15,7 @@ class Auth {
       final prefs = await SharedPreferences.getInstance();
       final String role = prefs.getString('role') ?? "norole";
       if (role == 'norole') return null;
+      ;
       bool isDriver = role == 'driver';
       final obj = <String, dynamic>{
         "uid": user.uid,
@@ -52,6 +53,7 @@ class Auth {
       );
     }
   }
+
   //How to call these functions?
   //answer: context.read<Auth>().functionName(param);
 
@@ -88,7 +90,7 @@ class Auth {
   //update email
   Future<void> updateEmail(String email) async {
     await _auth.currentUser!.updateEmail(email);
-    print(_auth.currentUser!.email);
+    // print(_auth.currentUser!.email);
     await _auth.currentUser!.sendEmailVerification();
   }
 

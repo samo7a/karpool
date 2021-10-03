@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
-// import 'package:mobile_app/models/User.dart' as user; //I will need it later
+import 'package:mobile_app/models/User.dart' as user; //I will need it later
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';
@@ -60,9 +61,20 @@ class MyApp extends StatelessWidget {
           initialData: null,
           create: (context) => context.read<Auth>().user,
         ),
-        // ChangeNotifierProvider<>(
-        //   create: (context) => user(),
-        // ), // need it later, do not delete it.
+        ChangeNotifierProvider<user.User>(
+          create: (context) => user.User(
+            email: "",
+            lastName: "",
+            phoneNumber: "",
+            isDriver: false,
+            isRider: false,
+            firstName: "",
+            rating: 0,
+            uid: "",
+            isVerified: false,
+            profileURL: "",
+          ),
+        ),
       ],
       builder: (context, child) {
         return MaterialApp(
