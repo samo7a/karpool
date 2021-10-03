@@ -385,7 +385,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, DriverNavScreen.id); // ScheduleScreen.id
+            Navigator.pushNamed(context, ScheduleScreen.id); 
           },
           child: Icon(
             Icons.add,

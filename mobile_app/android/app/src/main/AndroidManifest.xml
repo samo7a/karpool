@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
    <application
         android:label="Karpool"
         android:icon="@mipmap/ic_launcher"
@@ -45,5 +47,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyA9V1HwU9qQEGofwLLRRn8pjd1BRWq0PtM"/>
+               <!-- android:value="@string/GOOGLE_API_KEY"/> -->
     </application>
 </manifest>

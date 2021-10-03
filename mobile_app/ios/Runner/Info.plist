@@ -4,6 +4,12 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
     <string>This app requires to access your Camera</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires access to your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires location access</string>
+	<key>UIBackgroundModes</key>
+	<string>location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires to access your photo library</string>
 	<key>CFBundleDevelopmentRegion</key>

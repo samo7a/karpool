@@ -46,7 +46,11 @@ dependencies:
   flutter_dotenv: ^5.0.2
   awesome_card: ^1.1.5
   stripe_payment: ^1.1.4
+  flutter_config: ^2.0.0
   sliding_up_panel: ^2.0.0+1
+  google_maps_flutter: ^2.0.11
+  flutter_polyline_points: ^1.0.0
+  location: ^4.2.0
 
 dev_dependencies:
   flutter_test:
