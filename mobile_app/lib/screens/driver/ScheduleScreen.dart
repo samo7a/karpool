@@ -93,9 +93,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
-      setState(() {
-        _placeList = json.decode(response.body)['predictions'];
-      });
+      if (mounted)
+        setState(() {
+          _placeList = json.decode(response.body)['predictions'];
+        });
     } else {
       print("error in getSuggestions");
       throw Exception('Failed to load predictions');
@@ -107,18 +108,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACESAPIKEY&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
-    print("here: ----> " + response.toString());
     if (response.statusCode == 200) {
-      setState(() {
-        _toPlaceList = json.decode(response.body)['predictions'];
-      });
+      if (mounted)
+        setState(() {
+          _toPlaceList = json.decode(response.body)['predictions'];
+        });
     } else {
       print("error in getSuggestions");
       throw Exception('Failed to load predictions');
     }
   }
 
-// search ride code end
   void addRide() async {
     EasyLoading.show(status: "Adding Ride");
     HttpsCallable addRide = FirebaseFunctions.instance.httpsCallable("trip-createAddedTrip");
@@ -158,7 +158,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         backgroundColor: kDashboardColor,
         appBar: AppBar(
           backgroundColor: kDashboardColor,
-          title: Text("Schedule a Ride"),
+          title: Text(
+            "Schedule a Ride",
+          ),
           centerTitle: true,
           elevation: 0,
           leading: IconButton(
@@ -172,11 +174,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-          child: Column(
-            children: [
-              Center(child: _getScheduleWidget(size, context)),
-            ],
+          padding: EdgeInsets.symmetric(
+            vertical: size.BLOCK_HEIGHT * 2,
+            horizontal: size.BLOCK_WIDTH * 10,
+          ),
+          child: Center(
+            child: _getScheduleWidget(size, context),
           ),
         ),
       ),
@@ -185,320 +188,352 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   _getScheduleWidget(Size size, BuildContext context) {
     final uid = ModalRoute.of(context)!.settings.arguments as String?;
-    return Center(
-      child: Form(
-        autovalidateMode: AutovalidateMode.always, // Auto Validation Check
-        key: scheduleKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: Text(
-                'Date',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
+    return Form(
+      autovalidateMode: AutovalidateMode.onUserInteraction, // Auto Validation Check
+      key: scheduleKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: Text(
+              'Date',
+              style: TextStyle(
+                fontFamily: 'Glory',
+                color: kWhite,
+                fontSize: size.FONT_SIZE * 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: FormBuilderDateTimePicker(
-                name: 'date',
-                onChanged: (value) {
-                  setState(() {
-                    date = value!;
-                  });
-                  print(date);
-                },
-                inputType: InputType.date,
-                decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
-                    enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    errorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    focusedErrorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    hintStyle: TextStyle(color: kIconColor),
-                    hintText: "Date"),
-                style: TextStyle(fontWeight: FontWeight.bold),
-                initialTime: TimeOfDay(hour: 8, minute: 0),
-                initialValue: DateTime.now(),
-                enabled: true,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: Text(
-                'Time',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: FormBuilderDateTimePicker(
-                name: 'time',
-                onChanged: (value) {
-                  String t = getTime(value!);
-                  // String hh;
-                  // String mm;
-                  // if (value.hour < 10)
-                  //   hh = "0" + value.hour.toString();
-                  // else
-                  //   hh = value.hour.toString();
-                  // if (value.minute < 10)
-                  //   mm = "0" + value.minute.toString();
-                  // else
-                  //   mm = value.minute.toString();
-                  // String t = hh + ":" + mm + ":00.000";
-                  print(value);
-                  setState(() => time = t);
-                  print(time);
-                },
-                inputType: InputType.time,
-                decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
-                    enabledBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    errorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kGreen, width: 5),
-                    ),
-                    focusedErrorBorder: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: kRed, width: 5),
-                    ),
-                    hintStyle: TextStyle(color: kIconColor),
-                    hintText: "Time"),
-                style: TextStyle(fontWeight: FontWeight.bold),
-                initialTime: TimeOfDay(hour: 8, minute: 0),
-                initialValue: DateTime.now(),
-                enabled: true,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: Text(
-                'Number of Seats Available',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Slider(
-              activeColor: Color(0xff0466C8),
-              inactiveColor: Color(0xff979DAC),
-              value: seats,
-              min: 1,
-              max: 5,
-              divisions: 4,
-              label: seats.round().toString(),
-              onChanged: (double value) {
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: FormBuilderDateTimePicker(
+              name: 'date',
+              onChanged: (value) {
                 setState(() {
-                  seats = value;
+                  date = value!;
                 });
+                print(date);
               },
+              inputType: InputType.date,
+              decoration: InputDecoration(
+                fillColor: kWhite.withOpacity(0.4),
+                filled: true,
+                prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
+                enabledBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                errorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                focusedErrorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                hintStyle: TextStyle(color: kIconColor),
+                hintText: "Date",
+              ),
+              style: TextStyle(fontWeight: FontWeight.bold),
+              initialTime: TimeOfDay(hour: 0, minute: 0),
+              initialValue: DateTime.now(),
+              firstDate: DateTime.now(),
+              enabled: true,
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: Text(
-                'Starting Address',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: Text(
+              'Time',
+              style: TextStyle(
+                fontFamily: 'Glory',
+                fontWeight: FontWeight.bold,
+                fontSize: size.FONT_SIZE * 20,
+                color: kWhite,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: TextFormField(
-                  onChanged: (value) => setState(() => startAddress = value),
-                  controller: _controller,
-                  decoration: InputDecoration(
-                      fillColor: kWhite.withOpacity(0.4),
-                      filled: true,
-                      prefixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
-                      enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      focusedErrorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      hintStyle: TextStyle(color: kIconColor),
-                      hintText: "Address for Starting Location"),
-                  validator: MultiValidator([
-                    RequiredValidator(errorText: "Starting Location is Required!"),
-                  ]),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.text,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: _placeList.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: FormBuilderDateTimePicker(
+              name: 'time',
+              onChanged: (value) {
+                String t = getTime(value!);
+                print(value);
+                setState(() => time = t);
+                print(time);
+              },
+              inputType: InputType.time,
+              decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon: Icon(FontAwesomeIcons.calendarDay, color: kIconColor),
+                  enabledBorder: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    color: kWhite,
+                    borderSide: BorderSide(color: kGreen, width: 5),
                   ),
-                  child: ListTile(
-                    title: Text(
-                      _placeList[index]["description"],
-                      style: TextStyle(
-                        fontFamily: 'Glory',
-                        fontWeight: FontWeight.bold,
-                        fontSize: size.FONT_SIZE * 15,
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        startAddress = _placeList[index]["description"];
-                        startPlaceId = _placeList[index]["place_id"];
-                        _controller.text = _placeList[index]["description"];
-                        _placeList = [];
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25.0),
-              child: Text(
-                'Ending Address',
-                style: TextStyle(color: kWhite, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: TextFormField(
-                  onChanged: (value) => setState(() => endAddress = value),
-                  controller: _endController,
-                  decoration: InputDecoration(
-                      fillColor: kWhite.withOpacity(0.4),
-                      filled: true,
-                      suffixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
-                      enabledBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kGreen, width: 5),
-                      ),
-                      focusedErrorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: kRed, width: 5),
-                      ),
-                      hintStyle: TextStyle(color: kIconColor),
-                      hintText: "Address for Ending Location"),
-                  validator: MultiValidator([
-                    RequiredValidator(errorText: "Ending Location is Required!"),
-                  ]),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.text,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: _toPlaceList.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
+                  errorBorder: UnderlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    color: kWhite,
+                    borderSide: BorderSide(color: kRed, width: 5),
                   ),
-                  child: ListTile(
-                    title: Text(
-                      _toPlaceList[index]["description"],
-                      style: TextStyle(
-                        fontFamily: 'Glory',
-                        fontWeight: FontWeight.bold,
-                        fontSize: size.FONT_SIZE * 15,
-                      ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: kGreen, width: 5),
+                  ),
+                  focusedErrorBorder: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: kRed, width: 5),
+                  ),
+                  hintStyle: TextStyle(color: kIconColor),
+                  hintText: "Time"),
+              style: TextStyle(fontWeight: FontWeight.bold),
+              initialTime: TimeOfDay(hour: 8, minute: 0),
+              initialValue: DateTime.now(),
+              enabled: true,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: Text(
+              'Number of Seats Available',
+              style: TextStyle(
+                fontFamily: 'Glory',
+                fontWeight: FontWeight.bold,
+                fontSize: size.FONT_SIZE * 20,
+                color: kWhite,
+              ),
+            ),
+          ),
+          Slider(
+            activeColor: Color(0xff0466C8),
+            inactiveColor: Color(0xff979DAC),
+            value: seats,
+            min: 1,
+            max: 5,
+            divisions: 4,
+            label: seats.round().toString(),
+            onChanged: (double value) {
+              setState(() {
+                seats = value;
+              });
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: Text(
+              'Start Location',
+              style: TextStyle(
+                fontFamily: 'Glory',
+                fontWeight: FontWeight.bold,
+                fontSize: size.FONT_SIZE * 20,
+                color: kWhite,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: TextFormField(
+              onChanged: (value) => setState(() => startAddress = value),
+              controller: _controller,
+              decoration: InputDecoration(
+                fillColor: kWhite.withOpacity(0.4),
+                filled: true,
+                prefixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
+                enabledBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                errorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                focusedErrorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                hintStyle: TextStyle(color: kIconColor),
+                hintText: "Address for Starting Location",
+              ),
+              validator: MultiValidator([
+                RequiredValidator(errorText: "Starting Location is Required!"),
+              ]),
+              textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.text,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: _placeList.length,
+            itemBuilder: (context, index) {
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: kWhite,
+                ),
+                child: ListTile(
+                  title: Text(
+                    _placeList[index]["description"],
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 15,
                     ),
-                    onTap: () {
-                      setState(() {
-                        endAddress = _toPlaceList[index]["description"];
-                        endPlaceId = _toPlaceList[index]["place_id"];
-                        _endController.text = _toPlaceList[index]["description"];
-                        _toPlaceList = [];
-                      });
-                    },
                   ),
-                );
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 50.0),
-              child: Container(
-                height: size.BLOCK_HEIGHT * 7,
-                width: size.BLOCK_WIDTH * 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
-                  color: Colors.green,
+                  onTap: () {
+                    _controller.addListener(_onChanged);
+                    setState(() {
+                      startAddress = _placeList[index]["description"];
+                      startPlaceId = _placeList[index]["place_id"] ?? " ";
+                      _controller.text = _placeList[index]["description"];
+                      _placeList.clear();
+                    });
+                    _controller.removeListener(() {});
+                  },
                 ),
-                child: TextButton(
-                  onPressed: () => addRide(),
-                  child: Text(
-                    addButtonName,
-                    style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: Text(
+              'Ending Location',
+              style: TextStyle(
+                fontFamily: 'Glory',
+                fontWeight: FontWeight.bold,
+                fontSize: size.FONT_SIZE * 20,
+                color: kWhite,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+            child: TextFormField(
+              controller: _endController,
+              onChanged: (value) => setState(() => endAddress = value),
+              decoration: InputDecoration(
+                fillColor: kWhite.withOpacity(0.4),
+                filled: true,
+                prefixIcon: Icon(FontAwesomeIcons.mapPin, color: kIconColor),
+                enabledBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                errorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kGreen, width: 5),
+                ),
+                focusedErrorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kRed, width: 5),
+                ),
+                hintStyle: TextStyle(color: kIconColor),
+                hintText: "Address for Ending Location",
+              ),
+              validator: MultiValidator(
+                [
+                  RequiredValidator(errorText: "Ending Location is Required!"),
+                ],
+              ),
+              textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.text,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: _toPlaceList.length,
+            itemBuilder: (context, index) {
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: kWhite,
+                ),
+                child: ListTile(
+                  title: Text(
+                    _toPlaceList[index]["description"],
+                    style: TextStyle(
+                      fontFamily: 'Glory',
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.FONT_SIZE * 15,
+                    ),
+                  ),
+                  onTap: () {
+                    _endController.addListener(_onToChanged);
+                    setState(() {
+                      endAddress = _toPlaceList[index]["description"];
+                      endPlaceId = _toPlaceList[index]["place_id"];
+                      _endController.text = _toPlaceList[index]["description"];
+                      _toPlaceList.clear();
+                    });
+                    _endController.removeListener(() {});
+                  },
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 50.0),
+            child: Container(
+              height: size.BLOCK_HEIGHT * 7,
+              width: size.BLOCK_WIDTH * 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
+                color: Colors.green,
+              ),
+              child: TextButton(
+                onPressed: () => addRide(),
+                child: Text(
+                  addButtonName,
+                  style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 15.0),
+            child: Container(
+              height: size.BLOCK_HEIGHT * 7,
+              width: size.BLOCK_WIDTH * 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
+                color: Colors.red,
+              ),
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: Text(
+                  cancelButtonName,
+                  style: TextStyle(
+                    fontSize: size.FONT_SIZE * 20,
+                    color: Colors.white,
+                    height: 1,
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 15.0),
-              child: Container(
-                height: size.BLOCK_HEIGHT * 7,
-                width: size.BLOCK_WIDTH * 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 16),
-                  color: Colors.red,
-                ),
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context, null),
-                  child: Text(
-                    cancelButtonName,
-                    style: TextStyle(fontSize: size.FONT_SIZE * 20, color: Colors.white, height: 1),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

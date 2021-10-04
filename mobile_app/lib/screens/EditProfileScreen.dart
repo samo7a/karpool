@@ -240,7 +240,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                           fontSize: size.FONT_SIZE * 18,
                           color: kWhite,
                         ),
-                        textAlign: TextAlign.start,
                       ),
                     ),
                     SizedBox(

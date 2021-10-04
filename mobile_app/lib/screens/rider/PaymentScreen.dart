@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
-import 'package:mobile_app/models/User.dart';
+// import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/rider/AddCreditCardScreen.dart';
 import 'package:mobile_app/util/Size.dart';
 // import 'package:mobile_app/util/StripeService.dart';
@@ -33,7 +33,7 @@ class _PaymentScreen extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
-    final user = ModalRoute.of(context)!.settings.arguments as User; 
+    // final user = ModalRoute.of(context)!.settings.arguments as User; 
 
     // final card = ModalRoute.of(context)!.settings.arguments as card;
 
