@@ -95,3 +95,63 @@
 
 ]
 ```
+
+
+
+
+# User Methods
+
+## account-getCreditCards
+
+### `No Request Data`
+
+### Returns (ARRAY)
+
+```typescript
+{
+
+    brand: string
+
+    cardHolder: string
+
+    last4: string
+
+    expMonth: string
+
+    expYear: string
+
+    id: string
+
+    isDefault: boolean
+
+    userID: string
+
+}[]
+```  
+
+
+## account-deleteCreditCard
+
+### Request Data
+
+```typescript
+{
+    cardID: string
+}
+```
+
+### Returns: Empty Response
+
+
+
+## account-addCreditCard
+
+### Request Data
+
+```typescript
+{
+    cardToken: string
+}
+```
+
+### Returns: Empty Response
