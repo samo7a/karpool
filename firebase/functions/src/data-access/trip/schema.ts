@@ -4,11 +4,16 @@ import { firestore } from "firebase-admin";
 export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
 
-export interface FCMTokens{
+export interface FCMTokens {
     tokenIDs: string[]
 }
 
 // type TripStatus = 'Open' | 'Closed' | 'In Progress' | 'Completed'
+
+/**
+ * 
+ * Database implementation 
+ */
 
 export interface CreatedTripSchema {
 
