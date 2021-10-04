@@ -7,10 +7,10 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/SplashScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
-import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -21,24 +21,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DriverDrawer extends StatefulWidget {
   DriverDrawer({
-    required this.user,
     Key? key,
   }) : super(key: key);
-  final User user;
 
   @override
   _DriverDrawerState createState() => _DriverDrawerState();
 }
 
 class _DriverDrawerState extends State<DriverDrawer> {
-  late User user;
-  late bool isRider;
+  bool isRider = false;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    isRider = user.isRider;
     getCurrentRole();
   }
 
@@ -56,14 +51,9 @@ class _DriverDrawerState extends State<DriverDrawer> {
       isRider = !isRider;
     });
     return new Timer(new Duration(seconds: 1), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => RiderDashboardScreen(),
-          settings: RouteSettings(
-            arguments: user,
-          ),
-        ),
+        RiderDashboardScreen.id,
         (Route<dynamic> route) => false,
       );
     });
@@ -71,6 +61,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -79,11 +70,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
         children: [
           Container(
             height: size.BLOCK_HEIGHT * 45,
-            child: TopDrawer(
-              starRating: user.rating,
-              fullName: user.firstName + " " + user.lastName,
-              profilePic: user.profileURL,
-            ),
+            child: TopDrawer(),
           ),
           Container(
             height: size.BLOCK_HEIGHT * 3,
@@ -288,7 +275,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(context, EditProfilScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  EditProfilScreen.id,
+                );
               },
             ),
           ),
@@ -320,7 +310,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add car object. Car model under construction
-                Navigator.pushNamed(context, VehicleInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  VehicleInfoScreen.id,
+                );
               },
             ),
           ),
@@ -353,7 +346,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add Bank object. Bank model under construction
-                Navigator.pushNamed(context, BankInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  BankInfoScreen.id,
+                );
               },
             ),
           ),

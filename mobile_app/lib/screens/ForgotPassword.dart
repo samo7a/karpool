@@ -20,10 +20,10 @@ class ForgotPassword extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: kBackgroundColor,
+        backgroundColor: kDashboardColor,
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: kBackgroundColor,
+          backgroundColor: kDashboardColor,
           elevation: 0,
           leading: IconButton(
             onPressed: () {

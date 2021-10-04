@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/User.dart';
-import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
@@ -19,6 +18,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
+import 'package:mobile_app/util/Notification.dart' as not;
+import 'LoginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'registerScreen';
@@ -40,20 +41,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
 
-  Widget bottomSheet() {
+  Widget bottomSheet(BuildContext context) {
+    Size size = Size(Context: context);
     return Container(
-      height: 100,
-      // width: ,
+      height: size.BLOCK_HEIGHT * 13,
       margin: EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
+        vertical: size.BLOCK_HEIGHT * 3,
       ),
       child: Column(
         children: <Widget>[
           Text(
             "Choose profile photo",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: size.FONT_SIZE * 15,
             ),
           ),
           Row(
@@ -823,7 +823,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
-                          builder: (_) => bottomSheet(),
+                          builder: (_) => bottomSheet(context),
                         );
                       },
                       child: Icon(
@@ -943,8 +943,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                       ),
                       hintStyle: TextStyle(color: kHintText),
-                      hintText: "Email Address"
-                  ),
+                      hintText: "Email Address"),
                   validator: MultiValidator([
                     RequiredValidator(errorText: "Email Address is Required!"),
                     EmailValidator(errorText: "Please enter a valid email!"),
@@ -1265,9 +1264,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         color: 0xFF0466CB,
         buttonName: 'Register',
         onClick: () async {
-          print(userValidate());
-          print(driverValidate());
-          Provider.of<User?>(context, listen: false);
+          Provider.of<User>(context, listen: false);
+
           EasyLoading.show(status: "Signing up...");
           String img64;
           if (_imageFile == null) {
@@ -1343,11 +1341,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           HttpsCallable register =
               FirebaseFunctions.instance.httpsCallable.call('account-registerUser');
+          HttpsCallable storeToken =
+              FirebaseFunctions.instance.httpsCallable("account-storeDeviceToken");
+          String token = await not.Notification.getToken();
           try {
             final result = await register(obj);
             if (result.data == null) {
               EasyLoading.dismiss();
               EasyLoading.showSuccess("Signed Up!");
+
+              Map<String, List<String>> obj = {
+                "tokenIDs": [token]
+              };
+              await storeToken(obj);
               await context.read<Auth>().signOut();
               Navigator.popAndPushNamed(context, LoginScreen.id);
               return;

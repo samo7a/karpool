@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -27,7 +28,6 @@ class DriverRideContainer extends StatelessWidget {
   final DriverTrip trip;
   // final Function onPress;
 
-  // TODO: add button for scheduling rides
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,15 +8,14 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'ScheduleScreen.dart';
 import 'package:mobile_app/screens/driver/DriverNavScreen.dart';
 import 'package:intl/intl.dart';
 
 class DriverHomeScreen extends StatefulWidget {
-  final User user;
   const DriverHomeScreen({
     Key? key,
-    required this.user,
   }) : super(key: key);
 
   @override
@@ -25,22 +23,19 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
-  User? user;
+  late User user = Provider.of<User>(context, listen: false);
   late Future<List<DriverTrip>> trips;
 
   void initState() {
     super.initState();
-    user = widget.user;
     trips = tripFromFireBase();
   }
 
   Future<List<DriverTrip>> tripFromFireBase() async {
-    String uid = user!.uid;
+    String uid = user.uid;
     final obj = <String, dynamic>{
       "driverID": uid,
     };
-    print("obj");
-    print(obj);
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
     List<DriverTrip> tripList = [];
     final result;
@@ -57,32 +52,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
-        print("tripId");
-        print(tripId);
         String driverId = data[i]["driverID"];
-        print("driverId");
-        print(driverId);
         dynamic timestamp = data[i]["startTime"];
-        print("timestamp");
-        print(timestamp);
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-        print("ts");
-        print(ts);
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
-        print("date");
-        print(date);
         String time = DateFormat('hh:mm a').format(ts);
-        print("time");
-        print(time);
         String startAddress = data[i]["startAddress"] ?? " ";
-        print("startAddress");
-        print(startAddress);
         String endAddress = data[i]["endAddress"] ?? " ";
-        print("endAddress");
-        print(endAddress);
         int seatCount = data[i]["seatsAvailable"];
-        print("seatCount");
-        print(seatCount);
 
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
@@ -159,9 +136,28 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
-                      onDismissed: (direction) {
-                        // TODO: API call to delete scheduled trip
-                        snapshot.data!.removeAt(index);
+                      onDismissed: (direction) async {
+                        // TODO: API call to delete scheduled ride
+                        EasyLoading.show(status: "Deleting ...");
+                        Map<String, String> obj = {
+                          "driverID": user.uid,
+                          "tripID": trip.tripId,
+                        };
+                        HttpsCallable cancelRide =
+                            FirebaseFunctions.instance.httpsCallable("trip-deleteRidebyDriver");
+                        try {
+                          await cancelRide(obj);
+                          EasyLoading.dismiss();
+                          EasyLoading.showSuccess("Ride Deleted");
+                          setState(() {
+                            snapshot.data!.removeAt(index);
+                          });
+                        } catch (e) {
+                          EasyLoading.dismiss();
+                          EasyLoading.showError(
+                              "Error Occured while deleting your ride, Please try agian!");
+                          print(e.toString());
+                        }
                       },
                       confirmDismiss: (direction) async {
                         return await showDialog(
@@ -177,13 +173,47 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                   color: Color(0xffffffff),
                                 ),
                               ),
-                              content: Text(
-                                "Are you sure you want to cancel your trip?",
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
-                                  fontFamily: 'Glory',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: size.FONT_SIZE * 22,
+                              content: Container(
+                                height: size.BLOCK_HEIGHT * 25,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.warning,
+                                          color: Colors.yellow,
+                                        ),
+                                        SizedBox(
+                                          width: size.BLOCK_WIDTH * 4,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            "If the ride is within 3 hrs before starting time, you will be charged \$5.",
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                            ),
+                                            maxLines: 10,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      "Are you sure you want to cancel your trip?",
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               actions: [
@@ -213,7 +243,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                 Padding(
                                   padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                                   child: TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
+                                    onPressed: () => Navigator.of(context).pop(true),
                                     child: Container(
                                       height: size.BLOCK_HEIGHT * 7,
                                       width: size.BLOCK_WIDTH * 30,

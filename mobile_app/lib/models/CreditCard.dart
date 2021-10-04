@@ -1,32 +1,44 @@
 class CreditCard {
   String nameOnCard = '';
-  String cvv = '';
-  String expDate = '';
+  String cvc = '';
   String paymentMethodId = '';
-  String cardNumber = '';
+  String last4 = '';
+  int expMonth = 0;
+  int expYear = 0;
+  String? brand = "";
 
   CreditCard({
     required String nameOnCard,
-    required String cvv,
-    required String expDate,
+    required String cvc,
+    required int expMonth,
+    required int expYear,
     required String paymentMethodId,
-    required String cardNumber,
+    required String last4,
+    String? brand,
   }) {
     this.nameOnCard = nameOnCard;
     this.paymentMethodId = paymentMethodId;
-    this.cvv = cvv;
-    this.expDate = expDate;
-    this.cardNumber = cardNumber;
+    this.cvc = cvc;
+    this.last4 = last4;
+    this.expYear = expYear;
+    this.expMonth = expMonth;
+    this.brand = brand;
   }
 
-  static CreditCard creditCardFromFireBase() {
-    //TODO: api call to get payment methods
-    return CreditCard(
-      nameOnCard: "Ahmed Elshetany",
-      cvv: "123",
-      expDate: "02/25",
-      paymentMethodId: "pm_unique_id",
-      cardNumber: "********1234",
+  static List<CreditCard> creditCardFromFireBase() {
+    List<CreditCard> creditcards = [];
+    //TODO: api call to get list of Credit cards
+    creditcards.add(
+      CreditCard(
+        nameOnCard: "Ahmed Elshetany",
+        cvc: "123",
+        expMonth: 9,
+        expYear: 2025,
+        paymentMethodId: "pm_unique_id",
+        last4: "1234",
+        brand: "visa",
+      ),
     );
+    return creditcards;
   }
 }

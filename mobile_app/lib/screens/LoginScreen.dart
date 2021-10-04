@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,10 +9,14 @@ import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:mobile_app/widgets/widgets.dart';
+import 'package:mobile_app/widgets/PasswordField.dart';
+import 'package:mobile_app/widgets/TextField.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'driver/DriverDashboardScreen.dart';
+import 'package:mobile_app/models/User.dart' as u;
+import 'package:mobile_app/util/Notification.dart' as not;
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'loginScreen';
@@ -34,13 +39,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login() async {
-    final user = Provider.of<User?>(context, listen: false);
-    String email =
-        emailController.text.isEmpty ? "empty" : emailController.text.trim();
-    String password = passwordController.text.isEmpty
-        ? "empty"
-        : passwordController.text.trim();
+    String email = emailController.text.isEmpty ? "empty" : emailController.text.trim();
+    String password = passwordController.text.isEmpty ? "empty" : passwordController.text.trim();
     EasyLoading.show(status: 'Signing in...');
+    HttpsCallable storeToken = FirebaseFunctions.instance.httpsCallable("account-storeDeviceToken");
+    String token = await not.Notification.getToken();
     final prefs = await SharedPreferences.getInstance();
     try {
       if (isDriver)
@@ -49,31 +52,45 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString("role", "rider");
 
       final res = await context.read<Auth>().signIn(email, password);
+
+      u.User currentUser = Provider.of<u.User>(context, listen: false);
+
       if (res != null) {
         bool verified = res.isVerified;
         if (!verified) {
-          user!.sendEmailVerification();
+          context.read<Auth>().sendEmailVerificagtion();
           context.read<Auth>().signOut();
           await prefs.setString("role", "norole");
           EasyLoading.dismiss();
           EasyLoading.showInfo("Unverified user");
           return;
         } else {
+          currentUser.setFirstName = res.firstName;
+          currentUser.setLastName = res.lastName;
+          currentUser.setEmail = res.email;
+          currentUser.setUid = res.uid;
+          currentUser.setIsDriver = res.isDriver;
+          currentUser.setIsRider = res.isRider;
+          currentUser.setIsVerified = res.isVerified;
+          currentUser.setPhoneNumber = res.phoneNumber;
+          currentUser.setRating = res.rating;
+          currentUser.setProfileURL = res.profileURL;
           bool driverRole = res.isDriver;
           bool riderRole = res.isRider;
+          print("token : $token");
+          Map<String, List<String>> obj = {
+            "tokenIDs": [token]
+          };
+          await storeToken(obj);
           if (isDriver && driverRole) {
             //the user is driver
             await prefs.setString("role", "driver");
             EasyLoading.dismiss();
             EasyLoading.showSuccess("Logged in!");
-            Navigator.pushAndRemoveUntil(
+
+            Navigator.pushNamedAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => DriverDashboardScreen(),
-                settings: RouteSettings(
-                  arguments: res,
-                ),
-              ),
+              DriverDashboardScreen.id,
               (Route<dynamic> route) => false,
             );
           } else if (!isDriver && riderRole) {
@@ -81,21 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
             await prefs.setString("role", "rider");
             EasyLoading.dismiss();
             EasyLoading.showSuccess("Logged in!");
-            Navigator.pushAndRemoveUntil(
+            Navigator.pushNamedAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => RiderDashboardScreen(),
-                settings: RouteSettings(
-                  arguments: res,
-                ),
-              ),
+              RiderDashboardScreen.id,
               (Route<dynamic> route) => false,
             );
           } else {
             //has no roles
             EasyLoading.dismiss();
             context.read<Auth>().signOut();
-            EasyLoading.showError("Signing in failed, please try agin!");
+            await prefs.setString("role", "norole");
+            EasyLoading.showInfo("Signing in failed, please try again!");
             return;
           }
         }
@@ -103,14 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
         EasyLoading.dismiss();
         context.read<Auth>().signOut();
         await prefs.setString("role", "norole");
-        EasyLoading.showInfo("Signing in failed, please try agin!");
+        EasyLoading.showInfo("Signing in failed, please try again!");
         return;
       }
     } catch (e) {
       await prefs.setString("role", "norole");
       EasyLoading.dismiss();
       context.read<Auth>().signOut();
-      EasyLoading.showError("Signing in failed, please try agin!");
+      EasyLoading.showError("Signing in failed, please try again!");
       await prefs.setString("role", "norole");
       // EasyLoading.showError(e.toString());
       print(e.toString());
@@ -126,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: kBackgroundColor,
         appBar: AppBar(
           backgroundColor: kBackgroundColor,
-          title: Text("SIGN IN"),
+          title: Text("Sign In"),
           centerTitle: true,
           elevation: 0,
           leading: IconButton(
@@ -174,8 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
                 child: GestureDetector(
                   onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
                   child: Text(
