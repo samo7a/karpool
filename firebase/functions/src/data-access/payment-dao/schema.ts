@@ -2,10 +2,20 @@
 
 export interface CreditCardSchema {
 
-    holderName: string
+    brand: string
+
+    cardHolder: string
 
     last4: string
 
-    expDate: string
+    expMonth: string
+
+    expYear: string
+
+    id: string
+
+    isDefault: boolean
+
+    userID: string
 
 }

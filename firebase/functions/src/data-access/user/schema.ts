@@ -128,24 +128,6 @@ export interface RiderInfoSchema {
 }
 
 
-
-
-export interface CreditCardSchema {
-
-    cardNum: number
-
-    cvc: number
-
-    /**
-     * Expiration date in form of MM/YY
-     */
-    expDate: string
-
-    uid: string
-
-
-}
-
 export interface tokenSchema {
 
     tokenIDs: string[]

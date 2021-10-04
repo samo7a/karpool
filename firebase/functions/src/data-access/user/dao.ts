@@ -2,12 +2,11 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema, CreditCardSchema, tokenSchema } from './schema'
+import { UserSchema, tokenSchema } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
 import { fireEncode } from '../utils/encode'
-import { CreditCardSchema } from '../payment-dao/schema'
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
  * for unit testing.
@@ -98,12 +97,6 @@ export class UserDAO implements UserDAOInterface {
         await userRef.delete()
     }
 
-
-    //MARK: Credit Card Methods
-    async createCreditCard(data: CreditCardSchema): Promise<void> {
-        const ref = this.db.collection(FirestoreKey.creditCards).doc()
-        await ref.create(fireEncode(data))
-    }
 
     async updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}

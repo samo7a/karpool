@@ -2,9 +2,8 @@
 import { firestore } from 'firebase-admin'
 import Stripe from 'stripe'
 import { FirestoreKey } from '../../constants'
-import { CreditCardCreationInfo } from './types'
 import { CreditCardSchema } from './schema'
-
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 
 export interface PaymentDAOInterface {
 
@@ -14,9 +13,26 @@ export interface PaymentDAOInterface {
     createCustomer(): Promise<string>
 
 
-    createCreditCard(uid: string, customerID: string, cardInfo: CreditCardCreationInfo): Promise<void>
+    /**
+     * Creates a card object in stripe and in Firestore given a token generated on the client.
+     * @param uid The user's id.
+     * @param customerID The user's stripe customer id.
+     * @param cardToken The one-time use card token.
+     */
+    createCreditCard(uid: string, customerID: string, cardToken: string): Promise<void>
 
-    deleteCreditCard(creditCardID: string): Promise<void>;
+
+    /**
+     * Gets all credit cards for a specific user.
+     * @param uid The user's id.
+     */
+    getCreditCards(uid: string): Promise<CreditCardSchema[]>
+
+    /**
+     * Detaches the card from a customer and deletes its information from Firestore.
+     * @param creditCardID The credit card's Stripe id.
+     */
+    deleteCreditCard(creditCardID: string): Promise<void>
 
 
     createBankAccount(uid: string, customerID: string, email: string,): Promise<void>
@@ -47,35 +63,38 @@ export class PaymentDAO implements PaymentDAOInterface {
         })
     }
 
-    async createCreditCard(uid: string, customerID: string, cardInfo: CreditCardCreationInfo): Promise<void> {
-        await this.api.paymentMethods.create({
-            customer: customerID,
-            type: 'card',
-            card: {
-                number: cardInfo.cardNumber,
-                exp_month: cardInfo.exp_month,
-                exp_year: cardInfo.exp_year,
-                cvc: cardInfo.cvc
-            }
-        }).then(res => {
+    async createCreditCard(uid: string, customerID: string, cardToken: string): Promise<void> {
+        const source = await this.api.customers.createSource(customerID, { source: cardToken })
+        if (source.object === 'card') {
+            const card: Stripe.Card = source
             const data: CreditCardSchema = {
-                holderName: cardInfo.cardHolderName,
-                expDate: `${cardInfo.exp_month}/${cardInfo.exp_year}`,
-                last4: cardInfo.cardNumber.substring(cardInfo.cardNumber.length - 4)
+                cardHolder: card.name ?? '',
+                last4: card.last4,
+                expMonth: `${card.exp_month}`,
+                expYear: `${card.exp_year}`,
+                isDefault: false,
+                brand: card.brand,
+                id: card.id,
+                userID: uid
             }
-            return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.creditCards).doc().create(data)
+            const ref = this.db.collection(FirestoreKey.creditCards).doc(card.id)
+            await ref.create(data)
+        } else {
+            throw new HttpsError('failed-precondition', `Expected card object, but got ${source.object}.`)
+        }
+    }
+
+    getCreditCards(uid: string): Promise<CreditCardSchema[]> {
+        return this.db.collection(FirestoreKey.creditCards).where('uid', '==', uid).get().then(snap => {
+            return snap.docs.map(doc => doc.data()) as CreditCardSchema[]
         })
     }
 
-    updateCreditCard() {
-        //Update default
-    }
-
     async deleteCreditCard(creditCardID: string): Promise<void> {
-        await this.api.paymentMethods.detach(creditCardID)
+        await this.api.paymentMethods.detach(creditCardID).then(res => {
+            return this.db.collection(FirestoreKey.creditCards).doc(creditCardID).delete()
+        })
     }
-
-
 
 
     createBankAccount(uid: string, customerID: string, email: string,): Promise<void> {

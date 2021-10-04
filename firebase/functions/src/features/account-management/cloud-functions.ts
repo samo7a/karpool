@@ -50,6 +50,33 @@ export const addRole = functions.https.onCall(async (data, context) => {
 })
 
 
+export const addCreditCard = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
+
+    const cardToken = validateString(data.cardToken)
+
+    return newAccountService().addCreditCard(uid, cardToken)
+})
+
+export const getCreditCards = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
+
+    return newAccountService().getCreditCards(uid)
+})
+
+export const deleteCreditCard = functions.https.onCall(async (data, context) => {
+
+    const uid = validateAuthorization(context)
+
+    const cardID = validateString(data.cardID)
+
+    return newAccountService().deleteCreditCard(uid, cardID)
+
+})
+
+
 /**
  * Function Name: account-registerUser
  * Parameters:
@@ -104,10 +131,10 @@ export const getUser = functions.https.onCall(async (data, context) => {
             return JSON.parse(JSON.stringify(fields))
         })
 
-   
+
 
 })
 
-export const editUserProfile = functions.https.onCall(async (data, context) =>{
+export const editUserProfile = functions.https.onCall(async (data, context) => {
     return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
 })

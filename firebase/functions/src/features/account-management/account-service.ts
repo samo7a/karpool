@@ -8,6 +8,7 @@ import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 import { PaymentDAO } from "../../data-access/payment-dao/dao";
 import { Role } from '../../data-access/user/types';
 import { NotificationsDAO } from "../notifications/notificationsDAO";
+import { CreditCardSchema } from "../../data-access/payment-dao/schema";
 
 export class AccountService {
 
@@ -96,33 +97,33 @@ export class AccountService {
         }
     }
 
-    async storeDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void>{
+    async storeDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void> {
 
 
         const tokens = await this.notificationsDAO.getTokenList([uid])
 
-       console.log(tokens)
+        console.log(tokens)
 
 
-       //const arr = tokenIDs.tokenIDs
+        //const arr = tokenIDs.tokenIDs
 
-       //console.log(arr)
-        
-        if(tokens.length === 0){
+        //console.log(arr)
+
+        if (tokens.length === 0) {
             await this.userDAO.storeUserDeviceToken(uid, tokenIDs)
-        }else{
+        } else {
 
-            if(!tokens.includes(tokenIDs.tokenIDs[0])){
-            
-                 tokens.push(tokenIDs.tokenIDs[0])
+            if (!tokens.includes(tokenIDs.tokenIDs[0])) {
 
-                    const data: tokenSchema = {
+                tokens.push(tokenIDs.tokenIDs[0])
 
-                        tokenIDs: tokens
-                    }
+                const data: tokenSchema = {
 
-                    await this.userDAO.updateDeviceTokenList(uid, data)
-            }else{
+                    tokenIDs: tokens
+                }
+
+                await this.userDAO.updateDeviceTokenList(uid, data)
+            } else {
                 console.log("Token already exist in the list")
             }
         }
@@ -279,21 +280,46 @@ export class AccountService {
         return Promise.reject(new Error('Unimplemented.'))
     }
 
-    async editUserProfile(uid: string, phoneNum ?: string, email ?: string, pic ?: string): Promise<void>{
+    async editUserProfile(uid: string, phoneNum?: string, email?: string, pic?: string): Promise<void> {
         /**
          * Check if user exist
          * edit fields where necessary
          * assuming pic is given as string
         */
-       const user = await this.userDAO.getAccountData(uid)
-       const data: Partial<UserSchema> = {
-           phone: phoneNum ? phoneNum : user.phone,
-           email: email ? email : user.email,
-           profileURL: pic ? pic : user.profileURL
-       }
-        
-      return this.userDAO.updateUserAccount(uid,data)
-         
+        const user = await this.userDAO.getAccountData(uid)
+        const data: Partial<UserSchema> = {
+            phone: phoneNum ? phoneNum : user.phone,
+            email: email ? email : user.email,
+            profileURL: pic ? pic : user.profileURL
+        }
+
+        return this.userDAO.updateUserAccount(uid, data)
+
+    }
+
+    async addCreditCard(uid: string, cardToken: string): Promise<void> {
+        const user = await this.userDAO.getAccountData(uid)
+        const customerID = await user.riderInfo?.stripeCustomerID
+        if (customerID === undefined) {
+            throw new Error(`User needs a customer id to add a credit card.`)
+        }
+        return this.paymentDAO.createCreditCard(uid, customerID, cardToken)
+    }
+
+
+    async getCreditCards(uid: string): Promise<CreditCardSchema[]> {
+        return this.paymentDAO.getCreditCards(uid)
+    }
+
+
+    async deleteCreditCard(uid: string, cardID: string): Promise<void> {
+        const cards = await this.getCreditCards(uid)
+        for (const card of cards) {
+            if (card.id === cardID) {
+                return this.paymentDAO.deleteCreditCard(cardID)
+            }
+        }
+        throw new Error(`Card not a valid credit card.`)
     }
 
 }
