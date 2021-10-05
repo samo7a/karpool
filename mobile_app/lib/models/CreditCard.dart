@@ -1,3 +1,6 @@
+//working
+import 'package:cloud_functions/cloud_functions.dart';
+
 class CreditCard {
   String nameOnCard = '';
   String cvc = '';
@@ -9,7 +12,6 @@ class CreditCard {
 
   CreditCard({
     required String nameOnCard,
-    required String cvc,
     required int expMonth,
     required int expYear,
     required String paymentMethodId,
@@ -18,27 +20,35 @@ class CreditCard {
   }) {
     this.nameOnCard = nameOnCard;
     this.paymentMethodId = paymentMethodId;
-    this.cvc = cvc;
     this.last4 = last4;
     this.expYear = expYear;
     this.expMonth = expMonth;
     this.brand = brand;
   }
 
-  static List<CreditCard> creditCardFromFireBase() {
+  static Future<List<CreditCard>> creditCardFromFireBase() async {
+    print("getting cards from firebase");
     List<CreditCard> creditcards = [];
-    //TODO: api call to get list of Credit cards
-    creditcards.add(
-      CreditCard(
-        nameOnCard: "Ahmed Elshetany",
-        cvc: "123",
-        expMonth: 9,
-        expYear: 2025,
-        paymentMethodId: "pm_unique_id",
-        last4: "1234",
-        brand: "visa",
-      ),
-    );
+    HttpsCallable getCreditCards =
+        FirebaseFunctions.instance.httpsCallable("account-getCreditCards");
+    try {
+      var cards = await getCreditCards();
+      print("cards from credit card object file");
+      print(cards.data);
+    } catch (e) {
+      print(e.toString());
+    }
+    // creditcards.add(
+    //   CreditCard(
+    //     nameOnCard: "Ahmed Elshetany",
+    //     cvc: "123",
+    //     expMonth: 9,
+    //     expYear: 2025,
+    //     paymentMethodId: "pm_unique_id",
+    //     last4: "1234",
+    //     brand: "visa",
+    //   ),
+    // );
     return creditcards;
   }
 }

@@ -1,4 +1,6 @@
+//working
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_form.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
@@ -66,7 +68,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
     String yearString = "20" + expiryDate.substring(3, 5);
     int month = int.parse(monthString);
     int year = int.parse(yearString);
-
+    HttpsCallable addCreditCard = FirebaseFunctions.instance.httpsCallable("account-addCreditCard");
     try {
       final result = await StripeService.createPaymentMethod(
         number: cardNumber,
@@ -75,12 +77,12 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
         year: year,
         name: cardHolderName,
       );
-      print(result!.nameOnCard);
-      print(result.cvc);
-      print(result.expMonth);
-      print(result.expYear);
-      print(result.paymentMethodId);
-      print(result.last4);
+      // print(result!.nameOnCard);
+      // print(result.cvc);
+      // print(result.expMonth);
+      // print(result.expYear);
+      // print(result.paymentMethodId);
+      // print(result.last4);
       if (result == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -89,6 +91,9 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
         );
         Navigator.pop(context, null);
       } else {
+        print("adding credit cards to firebase");
+        Map<String, String> obj = {"cardToken": result.paymentMethodId};
+        await addCreditCard(obj);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Card Added Successfully"),
@@ -98,7 +103,6 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
           context,
           CreditCardObject.CreditCard(
             nameOnCard: cardHolderName,
-            cvc: result.cvc,
             expMonth: result.expMonth,
             expYear: result.expYear,
             paymentMethodId: result.paymentMethodId,
@@ -108,9 +112,10 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
         );
       }
     } catch (e) {
+      print("error adding a card: " + e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: Text("Error Occured, please try again!"),
         ),
       );
       Navigator.pop(context, null);

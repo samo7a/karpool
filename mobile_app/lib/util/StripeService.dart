@@ -56,7 +56,6 @@ class StripeService {
         expMonth: token.card!.expMonth ?? 0,
         expYear: token.card!.expYear ?? 0,
         nameOnCard: token.card!.name ?? " ",
-        cvc: cvc,
         paymentMethodId: token.id ?? " ",
         brand: token.card!.brand ?? null,
       );
