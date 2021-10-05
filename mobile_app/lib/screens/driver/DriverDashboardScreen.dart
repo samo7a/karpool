@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:provider/provider.dart';
 import 'DriverHomeScreen.dart';
 import 'DriverHistoryScreen.dart';
 import 'package:mobile_app/widgets/DriverDrawer.dart';
@@ -19,7 +17,6 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
   String title = "Dashboard";
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text("$title"),

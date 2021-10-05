@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -68,6 +68,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     } else {
       final bytes = Io.File(_imageFile!.path).readAsBytesSync();
       img64 = base64Encode(bytes);
+      print(img64);
     }
     // Map<String, dynamic> obj = {
     //   "uid": user!.uid,

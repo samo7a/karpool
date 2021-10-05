@@ -10,12 +10,11 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/RiderRideContainer.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class RiderHomeScreen extends StatefulWidget {
-  final User user;
   const RiderHomeScreen({
     Key? key,
-    required this.user,
   }) : super(key: key);
 
   @override
@@ -23,19 +22,17 @@ class RiderHomeScreen extends StatefulWidget {
 }
 
 class _RiderHomeScreenState extends State<RiderHomeScreen> {
-  User? user;
+  late User user = Provider.of<User>(context, listen: false);
   late Future<List<RiderTrip>> trips;
 
   void initState() {
     super.initState();
-    user = widget.user;
     trips = tripFromFireBase();
   }
 
-  
-
   Future<List<RiderTrip>> tripFromFireBase() async {
-    String uid = user!.uid;
+    print("calling trip from firebase rider side");
+    String uid = user.uid;
     final obj = <String, dynamic>{
       "riderID": uid,
     };
@@ -44,6 +41,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
     final result;
     final data;
     int length;
+
     try {
       result = await getTrips(obj);
       data = result.data;
@@ -56,7 +54,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startAddress"] ?? " ";
@@ -66,7 +64,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         dynamic rider = data[i]["riderStatus"];
         String status = rider[uid];
 
-        double estimatedPrice = double.parse((data[i]["estimatedFare"].toString()));
+        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
@@ -115,6 +113,19 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result =
+              await Navigator.pushNamed(context, SearchRidesScreen.id, arguments: user.uid);
+          if (result == null) return;
+          trips = tripFromFireBase();
+        },
+        child: Icon(
+          Icons.search,
+        ),
+        backgroundColor: kButtonColor,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: Container(
@@ -133,10 +144,9 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                       direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
                       onDismissed: (direction) async {
-                        // TODO: API call to delete scheduled ride
-                        EasyLoading.show(status: "Deleting ...");
+                        EasyLoading.show(status: "Canceling ...");
                         Map<String, String> obj = {
-                          "riderID": user!.uid,
+                          "riderID": user.uid,
                           "tripID": trip.tripId,
                         };
                         HttpsCallable cancelRide =
@@ -144,11 +154,11 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                         try {
                           await cancelRide(obj);
                           EasyLoading.dismiss();
-                          EasyLoading.showSuccess("Ride Deleted");
+                          EasyLoading.showSuccess("Ride Canceled");
                           snapshot.data!.removeAt(index);
                         } catch (e) {
                           EasyLoading.dismiss();
-                          EasyLoading.showError(e.toString());
+                          EasyLoading.showError("Error Occured while canceling your ride, Please try again!");
                           print(e.toString());
                         }
                       },
@@ -270,7 +280,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              'Delete Ride',
+                              'Cancel Ride',
                               style: TextStyle(
                                 color: kWhite,
                                 fontFamily: 'Glory',
@@ -282,7 +292,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                               width: size.BLOCK_WIDTH * 2,
                             ),
                             Icon(
-                              Icons.delete_forever_rounded,
+                              Icons.cancel_outlined,
                               color: Colors.white,
                               size: size.FONT_SIZE * 30,
                             ),
@@ -323,19 +333,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result =
-              await Navigator.pushNamed(context, SearchRidesScreen.id, arguments: user!.uid);
-          if (result == null) return;
-          trips = tripFromFireBase();
-        },
-        child: Icon(
-          Icons.search,
-        ),
-        backgroundColor: kButtonColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

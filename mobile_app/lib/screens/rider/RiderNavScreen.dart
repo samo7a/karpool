@@ -1,7 +1,7 @@
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:mobile_app/util/Size.dart';
+// import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/SlidePanel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -101,7 +101,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = Size(Context: context);
+    // Size size = Size(Context: context);
     return Scaffold(
       backgroundColor: Color(0xff33415C),
       appBar: AppBar(

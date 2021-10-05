@@ -10,6 +10,7 @@ import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/AddCreditCardScreen.dart';
 import 'package:mobile_app/screens/rider/DriverApplication.dart';
 import 'package:mobile_app/screens/rider/PaymentScreen.dart';
+import 'package:mobile_app/screens/rider/RiderNavScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
 import './screens/SplashScreen.dart';
 import 'package:provider/provider.dart';
@@ -95,6 +96,8 @@ class MyApp extends StatelessWidget {
             PaymentScreen.id: (context) => PaymentScreen(),
             AddCreditCardScreen.id: (context) => AddCreditCardScreen(),
             DriverApplication.id: (context) => DriverApplication(),
+            DriverNavScreen.id: (context) => DriverNavScreen(),
+            RiderNavScreen.id: (context) => RiderNavScreen(),
           },
         );
       },
