@@ -484,11 +484,16 @@ export class TripService {
 
         trip.seatsAvailable = trip.seatsAvailable - 1
 
-        //TO DO BELOW
-        //Email rider and driver with notification
+        const start = {x: trip.startLocation.longitude, y: trip.startLocation.latitude} as Point
+        const end = { x: trip.endLocation.longitude, y: trip.endLocation.latitude} as Point
+        
+        const wayPoints = this.getWaypoints(trip, 'Accepted')
+        
+        const updatedRoute = await this.directionsDAO.getRoute(tripID, start, end, wayPoints)
+        
+        trip.polyline = (await updatedRoute).polyline
 
         await this.tripDAO.updateCreatedTrip(tripID, trip)
-
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
@@ -515,8 +520,7 @@ export class TripService {
         }
     }
 
-    async riderRequestTrip(riderID: string, tripID: string): Promise<void>{
-        //get trip 
+    async riderRequestTrip(riderID: string, tripID: string, pickup: Point, dropoff: Point, startAddress: string, destinationAddress: string): Promise<void>{
         const trip = await this.tripDAO.getCreatedTrip(tripID)
         if (trip === undefined) {
             throw new HttpsError('not-found', 'Trip does not exist')
@@ -524,10 +528,26 @@ export class TripService {
        
         trip.riderStatus[riderID]='Requested'
     
-        //TO DO BELOW
-        //get trip route based on current route and riders pickup location
-        //estimate rider fare
+        const start = {x: trip.startLocation.longitude, y: trip.startLocation.latitude} as Point
+        const end = { x: trip.endLocation.longitude, y: trip.endLocation.latitude} as Point
+        
+        const wayPoints = this.getWaypoints(trip, 'Accepted')
 
+        // const newRiderInfo = {
+        //     dropoffAddress :destinationAddress,
+        //     pickupAddress : startAddress,
+        //     dropoffLocation : dropoff,
+        //     pickupLocation : pickup,
+        //     estimatedFare : 0
+        // } 
+        // trip.riderInfo.push({n})
+
+        wayPoints.push(pickup)
+        wayPoints.push(dropoff)
+        
+        const updatedRoute = await this.directionsDAO.getRoute(tripID, start, end, wayPoints)
+        
+        trip.polyline = (await updatedRoute).polyline
 
         await this.tripDAO.updateCreatedTrip(tripID, trip)
     }
