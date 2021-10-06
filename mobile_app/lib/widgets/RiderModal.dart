@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -19,6 +21,8 @@ class RiderModal extends StatefulWidget {
     // required this.estimatedPrice,
     // required this.trip,
     required this.riderid,
+    required this.status,
+    required this.tripid,
   }) : super(key: key);
 
   // final String profilePic;
@@ -29,14 +33,19 @@ class RiderModal extends StatefulWidget {
   // final String time;
   // final RiderTrip trip;
   final String riderid;
+  final String? status;
+  final String tripid;
 
   @override
   _RiderModalState createState() => _RiderModalState();
 }
 
 class _RiderModalState extends State<RiderModal> {
+  String? status;
+  late String riderid;
+  late String tripid;
   // ignore: avoid_init_to_null
-  late User rider = User(
+  User rider = User(
     uid: "",
     firstName: "",
     lastName: "",
@@ -48,26 +57,53 @@ class _RiderModalState extends State<RiderModal> {
     phoneNumber: "",
     email: "",
   );
-  late String driverId;
-  late RiderTrip trip;
   void initState() {
     super.initState();
-    driverId = widget.riderid;
+    riderid = widget.riderid;
+    status = widget.status;
+    tripid = widget.tripid;
     // trip = widget.trip;
-    getDriverInfo();
+    getRiderInfo();
   }
 
-  void getDriverInfo() async {
-    User r = await User.getDriverFromFireBase(driverId);
+  void getRiderInfo() async {
+    User r = await User.getRiderFromFireBase(riderid);
     setState(() {
       rider = r;
     });
   }
 
-  void schedule() async {
+  void accept() async {
     //TODO: call the endpoint function to schedule a ride
+    HttpsCallable accept = FirebaseFunctions.instance.httpsCallable("trip-acceptRiderRequest");
+    Map<String, String> obj = {
+      "tripID": tripid,
+      "riderID": riderid,
+    };
+    try {
+      await accept(obj);
+      EasyLoading.showSuccess("Rider joined!");
+    } catch (e) {
+      print(e.toString());
+      EasyLoading.showError("Error Accepting the rider!");
+    }
   }
 
+  void decline() async {
+    //TODO: call the endpoint
+    HttpsCallable accept = FirebaseFunctions.instance.httpsCallable("trip-declineRiderRequest");
+    Map<String, String> obj = {
+      "tripID": tripid,
+      "riderID": riderid,
+    };
+    try {
+      await accept(obj);
+      EasyLoading.showSuccess("Rider declined!");
+    } catch (e) {
+      print(e.toString());
+      EasyLoading.showError("Error declining the rider!");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
@@ -97,9 +133,11 @@ class _RiderModalState extends State<RiderModal> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                            image: NetworkImage(
-                              rider.profileURL,
-                            ),
+                            image: rider.profileURL.isEmpty
+                                ? AssetImage("images/chris.jpg") as ImageProvider
+                                : NetworkImage(
+                                    rider.profileURL,
+                                  ),
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -136,11 +174,11 @@ class _RiderModalState extends State<RiderModal> {
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 1,
                     ),
-                    
+
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 1,
                     ),
-                    
+
                     // SizedBox(
                     //   height: size.BLOCK_HEIGHT * 1,
                     // ),
@@ -213,24 +251,34 @@ class _RiderModalState extends State<RiderModal> {
                     // ),
                     Padding(
                       padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ModalButton(
-                            buttonName: "Cancel",
-                            onClick: () {
-                              Navigator.pop(context);
-                            },
-                            color: 0xffF31818,
-                          ),
-                          ModalButton(
-                            buttonName: "Schedule",
-                            color: 0xff3CB032,
-                            onClick: schedule,
-                          ),
-                        ],
-                      ),
+                      child: status == "Requested"
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ModalButton(
+                                  buttonName: "Decline",
+                                  onClick: decline,
+                                  color: 0xffF31818,
+                                ),
+                                ModalButton(
+                                  buttonName: "Accept",
+                                  color: 0xff3CB032,
+                                  onClick: accept,
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ModalButton(
+                                  buttonName: "Remove",
+                                  onClick: decline,
+                                  color: 0xffF31818,
+                                ),
+                              ],
+                            ),
                     ),
                   ],
                 ),
