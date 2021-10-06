@@ -1,15 +1,15 @@
 
 import * as admin from 'firebase-admin'
-import { NotificationData } from '../../data-access/trip/schema'
-// import { FirestoreKey } from '../../constants'
-// import * as functions from 'firebase-functions'
-// import { newNotificationDAO } from '../..'
+import { CreatedTripSchema, NotificationData } from '../../data-access/trip/schema'
+ import { FirestoreKey } from '../../constants'
+ import * as functions from 'firebase-functions'
+ import { newNotificationDAO } from '../..'
 
 
 
 
 
-export function sendCustomNotification( tokenIDs:string[], data: NotificationData): Promise<void>{
+export function sendCustomNotification( tokenIDs:string[], data: NotificationData){
    
         tokenIDs.forEach(function(token){
             const message = {
@@ -34,7 +34,7 @@ export function sendCustomNotification( tokenIDs:string[], data: NotificationDat
             })
         })
 
-        return Promise.resolve()
+      
  
 }
 
