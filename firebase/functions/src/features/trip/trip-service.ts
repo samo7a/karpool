@@ -234,10 +234,10 @@ export class TripService {
     }
 
 
-    /**
-    * @param tripID
+   /**
+    * @param riderID
+    * @param tripID 
     */
-
     async cancelRidebyRider(riderID: string, tripID: string): Promise<void> {
 
         //Get trip from the database

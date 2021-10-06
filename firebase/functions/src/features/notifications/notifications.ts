@@ -42,8 +42,8 @@ export function sendCustomNotification( tokenIDs:string[], data: NotificationDat
 export const sendTripThreeHoursNotifiction = functions.pubsub.schedule('* * * * *').onRun( async (context)=>{
 
     const currentTime = new Date().getTime()
-    const query = await admin.firestore().collection(FirestoreKey.tripsCreated).where('startTime', '==', (currentTime - 10800000)).get()
-    console.log("start query display: " )
+    const query = await admin.firestore().collection(FirestoreKey.tripsCreated).where('startTime', '<=', (currentTime - 10800000)).get()
+    console.log("start query display: ")
 
     const trips = query.docs.map(doc => doc.data()) as CreatedTripSchema[]
 
@@ -53,7 +53,7 @@ export const sendTripThreeHoursNotifiction = functions.pubsub.schedule('* * * * 
         console.log("No available trips")
     }else{
 
-            trips.forEach(async e =>{
+           await Promise.all(trips.map(async e =>{
                 const tripIDs : string[] = []
                 const snapshot = e.riderInfo
 
@@ -70,10 +70,9 @@ export const sendTripThreeHoursNotifiction = functions.pubsub.schedule('* * * * 
                         driverID : e.driverID,
                         tripID: e.docID,
                         notificationID: 2
-                    }
-            
+                    }           
                     sendCustomNotification(tokens, message)
-            })
+            }))
         }
    
 })
