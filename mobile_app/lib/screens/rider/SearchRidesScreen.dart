@@ -184,7 +184,44 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     }
   }
 
-  void search() async {}
+  void search() async {
+    Map<String, String> obj = {
+      "startPlaceID": startPlaceId,
+      "endPlaceID": endPlaceId,
+    };
+
+    print("start : " + startPlaceId);
+    print("end : $endPlaceId");
+    print("date: " + date.toUtc().toIso8601String());
+    HttpsCallable getCoordinates =
+        FirebaseFunctions.instance.httpsCallable("trip-getStartEndCoordinates");
+
+    HttpsCallable search = FirebaseFunctions.instance.httpsCallable("trip-searchTrips");
+    try {
+      final result = await getCoordinates(obj);
+
+      Map<String, dynamic> obj2 = {
+        "pickupLocation": {
+          "x": result.data["startLocation"]["longitude"],
+          "y": result.data["startLocation"]["latitude"],
+        },
+        "dropoffLocation": {
+          "x": result.data["endLocation"]["longitude"],
+          "y": result.data["endLocation"]["latitude"],
+        },
+        "passengerCount": seats,
+        "startDate": date.toUtc().toIso8601String(),
+      };
+      // print(obj2);
+      final result2 = await search(obj2);
+      print("search Results");
+      print(result2.data);
+      if (result.data.length != 0) {}
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
@@ -489,45 +526,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                             fontSize: size.FONT_SIZE * 22,
                           ),
                         ),
-                        onPressed: () async {
-                          // TODO: Link search to backend & retrieve trips map/data
-                          Map<String, String> obj = {
-                            "startPlaceID": startPlaceId,
-                            "endPlaceID": endPlaceId,
-                          };
-
-                          print("start : " + startPlaceId);
-                          print("end : $endPlaceId");
-                          print("date: " + date.toUtc().toIso8601String());
-                          HttpsCallable getCoordinates = FirebaseFunctions.instance
-                              .httpsCallable("trip-getStartEndCoordinates");
-
-                          HttpsCallable search =
-                              FirebaseFunctions.instance.httpsCallable("trip-searchTrips");
-                          try {
-                            final result = await getCoordinates(obj);
-
-                            Map<String, dynamic> obj2 = {
-                              "pickupLocation": {
-                                "x": result.data["startLocation"]["longitude"],
-                                "y": result.data["startLocation"]["latitude"],
-                              },
-                              "dropoffLocation": {
-                                "x": result.data["endLocation"]["longitude"],
-                                "y": result.data["endLocation"]["latitude"],
-                              },
-                              "passengerCount": seats,
-                              "startDate": date.toUtc().toIso8601String(),
-                            };
-                            // print(obj2);
-                            final result2 = await search(obj2);
-                            print("search Results");
-                            print(result2.data);
-                            if (result.data.length != 0) {}
-                          } catch (e) {
-                            print(e.toString());
-                          }
-                        },
+                        onPressed: search,
                       ),
                     ),
                     SizedBox(
@@ -603,7 +602,10 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                               },
                               child: TripResultContainer(
                                 trip: trips[index],
-                                object: {},
+                                placeIds: {
+                                  "startPlaceID": startPlaceId,
+                                  "endPlaceID": endPlaceId,
+                                },
                               ),
                             ),
                           ),

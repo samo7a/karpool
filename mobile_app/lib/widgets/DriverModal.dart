@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -22,6 +23,7 @@ class DriverModal extends StatefulWidget {
     required this.showButtons,
     required this.trip,
     required this.driverId,
+    required this.placeIds,
   }) : super(key: key);
 
   // final String profilePic;
@@ -33,6 +35,7 @@ class DriverModal extends StatefulWidget {
   final bool showButtons;
   final RiderTrip trip;
   final String driverId;
+  final Map<String, String> placeIds;
 
   @override
   _DriverModalState createState() => _DriverModalState();
@@ -54,11 +57,13 @@ class _DriverModalState extends State<DriverModal> {
   );
   late String driverId;
   late RiderTrip trip;
+  late Map<String, String> placeIds;
   late bool showButtons;
   void initState() {
     super.initState();
     driverId = widget.driverId;
     trip = widget.trip;
+    placeIds = widget.placeIds;
     getDriverInfo();
     showButtons = widget.showButtons;
   }
@@ -71,19 +76,36 @@ class _DriverModalState extends State<DriverModal> {
   }
 
   void schedule() async {
-    // Map<String, dynamic> obj = {
-    //   "tripID": trip.tripId,
-    //   "riderID": rider.uid,
-    //   "pickup" : ,
-    //   "dropoff" : ,
-    //   "passengerCount": trip.,
-    //   "startAddress" : ,
-    //   "destincationAddress": ,
-    // };
-    // HttpsCallable requestToJoin = FirebaseFunctions.instance.httpsCallable("trip-riderRequestTrip");
-    // try {
-
-    // }
+    EasyLoading.show(status: "schedule");
+    HttpsCallable requestToJoin = FirebaseFunctions.instance.httpsCallable("trip-riderRequestTrip");
+    HttpsCallable getCoordinates =
+        FirebaseFunctions.instance.httpsCallable("trip-getStartEndCoordinates");
+    try {
+      final result = await getCoordinates(placeIds);
+      final pickup = {
+        "x": result.data["startLocation"]["longitude"],
+        "y": result.data["startLocation"]["latitude"],
+      };
+      final dropOff = {
+        "x": result.data["endLocation"]["longitude"],
+        "y": result.data["endLocation"]["latitude"],
+      };
+      Map<String, dynamic> obj = {
+        "tripID": trip.tripId,
+        "riderID": rider.uid,
+        "pickup": pickup,
+        "dropoff": dropOff,
+        "passengerCount": trip.seatNumbers,
+        "startAddress": trip.fromAddress,
+        "destinationAddress": trip.toAddress,
+        "passengers": trip.seatNumbers,
+      };
+      await requestToJoin(obj);
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(e.toString());
+      EasyLoading.showError("Error joining trip");
+    }
   }
 
   @override
