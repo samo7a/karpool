@@ -3,7 +3,6 @@
 class RiderTrip {
   final String tripId;
   final String driverId;
-  // final User driver;
   final String date;
   final String time;
   final String fromAddress;
@@ -34,6 +33,5 @@ class RiderTrip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
-    // required this.driver,
   });
 }

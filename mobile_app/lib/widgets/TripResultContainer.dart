@@ -20,6 +20,7 @@ class TripResultContainer extends StatelessWidget {
     // required this.status,
     // required this.onPress,
     required this.trip,
+    required this.object,
   }) : super(key: key);
 
   // final String date;
@@ -33,6 +34,7 @@ class TripResultContainer extends StatelessWidget {
   // final String fullName;
   // final int starRating; //change to double later
   final RiderTrip trip;
+  final Map<String, dynamic> object;
 
   // TODO: add button for scheduling rides
 

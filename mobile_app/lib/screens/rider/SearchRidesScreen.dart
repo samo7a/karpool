@@ -495,8 +495,10 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                             "startPlaceID": startPlaceId,
                             "endPlaceID": endPlaceId,
                           };
+
                           print("start : " + startPlaceId);
                           print("end : $endPlaceId");
+                          print("date: " + date.toUtc().toIso8601String());
                           HttpsCallable getCoordinates = FirebaseFunctions.instance
                               .httpsCallable("trip-getStartEndCoordinates");
 
@@ -515,11 +517,13 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                 "y": result.data["endLocation"]["latitude"],
                               },
                               "passengerCount": seats,
-                              "startDate": date.toIso8601String() + "Z",
+                              "startDate": date.toUtc().toIso8601String(),
                             };
-                            print(obj2);
+                            // print(obj2);
                             final result2 = await search(obj2);
+                            print("search Results");
                             print(result2.data);
+                            if (result.data.length != 0) {}
                           } catch (e) {
                             print(e.toString());
                           }
@@ -599,6 +603,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                               },
                               child: TripResultContainer(
                                 trip: trips[index],
+                                object: {},
                               ),
                             ),
                           ),

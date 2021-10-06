@@ -70,6 +70,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
     int year = int.parse(yearString);
     HttpsCallable addCreditCard = FirebaseFunctions.instance.httpsCallable("account-addCreditCard");
     try {
+
       final result = await StripeService.createPaymentMethod(
         number: cardNumber,
         cvc: cvvCode,

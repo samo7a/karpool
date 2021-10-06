@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -6,6 +7,7 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
+import 'package:provider/provider.dart';
 
 //TODO: add no. of seats left, car info (car make, color, maybe year)
 class DriverModal extends StatefulWidget {
@@ -37,7 +39,7 @@ class DriverModal extends StatefulWidget {
 }
 
 class _DriverModalState extends State<DriverModal> {
-  // ignore: avoid_init_to_null
+  late final rider = Provider.of<User>(context, listen: false);
   late User driver = User(
     uid: "",
     firstName: "",
@@ -69,7 +71,19 @@ class _DriverModalState extends State<DriverModal> {
   }
 
   void schedule() async {
-    //TODO: call the endpoint function to schedule a ride
+    // Map<String, dynamic> obj = {
+    //   "tripID": trip.tripId,
+    //   "riderID": rider.uid,
+    //   "pickup" : ,
+    //   "dropoff" : ,
+    //   "passengerCount": trip.,
+    //   "startAddress" : ,
+    //   "destincationAddress": ,
+    // };
+    // HttpsCallable requestToJoin = FirebaseFunctions.instance.httpsCallable("trip-riderRequestTrip");
+    // try {
+
+    // }
   }
 
   @override
