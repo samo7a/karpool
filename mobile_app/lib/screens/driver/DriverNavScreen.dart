@@ -1,10 +1,13 @@
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
-// import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/SlidePanel.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_mapbox_navigation/library.dart';
 
 class DriverNavScreen extends StatefulWidget {
   static const String id = 'driverNavigationScreen';
@@ -16,93 +19,58 @@ class DriverNavScreen extends StatefulWidget {
 class _DriverNavScreenState extends State<DriverNavScreen> {
   String title = 'Trip Summary';
   String role = 'Rider';
-  String profileURL =
-      'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg';
+  String profileURL = 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg';
   String name = 'Hussein Noureddine';
-  String from = '123 Sesame Street';
-  String to = '456 UCF Street';
+  String from = '1000 S Semoran Blvd winter park , fl';
+  String to = '41000 S Semoran Blvd winter park , fl slslkdj  lskd djjjd  dkkd\n kdkdkdk';
   String moneyTitle = 'Profit';
   double money = 10.5;
   double rating = 4.5;
-
-  double currentLat = 0;
-  double currentLong = 0;
-  Location location = new Location();
-  GoogleMapController? mapController;
-
-  List<PointLatLng> result = [];
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void listenToLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-    _serviceEnabled = await location.serviceEnabled();
-    try {
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          Navigator.pop(context);
-        }
-      }
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          Navigator.pop(context);
-        }
-      }
-    } catch (e) {
-      print("error location denied: " + e.toString());
-    }
-
-    location.enableBackgroundMode(enable: true);
-
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      _locationData = currentLocation;
-
-      mapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            bearing: 270.0,
-            target: LatLng(_locationData.latitude!, _locationData.longitude!),
-            tilt: 30.0,
-            zoom: 15.5,
-          ),
-        ),
-      );
-    });
-
-    _locationData = await location.getLocation();
-  }
-
-  static final CameraPosition _initialLocation = CameraPosition(
-    target: LatLng(42.601154885399914, -99.99501138934635),
-    zoom: 4,
+  late MapBoxNavigationViewController _controller;
+  MapBoxOptions _options = MapBoxOptions(
+    initialLatitude: 36.1175275,
+    initialLongitude: -115.1839524,
+    zoom: 15.0,
+    tilt: 0.0,
+    bearing: 0.0,
+    enableRefresh: false,
+    alternatives: true,
+    voiceInstructionsEnabled: true,
+    bannerInstructionsEnabled: true,
+    allowsUTurnAtWayPoints: true,
+    mode: MapBoxNavigationMode.drivingWithTraffic,
+    units: VoiceUnits.imperial,
+    simulateRoute: false,
+    animateBuildRoute: true,
+    longPressDestinationEnabled: true,
+    language: "en",
   );
+  bool _routeBuilt = false;
+  bool _isNavigating = false;
+  bool _isMultipleStop = false;
+  double _distanceRemaining = 0;
+  double _durationRemaining = 0;
+  String _platformVersion = 'Unknown';
+  String _instruction = "";
+  late MapBoxNavigation _directions;
+  final _origin = WayPoint(name: "Way Point 1", latitude: 28.58185308, longitude: -81.30832491);
+  final _stop1 = WayPoint(name: "Way Point 2", latitude: 28.488359, longitude: -81.429638);
+  final _stop2 = WayPoint(name: "Way Point 3", latitude: 28.468275, longitude: -81.452194);
+  final _stop3 =
+      WayPoint(name: "Way Point 4", latitude: 38.909650771013034, longitude: -77.03850388526917);
+  final _stop4 =
+      WayPoint(name: "Way Point 5", latitude: 38.90894949285854, longitude: -77.03651905059814);
 
-  CameraPosition currentLocation = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(0, 0),
-    zoom: 14.4746,
-  );
-
-  String poly =
-      r"oz}mDjduoNLEPBLNNCj@ANYTGFCTLBLBX^d@ZWTI~@Eb@GbBOb@AE_BCcAA{E?aJAyECeEC{B@qBCaE?{D?aGFeBH_AT_B`@kBZgAXiAJ{@DgAAeGAsCCkMCaHAiEF_ED{FB_HE}KC}AMoDSaEGaEAmLDyAP}A\_Bd@oAl@mAd@o@f@i@vAsAb@m@v@sArBsErB{ExE{KdD_IpAeCd@s@^m@fDuEfEyF`LkO~FyHxDiFhDiELe@Ra@p@}@d@i@tBqCxA_CvCeE|@cA^[x@aAZq@Pk@Fg@Dg@?{BAyBJyIByD@gECkL@}FAgFEsUGgSKoPE_ZIsWWea@[yd@OaUCuIAgLA}FC}D@wB?{@CqI?{E@gGCsK@sE?oG@iJIiNWqX[mb@CyJ@kE?qDWkC[yA}@mC{@yAs@}@cB}Am@_@aBo@iBa@gAOqACkE@eB?}AM_AOk@Q}@_@u@a@eAu@u@w@_@e@o@gAo@}Ag@mBOcAQgCCiJ?sTDqHTgIV_GVmEf@kFb@gFDk@WQu@s@aBoAk@[yB_Ac@OeAYoAU}AOKFWAgBC}CBa@Bg@MyEBkCD_@JsHF{GHAEGC_CAmC@qBCwBSiAc@k@Uc@Wy@k@oAoASISY_@{@q@mB]cBMqAEqABsF?}BkHBw@?AwEAOKMg@?EF?nB";
-  
   @override
   void initState() {
     super.initState();
-    listenToLocation();
-    result = PolylinePoints().decodePolyline(poly);
+    _directions = MapBoxNavigation(onRouteEvent: _onEmbeddedRouteEvent);
+    initialize();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Size size = Size(Context: context);
+    Size size = Size(Context: context);
     return Scaffold(
       backgroundColor: Color(0xff33415C),
       appBar: AppBar(
@@ -110,34 +78,38 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
         title: Text("Trip Navigation"),
         centerTitle: true,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: kWhite,
-          ),
-        ),
       ),
       body: Stack(
         children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            myLocationButtonEnabled: true,
-            myLocationEnabled: true,
-            initialCameraPosition: _initialLocation,
-            zoomControlsEnabled: false,
-            polylines: {
-              Polyline(
-                polylineId: const PolylineId("polyId"),
-                color: Colors.blue,
-                width: 5,
-                points:
-                    result.map((e) => LatLng(e.latitude, e.longitude)).toList(),
-              )
+          MapBoxNavigationView(
+            options: _options,
+            onRouteEvent: _onEmbeddedRouteEvent,
+            onCreated: (MapBoxNavigationViewController controller) async {
+              _controller = controller;
+              controller.initialize();
             },
-            onMapCreated: _onMapCreated,
+          ),
+          ElevatedButton(
+            child: Text("Start Multi Stop"),
+            onPressed: () async {
+              _isMultipleStop = true;
+              var wayPoints = <WayPoint>[];
+              wayPoints.add(_origin);
+              wayPoints.add(_stop2);
+              wayPoints.add(_stop1);
+              // wayPoints.add(_stop3);
+              // wayPoints.add(_stop4);
+              // wayPoints.add(_origin);
+
+              await _directions.startNavigation(
+                  wayPoints: wayPoints,
+                  options: MapBoxOptions(
+                      mode: MapBoxNavigationMode.driving,
+                      simulateRoute: true,
+                      language: "en",
+                      allowsUTurnAtWayPoints: true,
+                      units: VoiceUnits.metric));
+            },
           ),
           SlidePanel(
             title: title,
@@ -153,5 +125,89 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> initialize() async {
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    _directions = MapBoxNavigation(onRouteEvent: _onEmbeddedRouteEvent);
+    _options = MapBoxOptions(
+      // initialLatitude: 36.1175275,
+      // initialLongitude: -115.1839524,
+      zoom: 15.0,
+      tilt: 0.0,
+      bearing: 0.0,
+      enableRefresh: false,
+      alternatives: true,
+      voiceInstructionsEnabled: true,
+      bannerInstructionsEnabled: true,
+      allowsUTurnAtWayPoints: true,
+      mode: MapBoxNavigationMode.drivingWithTraffic,
+      units: VoiceUnits.imperial,
+      simulateRoute: false,
+      animateBuildRoute: true,
+      longPressDestinationEnabled: true,
+      language: "en",
+    );
+
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await _directions.platformVersion;
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
+  }
+
+  Future<void> _onEmbeddedRouteEvent(e) async {
+    _distanceRemaining = await _directions.distanceRemaining;
+    _durationRemaining = await _directions.durationRemaining;
+
+    switch (e.eventType) {
+      case MapBoxEvent.progress_change:
+        var progressEvent = e.data as RouteProgressEvent;
+        if (progressEvent.currentStepInstruction != null)
+          _instruction = progressEvent.currentStepInstruction!;
+        break;
+      case MapBoxEvent.route_building:
+      case MapBoxEvent.route_built:
+        setState(() {
+          _routeBuilt = true;
+        });
+        break;
+      case MapBoxEvent.route_build_failed:
+        setState(() {
+          _routeBuilt = false;
+        });
+        break;
+      case MapBoxEvent.navigation_running:
+        setState(() {
+          _isNavigating = true;
+        });
+        break;
+      case MapBoxEvent.on_arrival:
+        if (!_isMultipleStop) {
+          await Future.delayed(Duration(seconds: 3));
+          await _controller.finishNavigation();
+        } else {}
+        break;
+      case MapBoxEvent.navigation_finished:
+      case MapBoxEvent.navigation_cancelled:
+        setState(() {
+          _routeBuilt = false;
+          _isNavigating = false;
+        });
+        break;
+      default:
+        break;
+    }
+    setState(() {});
   }
 }

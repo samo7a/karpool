@@ -5,23 +5,23 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class SlidePanel extends StatelessWidget {
-  const SlidePanel({
-    Key? key,
-    required this.title,
-    required this.role,
-    required this.profileURL,
-    required this.fullname,
-    required this.rating,
-    required this.source,
-    required this.destination,
-    required this.money,
-    required this.moneyTitle
-  }) : super(key: key);
+  const SlidePanel(
+      {Key? key,
+      required this.title,
+      required this.role,
+      required this.profileURL,
+      required this.fullname,
+      required this.rating,
+      required this.source,
+      required this.destination,
+      required this.money,
+      required this.moneyTitle})
+      : super(key: key);
 
   final String title; // Trip Summary or Ride Summary
   final String moneyTitle; // Profit or Fee
   final String role; // Rider or Driver
-  final String profileURL; 
+  final String profileURL;
   final String fullname;
   final double rating;
   final String source;
@@ -104,62 +104,66 @@ class SlidePanel extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: size.BLOCK_HEIGHT * 4),
+          SizedBox(
+            height: size.BLOCK_HEIGHT * 4,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'From: ' + source,
+                style: TextStyle(
+                  fontFamily: 'Glory',
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.FONT_SIZE * 20,
+                ),
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 2,
+              ),
+              Text(
+                'To: ' + destination,
+                style: TextStyle(
+                  fontFamily: 'Glory',
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.FONT_SIZE * 20,
+                ),
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 2,
+              ),
+            ],
+          ),
+          SizedBox(
+            width: size.BLOCK_WIDTH * 5,
+          ),
           Row(
             children: [
-              Column(
-                children: [
-                  Text(
-                    'From: ' + source,
-                    style: TextStyle(
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.BLOCK_HEIGHT * 2,
-                  ),
-                  Text(
-                    'To: ' + destination,
-                    style: TextStyle(
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                ],
+              Text(
+                moneyTitle + ":",
+                style: TextStyle(
+                  fontFamily: 'Glory',
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.FONT_SIZE * 20,
+                ),
               ),
-              SizedBox(width: size.BLOCK_WIDTH * 20),
-              Column(
-                children: [
-                  Text(
-                    moneyTitle,
-                    style: TextStyle(
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.BLOCK_HEIGHT * 2,
-                  ),
-                  Text(
-                    '\$$money',
-                    style: TextStyle(
-                      fontFamily: 'Glory',
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.FONT_SIZE * 20,
-                    ),
-                  ),
-                ],
+              SizedBox(
+                width: size.BLOCK_WIDTH * 2,
+              ),
+              Text(
+                '\$$money',
+                style: TextStyle(
+                  fontFamily: 'Glory',
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.FONT_SIZE * 20,
+                ),
               ),
             ],
           ),
         ],
       ),
-      minHeight: size.BLOCK_HEIGHT * 5,
-      maxHeight: size.BLOCK_HEIGHT * 32,
+      minHeight: size.BLOCK_HEIGHT * 6,
+      // maxHeight: size.BLOCK_HEIGHT * 50,
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(size.BLOCK_WIDTH * 5),
         topRight: Radius.circular(size.BLOCK_WIDTH * 5),

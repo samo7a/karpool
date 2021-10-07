@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/screens/driver/DriverNavScreen.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
@@ -54,7 +55,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();  
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startAddress"] ?? " ";
@@ -149,24 +150,33 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       // direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
                       onDismissed: (direction) async {
-                        if (direction == DismissDirection.endToStart) {}
-                        EasyLoading.show(status: "Deleting ...");
-                        Map<String, String> obj = {
-                          "driverID": user.uid,
-                          "tripID": trip.tripId,
-                        };
-                        HttpsCallable cancelRide =
-                            FirebaseFunctions.instance.httpsCallable("trip-deleteRidebyDriver");
-                        try {
-                          await cancelRide(obj);
-                          EasyLoading.dismiss();
-                          EasyLoading.showSuccess("Ride Deleted");
+                        if (direction == DismissDirection.endToStart) {
+                          EasyLoading.show(status: "Deleting ...");
+                          Map<String, String> obj = {
+                            "driverID": user.uid,
+                            "tripID": trip.tripId,
+                          };
+                          HttpsCallable cancelRide =
+                              FirebaseFunctions.instance.httpsCallable("trip-deleteRidebyDriver");
+                          try {
+                            await cancelRide(obj);
+                            EasyLoading.dismiss();
+                            EasyLoading.showSuccess("Ride Deleted");
+                            snapshot.data!.removeAt(index);
+                          } catch (e) {
+                            EasyLoading.dismiss();
+                            EasyLoading.showError(
+                                "Error Occured while deleting your ride, Please try agian!");
+                            print(e.toString());
+                          }
+                        } else if (direction == DismissDirection.startToEnd) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            DriverNavScreen.id,
+                            (Route<dynamic> route) => false,
+                            arguments: trip,
+                          );
                           snapshot.data!.removeAt(index);
-                        } catch (e) {
-                          EasyLoading.dismiss();
-                          EasyLoading.showError(
-                              "Error Occured while deleting your ride, Please try agian!");
-                          print(e.toString());
                         }
                       },
                       confirmDismiss: (direction) async {
@@ -286,7 +296,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         } else {
                           //start a ride
                           //TODO: start the ride only on the right time.
-                          
+                          // DateTime today = DateTime.now();
+                          // print(today);
+                          // String tripTime = trip.date.toString() + " " + trip.time.toString();
+                          // String tripDate = DateFormat().format(DateTime(tripTime));
+                          // print(tripDate);
                           return await showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -317,7 +331,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                       width: size.BLOCK_WIDTH * 30,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                        color: Color(0xff001233),
+                                        color: Color(0xffC80404),
                                       ),
                                       child: Center(
                                         child: Text(
@@ -336,13 +350,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                   Padding(
                                     padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                                     child: TextButton(
-                                      onPressed: () => Navigator.of(context).pop(false),
+                                      onPressed: () => Navigator.of(context).pop(true),
                                       child: Container(
                                         height: size.BLOCK_HEIGHT * 7,
                                         width: size.BLOCK_WIDTH * 30,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                          color: Color(0xffC80404),
+                                          color: Color(0xff001233),
                                         ),
                                         child: Center(
                                           child: Text(
