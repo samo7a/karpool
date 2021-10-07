@@ -291,7 +291,7 @@ class _DriverModalState extends State<DriverModal> {
                     // ),
                     Center(
                       child: Text(
-                        '\$ ' + widget.trip.estimatedPrice.toString(),
+                        '\$ ' + widget.trip.estimatedFare.toString(),
                         style: TextStyle(
                           color: Colors.green[400],
                           fontFamily: 'Glory',

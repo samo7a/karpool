@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
@@ -12,6 +14,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class SearchRidesScreen extends StatefulWidget {
   static const String id = 'searchRidesScreen';
@@ -35,76 +38,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   DateTime date = DateTime.now();
 
   // static scheduled rides list
-  List<RiderTrip> trips = [
-    RiderTrip(
-      timestamp: "8888",
-      tripId: "1",
-      date: "01/01/2021",
-      time: "01:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "SgxafpVWoPOhmHfdrggJKYafxcc2",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-    ),
-    RiderTrip(
-      tripId: "1",
-      date: "01/02/2021",
-      time: "02:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-      timestamp: "8888",
-    ),
-    RiderTrip(
-      timestamp: "8888",
-      tripId: "1",
-      date: "01/03/2021",
-      time: "03:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-    ),
-    RiderTrip(
-      timestamp: "8888",
-      tripId: "1",
-      date: "01/04/2021",
-      time: "04:30 PM",
-      fromAddress: "1111 S Semoran Blvd, 1111, winter park, fl, apt # 111 ",
-      status: "Pending",
-      toAddress: "very long address that I cannot wrap unless I add an expanded widget",
-      estimatedPrice: 32.34,
-      driverId: "23344",
-      isOpen: true,
-      polyLine: "polyLine",
-      seatNumbers: 4,
-      estimatedDistance: 111,
-      estimatedDuration: 111,
-      estimatedFare: 11,
-    ),
-  ];
+  List<RiderTrip> searchResults = [];
 
   final _controller = TextEditingController();
   final _endController = TextEditingController();
@@ -185,6 +119,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   }
 
   void search() async {
+    EasyLoading.show(status: "Searching...");
+    searchResults.clear();
     Map<String, String> obj = {
       "startPlaceID": startPlaceId,
       "endPlaceID": endPlaceId,
@@ -198,26 +134,88 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
 
     HttpsCallable search = FirebaseFunctions.instance.httpsCallable("trip-searchTrips");
     try {
-      final result = await getCoordinates(obj);
+      final points = await getCoordinates(obj);
 
       Map<String, dynamic> obj2 = {
         "pickupLocation": {
-          "x": result.data["startLocation"]["longitude"],
-          "y": result.data["startLocation"]["latitude"],
+          "x": points.data["startLocation"]["longitude"],
+          "y": points.data["startLocation"]["latitude"],
         },
         "dropoffLocation": {
-          "x": result.data["endLocation"]["longitude"],
-          "y": result.data["endLocation"]["latitude"],
+          "x": points.data["endLocation"]["longitude"],
+          "y": points.data["endLocation"]["latitude"],
         },
         "passengerCount": seats,
         "startDate": date.toUtc().toIso8601String(),
       };
-      // print(obj2);
-      final result2 = await search(obj2);
+      List<RiderTrip> futureTrips = [];
+      final result = await search(obj2);
+      final data = result.data;
+      int length = result.data.length;
+
       print("search Results");
-      print(result2.data);
-      if (result.data.length != 0) {}
+      print(data);
+      // if (length != 0) {
+      //   setState(() {
+      //     searchResults = futureTrips;
+      //   });
+      // } else {
+      for (int i = 0; i < length; i++) {
+        String tripId = data[i]["docID"];
+        String driverId = data[i]["driverID"];
+        dynamic timestamp = data[i]["startTime"];
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
+        String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+        String time = DateFormat('hh:mm a').format(ts);
+        String startAddress = data[i]["startAddress"] ?? " ";
+        String endAddress = data[i]["endAddress"] ?? " ";
+        int seatCount = data[i]["seatsAvailable"];
+        Map<String, double> startPoint = {
+          "latitude": data[i]["startLocation"]["_latitude"],
+          "longitude": data[i]["startLocation"]["_longitude"],
+        };
+        Map<String, double> endPoint = {
+          "latitude": data[i]["endLocation"]["_latitude"],
+          "longitude": data[i]["endLocation"]["_longitude"],
+        };
+
+        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+        String polyLine = data[i]["polyline"];
+        bool isOpen = data[i]["isOpen"];
+        double estimatedDistance =
+            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
+        double estimatedDuration = data[i]["estimatedDistance"] / 60;
+
+        futureTrips.add(
+          RiderTrip(
+            timestamp: ts,
+            tripId: tripId,
+            date: date,
+            time: time,
+            fromAddress: startAddress,
+            status: "status",
+            toAddress: endAddress,
+            driverId: driverId,
+            isOpen: isOpen,
+            polyLine: polyLine,
+            seatNumbers: seatCount,
+            estimatedDistance: estimatedDistance,
+            estimatedDuration: estimatedDuration,
+            estimatedFare: estimatedPrice,
+            startPoint: startPoint,
+            endPoint: endPoint,
+          ),
+        );
+        // }
+        print("something");
+        setState(() {
+          searchResults = futureTrips;
+        });
+      }
+      EasyLoading.dismiss();
     } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Network Error!");
       print(e.toString());
     }
   }
@@ -540,7 +538,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                       ),
                     ),
                     ListView.builder(
-                      itemCount: trips.length,
+                      itemCount: searchResults.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
@@ -601,7 +599,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                 );
                               },
                               child: TripResultContainer(
-                                trip: trips[index],
+                                trip: searchResults[index],
                                 placeIds: {
                                   "startPlaceID": startPlaceId,
                                   "endPlaceID": endPlaceId,

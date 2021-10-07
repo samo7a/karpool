@@ -8,7 +8,6 @@ class RiderTrip {
   final String fromAddress;
   final String toAddress;
   final String status;
-  final double estimatedPrice;
   final bool isOpen;
   final String polyLine;
   final int seatNumbers;
@@ -16,6 +15,8 @@ class RiderTrip {
   final double estimatedDuration;
   final double estimatedFare;
   final dynamic timestamp;
+  final Map<String, double> startPoint;
+  final Map<String, double> endPoint;
 
   RiderTrip({
     required this.timestamp,
@@ -25,7 +26,6 @@ class RiderTrip {
     required this.fromAddress,
     required this.status,
     required this.toAddress,
-    required this.estimatedPrice,
     required this.driverId,
     required this.isOpen,
     required this.polyLine,
@@ -33,5 +33,7 @@ class RiderTrip {
     required this.estimatedDistance,
     required this.estimatedDuration,
     required this.estimatedFare,
+    required this.startPoint,
+    required this.endPoint,
   });
 }

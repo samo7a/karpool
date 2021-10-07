@@ -70,6 +70,14 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
         double estimatedDuration = data[i]["estimatedDistance"] / 60;
+        Map<String, double> startPoint = {
+          "latitude": data[i]["startLocation"]["_latitude"],
+          "longitude": data[i]["startLocation"]["_longitude"],
+        };
+        Map<String, double> endPoint = {
+          "latitude": data[i]["endLocation"]["_latitude"],
+          "longitude": data[i]["endLocation"]["_longitude"],
+        };
         tripList.add(
           RiderTrip(
             timestamp: ts,
@@ -79,7 +87,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
             fromAddress: startAddress,
             status: status,
             toAddress: endAddress,
-            estimatedPrice: estimatedPrice,
             driverId: driverId,
             isOpen: isOpen,
             polyLine: polyLine,
@@ -87,6 +94,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
             estimatedDistance: estimatedDistance,
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
+            endPoint: endPoint,
+            startPoint: startPoint,
           ),
         );
       }
@@ -158,7 +167,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                           snapshot.data!.removeAt(index);
                         } catch (e) {
                           EasyLoading.dismiss();
-                          EasyLoading.showError("Error Occured while canceling your ride, Please try again!");
+                          EasyLoading.showError(
+                              "Error Occured while canceling your ride, Please try again!");
                           print(e.toString());
                         }
                       },

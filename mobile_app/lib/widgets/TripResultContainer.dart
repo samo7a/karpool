@@ -192,7 +192,7 @@ class TripResultContainer extends StatelessWidget {
                 // ),
                 Center(
                   child: Text(
-                    '\$ ' + trip.estimatedPrice.toString(),
+                    '\$ ' + trip.estimatedFare.toString(),
                     style: TextStyle(
                       color: Colors.green[900],
                       fontFamily: 'Glory',
