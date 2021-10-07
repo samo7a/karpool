@@ -88,7 +88,11 @@ export class TripService {
 
             seatsAvailable: data.seatsAvailable,
 
-            polyline: route.polyline
+            polyline: route.polyline,
+
+            notifStart: false,
+
+            notifThree: false
 
         })
 
