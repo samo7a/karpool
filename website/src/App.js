@@ -11,6 +11,7 @@ import ResetPasswordPage from "./pages/ResetPassword/ResetPasswordPage";
 import NotFoundPage from "./pages/NotFound/NotFoundPage";
 import RiderHomePage from "./pages/RiderHome/RiderHomePage";
 import DriverHomePage from "./pages/DriverHome/DriverHomePage";
+import AccountPage from "./pages/Account/AccountPage";
 
 import { transitions, positions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
@@ -71,7 +72,7 @@ function App() {
               exact
               path="/account"
             >
-              {/* <Account /> */}
+              {<AccountPage />}
             </ProtectedRoute>
             <Route path="*">
               <NotFoundPage />
