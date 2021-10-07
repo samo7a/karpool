@@ -1,0 +1,30 @@
+.avatar-img {
+    height: 250px;
+    padding-top: 5em;
+  }
+  
+  .banner-text {
+    background-color: black;
+    opacity: .8;
+    width: 50%;
+    margin: auto;
+    border-radius: 10px;
+  }
+  
+  .banner-text h1 {
+    font-size: 50px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .banner-text hr {
+    border-top: 5px dotted white;
+    width: 75%;
+    margin: auto;
+  }
+  
+  .banner-text p {
+    color: white;
+    font-size: 20px;
+    padding: 1em;
+  }
