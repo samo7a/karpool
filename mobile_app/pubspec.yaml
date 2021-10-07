@@ -54,6 +54,7 @@ dependencies:
   location: ^4.2.0
   firebase_messaging: ^10.0.8
   awesome_notifications: ^0.0.6+10
+  flutter_mapbox_navigation: ^0.0.26
 
 dev_dependencies:
   flutter_test:
