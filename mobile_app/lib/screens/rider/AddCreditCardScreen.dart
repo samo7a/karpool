@@ -70,7 +70,6 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
     int year = int.parse(yearString);
     HttpsCallable addCreditCard = FirebaseFunctions.instance.httpsCallable("account-addCreditCard");
     try {
-
       final result = await StripeService.createPaymentMethod(
         number: cardNumber,
         cvc: cvvCode,
@@ -93,7 +92,9 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
         Navigator.pop(context, null);
       } else {
         print("adding credit cards to firebase");
-        Map<String, String> obj = {"cardToken": result.paymentMethodId};
+        Map<String, String> obj = {
+          "cardToken": result.paymentMethodId,
+        };
         await addCreditCard(obj);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

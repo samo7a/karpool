@@ -6,11 +6,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
+import 'package:mobile_app/util/Auth.dart';
 // import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TripResultContainer.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -26,6 +28,7 @@ class SearchRidesScreen extends StatefulWidget {
 
 class _SearchRidesScreenState extends State<SearchRidesScreen> {
   GlobalKey<FormState> searchKey = GlobalKey<FormState>();
+  // late final auth = Provider.of<Auth>(context, listen: false);
   // String dateTime = "";
   String startLoc = 'Address 1';
   String destination = 'Address 2';

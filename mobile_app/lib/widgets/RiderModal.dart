@@ -8,6 +8,7 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
+import 'package:provider/provider.dart';
 
 //TODO: add no. of seats left, car info (car make, color, maybe year)
 class RiderModal extends StatefulWidget {
@@ -41,6 +42,7 @@ class RiderModal extends StatefulWidget {
 }
 
 class _RiderModalState extends State<RiderModal> {
+  late final user = Provider.of<User>(context, listen: false);
   String? status;
   late String riderid;
   late String tripid;
@@ -95,6 +97,7 @@ class _RiderModalState extends State<RiderModal> {
     Map<String, String> obj = {
       "tripID": tripid,
       "riderID": riderid,
+      "driverID": user.uid,
     };
     try {
       await accept(obj);

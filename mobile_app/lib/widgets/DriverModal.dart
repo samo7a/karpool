@@ -76,7 +76,7 @@ class _DriverModalState extends State<DriverModal> {
   }
 
   void schedule() async {
-    EasyLoading.show(status: "schedule");
+    EasyLoading.show(status: "Joining ...");
     HttpsCallable requestToJoin = FirebaseFunctions.instance.httpsCallable("trip-riderRequestTrip");
     HttpsCallable getCoordinates =
         FirebaseFunctions.instance.httpsCallable("trip-getStartEndCoordinates");
@@ -95,12 +95,12 @@ class _DriverModalState extends State<DriverModal> {
         "riderID": rider.uid,
         "pickup": pickup,
         "dropoff": dropOff,
-        "passengerCount": trip.seatNumbers,
         "startAddress": trip.fromAddress,
         "destinationAddress": trip.toAddress,
         "passengers": trip.seatNumbers,
       };
       await requestToJoin(obj);
+      EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();
       print(e.toString());

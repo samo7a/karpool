@@ -8,13 +8,27 @@ import 'package:provider/src/provider.dart';
 import '../util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   static const String id = 'mainScreen';
   const MainScreen({Key? key}) : super(key: key);
 
   @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    signout();
+  }
+
+  void signout() async {
+    await context.read<Auth>().signOut();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<Auth>().signOut();
     Size size = Size(Context: context);
     return Scaffold(
       backgroundColor: kBackgroundColor,
