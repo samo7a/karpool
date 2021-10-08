@@ -93,7 +93,7 @@ export interface CreatedTripSchema {
     /**
      * 
      */
-    notifStart?: boolean
+    notifThirty?: boolean
 
 }
 

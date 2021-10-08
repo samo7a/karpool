@@ -90,7 +90,7 @@ export class TripService {
 
             polyline: route.polyline,
 
-            notifStart: false,
+            notifThirty: false,
 
             notifThree: false
 
