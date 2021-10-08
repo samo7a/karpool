@@ -1,9 +1,7 @@
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/PasswordField.dart';

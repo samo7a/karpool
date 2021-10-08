@@ -2,16 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-    <string>This app requires to access your Camera</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires access to your location</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requires location access</string>
-	<key>UIBackgroundModes</key>
-	<string>location</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires to access your photo library</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -30,15 +20,25 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MGLMapboxAccessToken</key>
+	<string>pk.eyJ1Ijoic2FtbzdhIiwiYSI6ImNrdWg3M2VxeDE2NjYyb3BoaTRrN3k1MXoifQ.RFo3xg0yLczCFWcHlyPJqQ</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires to access your Camera</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires location access</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Shows your location on the map and helps improve OpenStreetMap</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires to access your photo library</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
+		<string>location</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -59,8 +59,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 </dict>
 </plist>

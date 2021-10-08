@@ -43,6 +43,7 @@ class RiderRideContainer extends StatelessWidget {
               return DriverModal(
                 trip: trip,
                 driverId: trip.driverId,
+                placeIds: {},
                 showButtons: false,
               );
             },
@@ -182,7 +183,7 @@ class RiderRideContainer extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        '\$ ' + trip.estimatedPrice.toString(),
+                        '\$ ' + trip.estimatedFare.toString(),
                         style: TextStyle(
                           color: Colors.green[900],
                           fontFamily: 'Glory',

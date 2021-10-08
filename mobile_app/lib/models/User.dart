@@ -28,6 +28,7 @@ class User with ChangeNotifier {
     required this.email,
     required this.phoneNumber,
   });
+  
   String get getUid => uid;
   set setUid(String value) {
     uid = value;

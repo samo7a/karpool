@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RiderDrawer.dart';
-import 'package:provider/provider.dart';
 import 'RiderHomeScreen.dart';
 import 'RiderHistoryScreen.dart';
 import 'package:mobile_app/widgets/TabHandler.dart';
@@ -18,7 +16,6 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
   String title = "Dashboard";
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('$title'),
@@ -48,7 +45,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  RiderHomeScreen(user: user),
+                  RiderHomeScreen(),
                   RiderHistoryScreen(),
                 ],
               ),

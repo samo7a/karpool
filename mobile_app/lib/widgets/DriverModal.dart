@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -6,6 +8,7 @@ import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
+import 'package:provider/provider.dart';
 
 //TODO: add no. of seats left, car info (car make, color, maybe year)
 class DriverModal extends StatefulWidget {
@@ -20,6 +23,7 @@ class DriverModal extends StatefulWidget {
     required this.showButtons,
     required this.trip,
     required this.driverId,
+    required this.placeIds,
   }) : super(key: key);
 
   // final String profilePic;
@@ -31,13 +35,14 @@ class DriverModal extends StatefulWidget {
   final bool showButtons;
   final RiderTrip trip;
   final String driverId;
+  final Map<String, String> placeIds;
 
   @override
   _DriverModalState createState() => _DriverModalState();
 }
 
 class _DriverModalState extends State<DriverModal> {
-  // ignore: avoid_init_to_null
+  late final rider = Provider.of<User>(context, listen: false);
   late User driver = User(
     uid: "",
     firstName: "",
@@ -52,11 +57,13 @@ class _DriverModalState extends State<DriverModal> {
   );
   late String driverId;
   late RiderTrip trip;
+  late Map<String, String> placeIds;
   late bool showButtons;
   void initState() {
     super.initState();
     driverId = widget.driverId;
     trip = widget.trip;
+    placeIds = widget.placeIds;
     getDriverInfo();
     showButtons = widget.showButtons;
   }
@@ -69,7 +76,36 @@ class _DriverModalState extends State<DriverModal> {
   }
 
   void schedule() async {
-    //TODO: call the endpoint function to schedule a ride
+    EasyLoading.show(status: "Joining ...");
+    HttpsCallable requestToJoin = FirebaseFunctions.instance.httpsCallable("trip-riderRequestTrip");
+    HttpsCallable getCoordinates =
+        FirebaseFunctions.instance.httpsCallable("trip-getStartEndCoordinates");
+    try {
+      final result = await getCoordinates(placeIds);
+      final pickup = {
+        "x": result.data["startLocation"]["longitude"],
+        "y": result.data["startLocation"]["latitude"],
+      };
+      final dropOff = {
+        "x": result.data["endLocation"]["longitude"],
+        "y": result.data["endLocation"]["latitude"],
+      };
+      Map<String, dynamic> obj = {
+        "tripID": trip.tripId,
+        "riderID": rider.uid,
+        "pickup": pickup,
+        "dropoff": dropOff,
+        "startAddress": trip.fromAddress,
+        "destinationAddress": trip.toAddress,
+        "passengers": trip.seatNumbers,
+      };
+      await requestToJoin(obj);
+      EasyLoading.dismiss();
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(e.toString());
+      EasyLoading.showError("Error joining trip");
+    }
   }
 
   @override
@@ -255,7 +291,7 @@ class _DriverModalState extends State<DriverModal> {
                     // ),
                     Center(
                       child: Text(
-                        '\$ ' + widget.trip.estimatedPrice.toString(),
+                        '\$ ' + widget.trip.estimatedFare.toString(),
                         style: TextStyle(
                           color: Colors.green[400],
                           fontFamily: 'Glory',

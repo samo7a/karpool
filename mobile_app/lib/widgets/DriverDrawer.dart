@@ -65,7 +65,6 @@ class _DriverDrawerState extends State<DriverDrawer> {
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
-        physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           Container(

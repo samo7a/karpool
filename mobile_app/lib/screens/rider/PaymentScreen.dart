@@ -1,3 +1,5 @@
+//working
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:awesome_card/awesome_card.dart' as CreditCardWidget;
@@ -18,22 +20,23 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreen extends State<PaymentScreen> {
   // bool showBack = false;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  late List<CreditCardObject.CreditCard> creditCards;
-  List<bool> showBack = [];
+  List<CreditCardObject.CreditCard> creditCards = [];
+  // List<bool> showBack = [false];
 
   @override
   void initState() {
     super.initState();
-    creditCards = CreditCardObject.CreditCard.creditCardFromFireBase();
-    for (int i = 0; i < creditCards.length; i++) {
-      showBack.add(false);
-    }
+    CreditCardObject.CreditCard.creditCardFromFireBase().then((cards) {
+      setState(() {
+        creditCards = cards;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
-    // final user = ModalRoute.of(context)!.settings.arguments as User; 
+    // final user = ModalRoute.of(context)!.settings.arguments as User;
 
     // final card = ModalRoute.of(context)!.settings.arguments as card;
 
@@ -52,7 +55,6 @@ class _PaymentScreen extends State<PaymentScreen> {
           if (card == null) return;
           setState(() {
             creditCards.add(card);
-            showBack.add(false);
           });
         },
         child: Icon(
@@ -89,9 +91,19 @@ class _PaymentScreen extends State<PaymentScreen> {
             direction: DismissDirection.endToStart,
             key: Key(creditCard.paymentMethodId),
             onDismissed: (direction) async {
-              // TODO: Api call to delete card
-              creditCards.removeAt(index);
-              showBack.removeAt(index);
+              HttpsCallable delete =
+                  FirebaseFunctions.instance.httpsCallable("account-deleteCreditCard");
+              try {
+                await delete({"cardToken": creditCard.paymentMethodId});
+                creditCards.removeAt(index);
+              } catch (e) {
+                print("error deleting a card: " + e.toString());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Error Occured, please try again!"),
+                  ),
+                );
+              }
             },
             confirmDismiss: (direction) async {
               return await showDialog(
@@ -197,37 +209,32 @@ class _PaymentScreen extends State<PaymentScreen> {
               ),
               color: kRed,
             ),
-            child: GestureDetector(
-              onTap: () => setState(() {
-                showBack[index] = !showBack[index];
-              }),
-              child: CreditCardWidget.CreditCard(
-                cardNumber: "**** **** **** " + creditCard.last4,
-                cardExpiry:
-                    creditCard.expMonth.toString() + "/" + (creditCard.expYear - 2000).toString(),
-                cardHolderName: creditCard.nameOnCard,
-                cvv: creditCard.cvc,
-                showBackSide: showBack[index],
-                cardType: (creditCard.brand == "visa")
-                    ? CreditCardWidget.CardType.visa
-                    : (creditCard.brand == "diners")
-                        ? CreditCardWidget.CardType.dinersClub
-                        : (creditCard.brand == "discover")
-                            ? CreditCardWidget.CardType.discover
-                            : (creditCard.brand == "amex")
-                                ? CreditCardWidget.CardType.americanExpress
-                                : (creditCard.brand == "jcb")
-                                    ? CreditCardWidget.CardType.jcb
-                                    : (creditCard.brand == "mastercard")
-                                        ? CreditCardWidget.CardType.masterCard
-                                        : CreditCardWidget.CardType.other,
-                frontBackground: CreditCardWidget.CardBackgrounds.black,
-                backBackground: CreditCardWidget.CardBackgrounds.white,
-                showShadow: true,
-                textExpDate: 'Exp. Date',
-                textName: 'Name',
-                textExpiry: 'MM/YY',
-              ),
+            child: CreditCardWidget.CreditCard(
+              cardNumber: "**** **** **** " + creditCard.last4,
+              cardExpiry:
+                  creditCard.expMonth.toString() + "/" + (creditCard.expYear - 2000).toString(),
+              cardHolderName: creditCard.nameOnCard,
+              cvv: creditCard.cvc,
+              showBackSide: false,
+              cardType: (creditCard.brand == "visa")
+                  ? CreditCardWidget.CardType.visa
+                  : (creditCard.brand == "diners")
+                      ? CreditCardWidget.CardType.dinersClub
+                      : (creditCard.brand == "discover")
+                          ? CreditCardWidget.CardType.discover
+                          : (creditCard.brand == "amex")
+                              ? CreditCardWidget.CardType.americanExpress
+                              : (creditCard.brand == "jcb")
+                                  ? CreditCardWidget.CardType.jcb
+                                  : (creditCard.brand == "mastercard")
+                                      ? CreditCardWidget.CardType.masterCard
+                                      : CreditCardWidget.CardType.other,
+              frontBackground: CreditCardWidget.CardBackgrounds.black,
+              backBackground: CreditCardWidget.CardBackgrounds.white,
+              showShadow: true,
+              textExpDate: 'Exp. Date',
+              textName: 'Name',
+              textExpiry: 'MM/YY',
             ),
           );
         },
