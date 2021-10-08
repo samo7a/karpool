@@ -19,7 +19,7 @@ import {  NotificationsDAOInterface } from "../../features/notifications/notific
 //  create a cloud function to add deviceToken to FCMTokens collection
 //       finish the notification for delete, add, join, decline and, cancel a ride
 
-//Later: ad notificatrions for 3, 1h  and time hour to start the trip
+//Later: ad notificatrions for 3  and at the trip's start time
 
 export class TripService {
 
@@ -88,7 +88,11 @@ export class TripService {
 
             seatsAvailable: data.seatsAvailable,
 
-            polyline: route.polyline
+            polyline: route.polyline,
+
+            notifThirty: false,
+
+            notifThree: false
 
         })
 
@@ -580,6 +584,6 @@ export class TripService {
             notificationID: 1
         }
 
-        await sendCustomNotification(token, message)
+         sendCustomNotification(token, message)
     }
 }

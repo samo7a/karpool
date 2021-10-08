@@ -85,6 +85,15 @@ export interface CreatedTripSchema {
      */
     polyline: string
 
+    /**
+     * 
+     */
+    notifThree?: boolean
+
+    /**
+     * 
+     */
+    notifThirty?: boolean
 
 }
 

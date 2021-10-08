@@ -114,7 +114,7 @@ export const getDriverTrips = functions.https.onCall(async (data, context) => {
 export const getRiderTrips = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)
-    console.log(data.riderID, uid)
+   // console.log(data.riderID, uid)
     if (uid === data.riderID) {
         return newTripService().getRiderTrips(data.riderID)
     } else {
