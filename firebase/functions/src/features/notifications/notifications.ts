@@ -113,7 +113,7 @@ export const sendTripThirtyMinutesNotifiction = functions.pubsub.schedule('* * *
 
             //console.log(tokens)
             const message = {
-                subject: "Your scheduled trip will start in about thirthy(30) minutes",
+                subject: "Your scheduled trip will start in about thirty(30) minutes",
                 driverID: e.driverID,
                 tripID: e.docID,
                 notificationID: 2

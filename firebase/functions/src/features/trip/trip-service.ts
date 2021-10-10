@@ -281,7 +281,7 @@ export class TripService {
 
         const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
         // UPdate available seats
-        console.log(rider)
+        //console.log(rider)
         trip.seatsAvailable += rider.passengerCount
 
         // Call change route function to update route
@@ -293,9 +293,9 @@ export class TripService {
 
         //delete rider info from trip
         const arr = trip.riderInfo
-        arr.slice().reverse().forEach((element, i) => {
+        arr.slice().reverse().forEach((element) => {
             if (element.riderID === riderID) {
-                arr.splice(i)
+                arr.splice(1);
             }
         });
         trip.riderInfo = arr
