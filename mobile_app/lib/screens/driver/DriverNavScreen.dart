@@ -107,7 +107,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                 wayPoints: wayPoints,
                 options: MapBoxOptions(
                     mode: MapBoxNavigationMode.driving,
-                    simulateRoute: true,
+                    simulateRoute: false,
                     language: "en",
                     allowsUTurnAtWayPoints: true,
                     units: VoiceUnits.imperial),
