@@ -50,6 +50,7 @@ export const addRole = functions.https.onCall(async (data, context) => {
 })
 
 
+
 export const addCreditCard = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)

@@ -2,6 +2,7 @@ import { CreatedTripSchema, GeoPointSchema, ScheduleTripSchema } from "./schema"
 import * as admin from 'firebase-admin'
 import { FirestoreKey, RealtimeKey } from '../../constants'
 import { autoID } from "../utils/misc";
+import { HttpsError } from "firebase-functions/lib/providers/https";
 
 
 export interface TripDAOInterface {
@@ -148,9 +149,14 @@ export class TripDAO implements TripDAOInterface {
     }
 
     //TODO: Throw error if function.
-    getCreatedTrip(tripID: string): Promise<CreatedTripSchema> {
-        return this.db.collection(FirestoreKey.tripsCreated).doc(tripID)
-            .get().then(doc => doc.data() as CreatedTripSchema)
+    async getCreatedTrip(tripID: string): Promise<CreatedTripSchema> {
+        const doc = await this.db.collection(FirestoreKey.tripsCreated).doc(tripID).get()
+        if (!doc.exists) {
+            throw new HttpsError('not-found', `Trip with id: ${tripID} not found.`)
+        } else {
+            return doc.data() as CreatedTripSchema
+        }
+
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {

@@ -36,6 +36,7 @@ export const getStartEndCoordinates = functions.https.onCall(async (data, contex
 
 })
 
+
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
     const uid = await validateAuthorization(context)
@@ -174,7 +175,7 @@ export const acceptRiderRequest = functions.https.onCall(async (data, context) =
     //  const uid = validateAuthorization(context)
 
     //  if (uid) {
-         return newTripService().acceptRiderRequest(data.riderID, data.tripID)
+    return newTripService().acceptRiderRequest(data.riderID, data.tripID)
     //  }
     //  else {
     //      throw new HttpsError('failed-precondition', 'Invalid User')
@@ -207,15 +208,15 @@ export const getRiderCompletedTrips = functions.https.onCall(async (data, contex
 
 })
 
-export const riderRequestTrip = functions.https.onCall(async (data, context) =>{
-     const uid = validateAuthorization(context)
+export const riderRequestTrip = functions.https.onCall(async (data, context) => {
+    const uid = validateAuthorization(context)
 
-     if (uid) {
-         return newTripService().riderRequestTrip(data.riderID,data.tripID,data.pickup,data.dropoff,data.pickupAddress,data.dropoffAddress)
-     }
-     else {
+    if (uid) {
+        return newTripService().riderRequestTrip(data.riderID, data.tripID, data.pickup, data.dropoff, data.pickupAddress, data.dropoffAddress)
+    }
+    else {
         throw new HttpsError('failed-precondition', 'Invalid User')
     }
-    
+
 
 })
