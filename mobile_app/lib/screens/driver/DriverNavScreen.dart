@@ -57,11 +57,9 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   final _origin = WayPoint(name: "Way Point 1", latitude: 28.58185308, longitude: -81.30832491);
   final _stop1 = WayPoint(name: "Way Point 2", latitude: 28.488359, longitude: -81.429638);
   final _stop2 = WayPoint(name: "Way Point 3", latitude: 28.468275, longitude: -81.452194);
-  final _stop3 =
-      WayPoint(name: "Way Point 4", latitude: 25.796395, longitude: -80.277177);
-  final _stop4 =
-      WayPoint(name: "Way Point 5", latitude: 25.492905, longitude: -80.421999);
-      final _destination = WayPoint(name: "Way Point 5", latitude: 25.318357, longitude: -80.280417);
+  final _stop3 = WayPoint(name: "Way Point 4", latitude: 25.796395, longitude: -80.277177);
+  final _stop4 = WayPoint(name: "Way Point 5", latitude: 25.492905, longitude: -80.421999);
+  final _destination = WayPoint(name: "Way Point 5", latitude: 25.318357, longitude: -80.280417);
 
   @override
   void initState() {
@@ -106,7 +104,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
               await _directions.startNavigation(
                 wayPoints: wayPoints,
                 options: MapBoxOptions(
-                    mode: MapBoxNavigationMode.driving,
+                    mode: MapBoxNavigationMode.drivingWithTraffic,
                     simulateRoute: false,
                     language: "en",
                     allowsUTurnAtWayPoints: true,
