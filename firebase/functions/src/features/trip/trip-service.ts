@@ -1,4 +1,4 @@
-import { CreatedTripSchema, GeoPointSchema, RiderStatus, ScheduleTripSchema } from "../../data-access/trip/schema";
+import { CreatedTripSchema, GeoPointSchema, RiderStatus, ScheduleTripSchema, TripRiderInfo} from "../../data-access/trip/schema";
 import { TripCreationData } from "./types";
 import { TripDAOInterface } from '../../data-access/trip/dao'
 import { UserDAOInterface } from '../../data-access/user/dao'
@@ -19,7 +19,7 @@ import { NotificationsDAOInterface } from "../../features/notifications/notifica
 //  create a cloud function to add deviceToken to FCMTokens collection
 //       finish the notification for delete, add, join, decline and, cancel a ride
 
-//Later: ad notificatrions for 3, 1h  and time hour to start the trip
+//Later: ad notificatrions for 3  and at the trip's start time
 
 export class TripService {
 
@@ -88,7 +88,11 @@ export class TripService {
 
             seatsAvailable: data.seatsAvailable,
 
-            polyline: route.polyline
+            polyline: route.polyline,
+
+            notifThirty: false,
+
+            notifThree: false
 
         })
 
@@ -252,10 +256,10 @@ export class TripService {
     }
 
 
-    /**
-    * @param tripID
+   /**
+    * @param riderID
+    * @param tripID 
     */
-
     async cancelRidebyRider(riderID: string, tripID: string): Promise<void> {
 
         //Get trip from the database
@@ -512,6 +516,17 @@ export class TripService {
         trip.polyline = (await updatedRoute).polyline
 
         await this.tripDAO.updateCreatedTrip(tripID, trip)
+
+        const token = await this.notificationsDAO.getTokenList([riderID])
+
+        const message  = {
+            subject: "Your request to join a trip has been accepted by the driver",
+            driverID : trip.driverID,
+            tripID : tripID,
+            notificationID: 1
+        }
+
+        sendCustomNotification(token, message)
     }
 
     async getDriverCompletedTrips(driverID: string): Promise<ScheduleTripSchema[]> {
@@ -538,35 +553,74 @@ export class TripService {
         }
     }
 
+<<<<<<< HEAD
     async riderRequestTrip(riderID: string, tripID: string, pickup: Point, dropoff: Point, startAddress: string, destinationAddress: string): Promise<void> {
+=======
+    async riderRequestTrip(riderID: string, tripID: string, pickup: Point, dropoff: Point, startAddress: string, destinationAddress: string, passengers: number): Promise<void>{
+>>>>>>> 677d5dd0719f5f4b25825c97dfe08452dabf5388
         const trip = await this.tripDAO.getCreatedTrip(tripID)
         if (trip === undefined) {
             throw new HttpsError('not-found', 'Trip does not exist')
         }
+<<<<<<< HEAD
 
         trip.riderStatus[riderID] = 'Requested'
 
         const start = { x: trip.startLocation.longitude, y: trip.startLocation.latitude } as Point
         const end = { x: trip.endLocation.longitude, y: trip.endLocation.latitude } as Point
 
+=======
+    
+        const start = {x: trip.startLocation.longitude, y: trip.startLocation.latitude} as Point
+        const end = { x: trip.endLocation.longitude, y: trip.endLocation.latitude} as Point
+        
+>>>>>>> 677d5dd0719f5f4b25825c97dfe08452dabf5388
         const wayPoints = this.getWaypoints(trip, 'Accepted')
 
-        // const newRiderInfo = {
-        //     dropoffAddress :destinationAddress,
-        //     pickupAddress : startAddress,
-        //     dropoffLocation : dropoff,
-        //     pickupLocation : pickup,
-        //     estimatedFare : 0
-        // } 
-        // trip.riderInfo.push({n})
+        const newRiderInfo: TripRiderInfo = {
 
+            dropoffAddress :destinationAddress,
+            pickupAddress : startAddress,
+            dropoffLocation : new firestore.GeoPoint(dropoff.y,dropoff.x),
+            pickupLocation : new firestore.GeoPoint(pickup.y,pickup.x),
+            estimatedFare : 0,
+            passengerCount : passengers,
+            pickupIndex : 0,
+            dropoffIndex : 0,
+            riderID: riderID
+
+        }
+        
         wayPoints.push(pickup)
         wayPoints.push(dropoff)
 
+<<<<<<< HEAD
         const updatedRoute = await this.directionsDAO.getRoute(tripID, start, end, wayPoints)
 
         trip.polyline = (await updatedRoute).polyline
+=======
 
-        await this.tripDAO.updateCreatedTrip(tripID, trip)
+        
+        await this.directionsDAO.getRoute(tripID, start, end, wayPoints)
+        
+        
+        const data: any = {riderInfo: firestore.FieldValue.arrayUnion(newRiderInfo) as any}
+        data[`riderStatus.${riderID}`] = 'Requested' 
+        
+        await this.tripDAO.updateCreatedTrip(tripID,data)
+>>>>>>> 677d5dd0719f5f4b25825c97dfe08452dabf5388
+
+        console.log(data,"AND ", tripID)
+
+        const token = await this.notificationsDAO.getTokenList([trip.driverID])
+
+        const message  = {
+            subject: "A rider is requesting to join your trip!",
+            driverID : trip.driverID,
+            tripID : tripID,
+            notificationID: 1
+        }
+
+         sendCustomNotification(token, message)
     }
 }

@@ -118,6 +118,8 @@
 
     destinationAddress: string
 
+    passengers: number
+
 }
 ```
 ### Returns
