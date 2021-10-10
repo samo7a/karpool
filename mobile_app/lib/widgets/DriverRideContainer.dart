@@ -53,9 +53,10 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
     List<User> u = [];
     for (var rider in trip.riders) {
       String uid = rider["uid"] ?? "";
+      String status = rider["status"] ?? "";
+      if (status == "Rejected") continue;
       final user = await User.getRiderFromFireBase(uid);
       u.add(user);
-      print(user.firstName);
     }
     print("lenght of the array: should be 2: " + u.length.toString());
     setState(() {
@@ -222,7 +223,7 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                 width: size.BLOCK_WIDTH * 78,
                 height: size.BLOCK_HEIGHT * 10,
                 child: ListView.separated(
-                  padding: EdgeInsets.only(left : size.BLOCK_WIDTH * 4.6),
+                  padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 4.6),
                   separatorBuilder: (BuildContext context, int index) {
                     return SizedBox(
                       width: size.BLOCK_WIDTH * 4.6,

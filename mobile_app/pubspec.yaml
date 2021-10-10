@@ -69,13 +69,13 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  plugin:
-    platforms:
-      android:
-        package: com.dormmom.flutter_mapbox_navigation
-        pluginClass: FlutterMapboxNavigationPlugin
-      ios:
-        pluginClass: FlutterMapboxNavigationPlugin
+  # plugin:
+  #   platforms:
+  #     android:
+  #       package: com.dormmom.flutter_mapbox_navigation
+  #       pluginClass: FlutterMapboxNavigationPlugin
+  #     ios:
+  #       pluginClass: FlutterMapboxNavigationPlugin
 
   assets:
     - images/

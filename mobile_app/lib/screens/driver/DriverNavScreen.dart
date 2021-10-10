@@ -38,7 +38,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
     voiceInstructionsEnabled: true,
     bannerInstructionsEnabled: true,
     allowsUTurnAtWayPoints: true,
-    mode: MapBoxNavigationMode.drivingWithTraffic,
+    mode: MapBoxNavigationMode.driving,
     units: VoiceUnits.imperial,
     simulateRoute: false,
     animateBuildRoute: true,
@@ -104,7 +104,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
               await _directions.startNavigation(
                 wayPoints: wayPoints,
                 options: MapBoxOptions(
-                    mode: MapBoxNavigationMode.drivingWithTraffic,
+                    mode: MapBoxNavigationMode.driving,
                     simulateRoute: false,
                     language: "en",
                     allowsUTurnAtWayPoints: true,
@@ -146,7 +146,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
       voiceInstructionsEnabled: true,
       bannerInstructionsEnabled: true,
       allowsUTurnAtWayPoints: true,
-      mode: MapBoxNavigationMode.drivingWithTraffic,
+      mode: MapBoxNavigationMode.driving,
       units: VoiceUnits.imperial,
       simulateRoute: false,
       animateBuildRoute: true,

@@ -76,7 +76,6 @@ class _RiderModalState extends State<RiderModal> {
   }
 
   void accept() async {
-    //TODO: call the endpoint function to schedule a ride
     HttpsCallable accept = FirebaseFunctions.instance.httpsCallable("trip-acceptRiderRequest");
     Map<String, String> obj = {
       "tripID": tripid,
@@ -92,21 +91,37 @@ class _RiderModalState extends State<RiderModal> {
   }
 
   void decline() async {
-    //TODO: call the endpoint
-    HttpsCallable accept = FirebaseFunctions.instance.httpsCallable("trip-declineRiderRequest");
+    HttpsCallable decline = FirebaseFunctions.instance.httpsCallable("trip-declineRiderRequest");
     Map<String, String> obj = {
       "tripID": tripid,
       "riderID": riderid,
       "driverID": user.uid,
     };
     try {
-      await accept(obj);
+      await decline(obj);
       EasyLoading.showSuccess("Rider declined!");
     } catch (e) {
       print(e.toString());
       EasyLoading.showError("Error declining the rider!");
     }
   }
+
+  void remove() async {
+    HttpsCallable remove = FirebaseFunctions.instance.httpsCallable("trip-cancelRiderbyDriver");
+    Map<String, String> obj = {
+      "tripID": tripid,
+      "riderID": riderid,
+      "driverID": user.uid,
+    };
+    try {
+      await remove(obj);
+      EasyLoading.showSuccess("Rider removed!");
+    } catch (e) {
+      print(e.toString());
+      EasyLoading.showError("Error removing the rider!");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
@@ -271,17 +286,13 @@ class _RiderModalState extends State<RiderModal> {
                                 ),
                               ],
                             )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ModalButton(
+                          : status == "Accepted"
+                              ? ModalButton(
                                   buttonName: "Remove",
-                                  onClick: decline,
+                                  onClick: remove,
                                   color: 0xffF31818,
-                                ),
-                              ],
-                            ),
+                                )
+                              : Container(),
                     ),
                   ],
                 ),

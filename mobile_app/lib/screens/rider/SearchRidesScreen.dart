@@ -123,7 +123,9 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
 
   void search() async {
     EasyLoading.show(status: "Searching...");
-    searchResults.clear();
+    setState(() {
+      searchResults = [];
+    });
     Map<String, String> obj = {
       "startPlaceID": startPlaceId,
       "endPlaceID": endPlaceId,
@@ -151,74 +153,78 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
         "passengerCount": seats,
         "startDate": date.toUtc().toIso8601String(),
       };
+      print(obj2.toString());
       List<RiderTrip> futureTrips = [];
       final result = await search(obj2);
-      final data = result.data;
-      int length = result.data.length;
+      final data = result.data["trips"];
+      int length = data.length;
 
       print("search Results");
       print(data);
-      // if (length != 0) {
-      //   setState(() {
-      //     searchResults = futureTrips;
-      //   });
-      // } else {
-      for (int i = 0; i < length; i++) {
-        String tripId = data[i]["docID"];
-        String driverId = data[i]["driverID"];
-        dynamic timestamp = data[i]["startTime"];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
-        String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
-        String time = DateFormat('hh:mm a').format(ts);
-        String startAddress = data[i]["startAddress"] ?? " ";
-        String endAddress = data[i]["endAddress"] ?? " ";
-        int seatCount = data[i]["seatsAvailable"];
-        Map<String, double> startPoint = {
-          "latitude": data[i]["startLocation"]["_latitude"],
-          "longitude": data[i]["startLocation"]["_longitude"],
-        };
-        Map<String, double> endPoint = {
-          "latitude": data[i]["endLocation"]["_latitude"],
-          "longitude": data[i]["endLocation"]["_longitude"],
-        };
-
-        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
-        String polyLine = data[i]["polyline"];
-        bool isOpen = data[i]["isOpen"];
-        double estimatedDistance =
-            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
-        double estimatedDuration = data[i]["estimatedDistance"] / 60;
-
-        futureTrips.add(
-          RiderTrip(
-            timestamp: ts,
-            tripId: tripId,
-            date: date,
-            time: time,
-            fromAddress: startAddress,
-            status: "status",
-            toAddress: endAddress,
-            driverId: driverId,
-            isOpen: isOpen,
-            polyLine: polyLine,
-            seatNumbers: seatCount,
-            estimatedDistance: estimatedDistance,
-            estimatedDuration: estimatedDuration,
-            estimatedFare: estimatedPrice,
-            startPoint: startPoint,
-            endPoint: endPoint,
-          ),
-        );
-        // }
-        print("something");
+      print(length);
+      if (length == 0) {
+        print("no results");
         setState(() {
           searchResults = futureTrips;
         });
+      } else {
+        for (int i = 0; i < length; i++) {
+          String tripId = data[i]["docID"];
+          String driverId = data[i]["driverID"];
+          dynamic timestamp = data[i]["startTime"];
+          DateTime ts =
+              Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
+          String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+          String time = DateFormat('hh:mm a').format(ts);
+          String startAddress = data[i]["startAddress"] ?? " ";
+          String endAddress = data[i]["endAddress"] ?? " ";
+          int seatCount = data[i]["seatsAvailable"];
+          Map<String, double> startPoint = {
+            "latitude": data[i]["startLocation"]["_latitude"],
+            "longitude": data[i]["startLocation"]["_longitude"],
+          };
+          Map<String, double> endPoint = {
+            "latitude": data[i]["endLocation"]["_latitude"],
+            "longitude": data[i]["endLocation"]["_longitude"],
+          };
+
+          double estimatedPrice =
+              double.parse((result.data["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+          String polyLine = data[i]["polyline"];
+          bool isOpen = data[i]["isOpen"];
+          double estimatedDistance =
+              double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
+          double estimatedDuration = data[i]["estimatedDistance"] / 60;
+
+          futureTrips.add(
+            RiderTrip(
+              timestamp: ts,
+              tripId: tripId,
+              date: date,
+              time: time,
+              fromAddress: startAddress,
+              status: "status",
+              toAddress: endAddress,
+              driverId: driverId,
+              isOpen: isOpen,
+              polyLine: polyLine,
+              seatNumbers: seatCount,
+              estimatedDistance: estimatedDistance,
+              estimatedDuration: estimatedDuration,
+              estimatedFare: estimatedPrice,
+              startPoint: startPoint,
+              endPoint: endPoint,
+            ),
+          );
+        }
       }
+      setState(() {
+        searchResults = futureTrips;
+      });
       EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError("Network Error!");
+      EasyLoading.showError("No Results!");
       print(e.toString());
     }
   }
@@ -541,11 +547,13 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                       ),
                     ),
                     ListView.builder(
+                      // key: Key(Uuid().toString()),
                       itemCount: searchResults.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
+                          // key: UniqueKey(),
                           child: Center(
                             child: GestureDetector(
                               onTap: () {
