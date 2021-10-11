@@ -539,21 +539,20 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 5,
                     ),
-                    Text(
-                      "Search Results:",
-                      style: TextStyle(
-                        color: kWhite,
-                        fontSize: size.FONT_SIZE * 28,
-                      ),
-                    ),
+                    searchResults.length != 0
+                        ? Text(
+                            "Search Results:",
+                            style: TextStyle(
+                              color: kWhite,
+                              fontSize: size.FONT_SIZE * 28,
+                            ),
+                          )
+                        : Container(),
                     ListView.builder(
-                      // key: Key(Uuid().toString()),
                       itemCount: searchResults.length,
-                      physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
-                          // key: UniqueKey(),
                           child: Center(
                             child: GestureDetector(
                               onTap: () {
@@ -574,17 +573,15 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                         // ignore: deprecated_member_use
                                         FlatButton(
                                           onPressed: () {
-                                            // TODO: Add ride to trip list
-                                            // TODO: Register Scheduling in backend
                                             print("Chose Yes");
                                             Navigator.of(context).pop(true);
                                           },
-                                          child: const Text(
+                                          child: Text(
                                             "YES",
                                             style: TextStyle(
                                               fontFamily: 'Glory',
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 20, // size object not working here,
+                                              fontSize: size.FONT_SIZE * 22,
                                             ),
                                           ),
                                         ),
@@ -594,12 +591,12 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
                                             print("Chose No");
                                             Navigator.of(context).pop(false);
                                           },
-                                          child: const Text(
+                                          child: Text(
                                             "NO",
                                             style: TextStyle(
                                               fontFamily: 'Glory',
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 20, // size object not working here,
+                                              fontSize: size.FONT_SIZE * 22,
                                             ),
                                           ),
                                         ),

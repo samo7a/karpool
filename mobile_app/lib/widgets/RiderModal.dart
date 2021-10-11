@@ -76,6 +76,7 @@ class _RiderModalState extends State<RiderModal> {
   }
 
   void accept() async {
+    EasyLoading.show(status: "Accepting the rider ...");
     HttpsCallable accept = FirebaseFunctions.instance.httpsCallable("trip-acceptRiderRequest");
     Map<String, String> obj = {
       "tripID": tripid,
@@ -83,14 +84,18 @@ class _RiderModalState extends State<RiderModal> {
     };
     try {
       await accept(obj);
+      EasyLoading.dismiss();
+      Navigator.pop(context);
       EasyLoading.showSuccess("Rider joined!");
     } catch (e) {
+      EasyLoading.dismiss();
       print(e.toString());
       EasyLoading.showError("Error Accepting the rider!");
     }
   }
 
   void decline() async {
+    EasyLoading.show(status: "Declining the rider ...");
     HttpsCallable decline = FirebaseFunctions.instance.httpsCallable("trip-declineRiderRequest");
     Map<String, String> obj = {
       "tripID": tripid,
@@ -99,14 +104,18 @@ class _RiderModalState extends State<RiderModal> {
     };
     try {
       await decline(obj);
+      EasyLoading.dismiss();
+      Navigator.pop(context);
       EasyLoading.showSuccess("Rider declined!");
     } catch (e) {
+      EasyLoading.dismiss();
       print(e.toString());
       EasyLoading.showError("Error declining the rider!");
     }
   }
 
   void remove() async {
+    EasyLoading.show(status: "Removing the rider from your trip ...");
     HttpsCallable remove = FirebaseFunctions.instance.httpsCallable("trip-cancelRiderbyDriver");
     Map<String, String> obj = {
       "tripID": tripid,
@@ -115,8 +124,11 @@ class _RiderModalState extends State<RiderModal> {
     };
     try {
       await remove(obj);
+      EasyLoading.dismiss();
+      Navigator.pop(context);
       EasyLoading.showSuccess("Rider removed!");
     } catch (e) {
+      EasyLoading.dismiss();
       print(e.toString());
       EasyLoading.showError("Error removing the rider!");
     }

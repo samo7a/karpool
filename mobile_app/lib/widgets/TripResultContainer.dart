@@ -6,38 +6,20 @@ import 'package:mobile_app/util/constants.dart';
 import '../util/HeroDialog.dart';
 import 'DriverModal.dart';
 
-class TripResultContainer extends StatelessWidget {
+class TripResultContainer extends StatefulWidget {
   const TripResultContainer({
     Key? key,
-    // required this.date,
-    // required this.time,
-    // // required this.fromAddress,
-    // // required this.toAddress,
-    // required this.profilePic,
-    // required this.fullName,
-    // required this.starRating,
-    // required this.estimatedPrice,
-    // required this.status,
-    // required this.onPress,
     required this.trip,
     required this.placeIds,
   }) : super(key: key);
-
-  // final String date;
-  // final String time;
-  // // final String fromAddress;
-  // // final String toAddress;
-  // final String profilePic;
-  // final String estimatedPrice;
-  // final String status;
-  // // final Function onPress;
-  // final String fullName;
-  // final int starRating; //change to double later
   final RiderTrip trip;
   final Map<String, String> placeIds;
 
-  // TODO: add button for scheduling rides
+  @override
+  State<TripResultContainer> createState() => _TripResultContainerState();
+}
 
+class _TripResultContainerState extends State<TripResultContainer> {
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
@@ -47,10 +29,10 @@ class TripResultContainer extends StatelessWidget {
           HeroDialogRoute(
             builder: (context) {
               return DriverModal(
-                showButtons: true,
-                trip: trip,
-                driverId: trip.driverId,
-                placeIds: placeIds,
+                showButtons: widget.trip.status == "Requseted" ? true : false,
+                trip: widget.trip,
+                driverId: widget.trip.driverId,
+                placeIds: widget.placeIds,
               );
             },
           ),
@@ -87,7 +69,7 @@ class TripResultContainer extends StatelessWidget {
                       width: size.BLOCK_WIDTH * 3,
                     ),
                     Text(
-                      trip.date,
+                      widget.trip.date,
                       style: TextStyle(
                         color: kWhite,
                         fontFamily: 'Glory',
@@ -109,7 +91,7 @@ class TripResultContainer extends StatelessWidget {
                       width: size.BLOCK_WIDTH * 3,
                     ),
                     Text(
-                      trip.time,
+                      widget.trip.time,
                       style: TextStyle(
                         color: kWhite,
                         fontFamily: 'Glory',
@@ -192,7 +174,7 @@ class TripResultContainer extends StatelessWidget {
                 // ),
                 Center(
                   child: Text(
-                    '\$ ' + trip.estimatedFare.toString(),
+                    '\$ ' + widget.trip.estimatedFare.toString(),
                     style: TextStyle(
                       color: Colors.green[900],
                       fontFamily: 'Glory',

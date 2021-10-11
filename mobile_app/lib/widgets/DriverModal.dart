@@ -14,24 +14,12 @@ import 'package:provider/provider.dart';
 class DriverModal extends StatefulWidget {
   const DriverModal({
     Key? key,
-    // required this.profilePic,
-    // required this.fullName,
-    // required this.starRating,
-    // required this.date,
-    // required this.time,
-    // required this.estimatedPrice,
     required this.showButtons,
     required this.trip,
     required this.driverId,
     required this.placeIds,
   }) : super(key: key);
 
-  // final String profilePic;
-  // final String fullName;
-  // final int starRating; //change to double later
-  // final String date;
-  // final double estimatedPrice;
-  // final String time;
   final bool showButtons;
   final RiderTrip trip;
   final String driverId;
@@ -101,6 +89,7 @@ class _DriverModalState extends State<DriverModal> {
       };
       await requestToJoin(obj);
       EasyLoading.dismiss();
+      Navigator.pop(context);
     } catch (e) {
       EasyLoading.dismiss();
       print(e.toString());
