@@ -1,5 +1,6 @@
 import 'dart:convert';
 // import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -24,9 +25,10 @@ class EditProfilScreen extends StatefulWidget {
 }
 
 class _EditProfilScreenState extends State<EditProfilScreen> {
+  late final user = Provider.of<u.User>(context, listen: false);
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  String phoneString = "";
   String profilePic = "";
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -55,11 +57,14 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
   void takePhoto(ImageSource source) async {
     final pickedFile = await _picker.pickImage(
       source: source,
+      imageQuality: 25,
     );
+    print(pickedFile);
     setState(() {
       _imageFile = pickedFile;
     });
-
+    print(await pickedFile!.length());
+    EasyLoading.show(status: "Uploading the profile pic");
     String img64;
     if (_imageFile == null) {
       EasyLoading.dismiss();
@@ -68,15 +73,61 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     } else {
       final bytes = Io.File(_imageFile!.path).readAsBytesSync();
       img64 = base64Encode(bytes);
-      print(img64);
     }
-    // Map<String, dynamic> obj = {
-    //   "uid": user!.uid,
-    //   "profilePicData": img64,
-    // };
-    // TODO: Link image change to backend
-    // HttpsCallable updatePhoto = FirebaseFunctions.instance.httpsCallable.call('nameOfTheFunction');
-    // await updatePhoto(obj);
+    print("base 64 string : " + img64);
+    Map<String, dynamic> obj = {
+      "uid": user.uid,
+      "pic": img64,
+    };
+    HttpsCallable updatePhoto =
+        FirebaseFunctions.instance.httpsCallable.call('account-editUserProfile');
+    try {
+      print("inside the try");
+      final result = await updatePhoto(obj);
+      final data = result.data;
+      print(data);
+      //TODO; set the profileURL to the new profile pic url
+      //Size of the file needs review;
+      // user.setProfileURL = data.profileURL;
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Error uploading the profile picture.");
+    }
+  }
+
+  void changePhoneNum() async {
+    EasyLoading.show(status: "Updating phone number!");
+    if (!formKey.currentState!.validate()) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Enter a valid phone number!");
+      return;
+    }
+    String phoneNumber = user.getPhoneNumber;
+    String newPhoneNumber = phoneString;
+    if (phoneNumber.trim() == newPhoneNumber.trim()) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Try to add a different phone number!");
+      return;
+    }
+    HttpsCallable changePhoneNumber =
+        FirebaseFunctions.instance.httpsCallable("account-editUserProfile");
+    Map<String, dynamic> obj = {
+      "uid": user.uid,
+      "phoneNum": newPhoneNumber,
+    };
+    try {
+      print("inside the try");
+      final result = await changePhoneNumber(obj);
+      final data = result.data;
+      print(result);
+      print(data);
+      user.setPhoneNumber = newPhoneNumber;
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Phone number updated!");
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Error updating the phone number.");
+    }
   }
 
   Widget bottomSheet(BuildContext context) {
@@ -122,21 +173,19 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
   void initState() {
     super.initState();
     _imageFile = null;
+    phoneString = user.getPhoneNumber;
   }
 
   @override
   void dispose() {
     super.dispose();
     emailController.dispose();
-    phoneController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<u.User>(context, listen: false);
     Size size = Size(Context: context);
-
-    phoneController.text = user.phoneNumber;
+    // phoneController.text = user.phoneNumber;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -381,7 +430,10 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                         child: Consumer<u.User>(
                           builder: (context, value, child) {
                             return TextFormField(
-                              controller: phoneController,
+                              onChanged: (value) => setState(() {
+                                phoneString = value;
+                              }),
+                              initialValue: phoneString,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -436,19 +488,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                             fontSize: size.FONT_SIZE * 18,
                           ),
                         ),
-                        onPressed: () async {
-                          String phoneNumber = user.getPhoneNumber;
-                          String newPhoneNumber = phoneController.text;
-                          if (phoneNumber.trim() == newPhoneNumber.trim()) {
-                            return;
-                          }
-                          // TODO: call api for changing phone number
-                          // HttpsCallable changePhoneNumber =
-                          //     FirebaseFunctions.instance.httpsCallable("function name");
-                          // if (true) {
-                          //   user.setPhoneNumber = newPhoneNumber;
-                          // }
-                        },
+                        onPressed: changePhoneNum,
                       ),
                     ),
                   ],
