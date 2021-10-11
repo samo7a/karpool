@@ -58,6 +58,7 @@ class StripeService {
         nameOnCard: token.card!.name ?? " ",
         paymentMethodId: token.id ?? " ",
         brand: token.card!.brand ?? null,
+        isDefault: false,
       );
     } catch (e) {
       print(e);
@@ -65,4 +66,3 @@ class StripeService {
     }
   }
 }
-  

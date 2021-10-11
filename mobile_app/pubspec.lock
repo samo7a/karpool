@@ -11,9 +11,11 @@ packages:
   awesome_card:
     dependency: "direct main"
     description:
-      name: awesome_card
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "3b138d2c6f4178e4a45fbafd65bd6b31e180c787"
+      url: "https://github.com/samo7a/AwesomeCard"
+    source: git
     version: "1.1.5"
   awesome_notifications:
     dependency: "direct main"

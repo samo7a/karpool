@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_form.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/StripeService.dart';
 import 'package:mobile_app/util/constants.dart';
@@ -54,9 +55,11 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
   }
 
   Future<CreditCardObject.CreditCard?> addCard() async {
-    FocusScope.of(context).unfocus();
+    // FocusScope.of(context).unfocus();
+    EasyLoading.show(status: "Adding Card...");
     if (!formKey.currentState!.validate()) {
       print('invalid!');
+      EasyLoading.dismiss();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please Add a Valid Credit Card!'),
@@ -84,9 +87,10 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
       // print(result.paymentMethodId);
       // print(result.last4);
       if (result == null) {
+        EasyLoading.dismiss();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Process Cancelled!"),
+            content: Text("Wrong info, please try again!"),
           ),
         );
         Navigator.pop(context, null);
@@ -110,10 +114,12 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
             paymentMethodId: result.paymentMethodId,
             last4: result.last4,
             brand: result.brand,
+            isDefault: false,
           ),
         );
       }
     } catch (e) {
+      EasyLoading.dismiss();
       print("error adding a card: " + e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

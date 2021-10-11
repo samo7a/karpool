@@ -44,7 +44,10 @@ dependencies:
   uuid: ^3.0.4
   cloud_firestore: ^2.5.3
   flutter_dotenv: ^5.0.2
-  awesome_card: ^1.1.5
+  # awesome_card: ^1.1.5
+  awesome_card:
+    git:
+      url: https://github.com/samo7a/AwesomeCard
   flutter_credit_card: ^3.0.0
   stripe_payment: ^1.1.4
   flutter_config: ^2.0.0
