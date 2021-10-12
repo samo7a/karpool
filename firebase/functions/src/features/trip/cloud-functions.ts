@@ -4,7 +4,7 @@ import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../data-access/auth/utils"
 import { newRouteDAO, newTripService, newUserDao } from '../../index'
 import { validateDate, validateNumber, validateString } from "../../utils/validation"
-import { validateAddTripData } from "./validation"
+import { validateAddRatingData, validateAddTripData } from "./validation"
 
 /*
 
@@ -218,5 +218,57 @@ export const riderRequestTrip = functions.https.onCall(async (data, context) => 
         throw new HttpsError('failed-precondition', 'Invalid User')
     }
 
+
+})
+
+
+export const createScheduledTrip = functions.https.onCall(async (data, context) => {
+
+    const uid =  validateAuthorization(context)
+
+    if (uid) {
+        return newTripService().createScheduledTrip(data.tripID)
+    }
+    else {
+        throw new HttpsError('failed-precondition', 'Invalid Trip')
+    }
+  
+
+})
+
+export const addRiderTripRating = functions.https.onCall(async (data, context) =>{
+
+    if(data.rating === -1){
+        return `Rider: ${data.riderID} did not rate the driver`
+    }
+
+    const uid = validateAuthorization(context)
+
+    const addTripData = validateAddRatingData(data)
+
+    if(uid === addTripData.riderID){
+        return newTripService().addRiderTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
+    }else{
+        throw new HttpsError('failed-precondition', 'Invalid Trip')
+    }
+
+})
+
+
+export const addDriverTripRating = functions.https.onCall(async (data, context) =>{
+
+    if(data.rating === -1){
+        return `Driver did not rate rider ${data.riderID} `
+    }
+
+    const uid = validateAuthorization(context)
+
+    const addTripData = validateAddRatingData(data)
+
+    if(uid === data.driverID){
+        return newTripService().addDriverTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
+    }else{
+        throw new HttpsError('failed-precondition', 'Invalid Trip')
+    }
 
 })
