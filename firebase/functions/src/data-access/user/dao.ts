@@ -2,7 +2,7 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema, tokenSchema } from './schema'
+import { UserSchema, tokenSchema, earnings } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
@@ -49,6 +49,10 @@ export interface UserDAOInterface {
     storeUserDeviceToken(uid: string, data: tokenSchema): Promise<void>
 
     updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void>
+
+    getAllEarnings(uid: string): Promise<earnings[]>
+    
+    getEarningsByMonth(uid: string, start: string, end: string): Promise<number> 
 }
 
 
@@ -123,6 +127,42 @@ export class UserDAO implements UserDAOInterface {
         const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
         await doc.update(data)
     }
+
+    async createEarning(driverID: string, data: earnings ){
+        const userEarnings = this.db.collection(FirestoreKey.users).doc(driverID).collection(FirestoreKey.earnings).doc()
+
+        await userEarnings.create(data)
+    }
+
+    async getAllEarnings(uid: string): Promise<earnings[]> {
+        
+        // return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
+        //     return snap.docs.map(doc => doc.data()) as CreditCardSchema[]
+        // })
+        return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
+           return snap.docs.map(doc =>doc.data()) as earnings[]
+        })
+        // const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get()
+        // .then((snapshot) => {
+        //     snapshot.docs.map(doc => console.log(doc.data()))
+        // })
+
+       
+    }
+
+    async getEarningsByMonth(uid: string, start: string, end: string): Promise<number> {
+        const startMonth = new Date(start)
+        const endMonth = new Date(end)
+        var monthlyEarnings: number = 0
+        const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).where('date','>=',startMonth).where('date','<=',endMonth).get()
+        .then((snapshot) => {
+            snapshot.docs.map(doc => monthlyEarnings += doc.data().amount)
+        })
+       console.log(documents)
+       console.log(monthlyEarnings)
+       return monthlyEarnings
+    }
+
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
     // async getTrips(riderID: string, startDate: Date, endDate: Date): Promise<number> {

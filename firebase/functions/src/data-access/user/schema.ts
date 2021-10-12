@@ -1,5 +1,5 @@
+import { firestore } from "firebase-admin";
 import { Role } from "./types";
-
 
 /**
  * Exact schema of the user record in the database.
@@ -132,4 +132,32 @@ export interface tokenSchema {
 
     tokenIDs: string[]
 
+}
+
+export interface earnings{
+    amount: number
+
+    tripID: string
+
+    date: firestore.Timestamp
+
+    dayOfWeek: string
+
+}
+
+
+export interface week {
+   weekNum: number
+
+    amount: number
+}
+
+export interface month{
+    month: number
+
+    amount: number
+}
+
+export interface earningsList{
+    
 }
