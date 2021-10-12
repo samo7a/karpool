@@ -64,29 +64,29 @@ export class PaymentDAO implements PaymentDAOInterface {
     }
 
     async createCreditCard(uid: string, customerID: string, cardToken: string): Promise<void> {
-        const source = await this.api.customers.createSource(customerID, { source: cardToken })
-        if (source.object === 'card') {
-            const card: Stripe.Card = source
+        const method = await this.api.paymentMethods.attach(cardToken, { customer: customerID })
+        const card = method.card
+        if (card !== undefined) {
             const data: CreditCardSchema = {
-                cardHolder: card.name ?? '',
+                cardHolder: method.billing_details.name ?? 'Unknown',
                 last4: card.last4,
                 expMonth: `${card.exp_month}`,
                 expYear: `${card.exp_year}`,
                 isDefault: false,
                 brand: card.brand,
-                id: card.id,
+                id: method.id,
                 userID: uid
             }
-            const ref = this.db.collection(FirestoreKey.creditCards).doc(card.id)
+            const ref = this.db.collection(FirestoreKey.creditCards).doc(method.id)
             await ref.create(data)
         } else {
-            throw new HttpsError('failed-precondition', `Expected card object, but got ${source.object}.`)
+            throw new HttpsError('failed-precondition', `Expected card object.`)
         }
     }
 
     getCreditCards(uid: string): Promise<CreditCardSchema[]> {
-        return this.db.collection(FirestoreKey.creditCards).where('uid', '==', uid).get().then(snap => {
-            return snap.docs.map(doc => doc.data()) as CreditCardSchema[]
+        return this.db.collection(FirestoreKey.creditCards).where('userID', '==', uid).get().then(snap => {
+            return snap.docs.filter(doc => doc.exists).map(doc => doc.data()) as CreditCardSchema[]
         })
     }
 

@@ -42,10 +42,10 @@ constructor(db: admin.firestore.Firestore){
 
             if (query.exists) {
                 const Arr2 = query.data() as FCMTokens
-                console.log(Arr2)
+                //console.log(Arr2)
                 Arr2.tokenIDs.forEach((e)=>{
                     arr.push(e)
-                    console.log(arr) 
+                    //console.log(arr) 
                 })      
             } else {
                 // doc.data() will be undefined in this case

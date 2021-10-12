@@ -137,13 +137,30 @@ export const testCache = functions.https.onCall(async (data, context) => {
 
     // return route
 })
+// {pickupLocation: {x: -81.28721759999999, y: 28.6060022}, dropoffLocation: {x: -81.3761372, y: 28.6972963}
 
-// export const searchTrips = functions.https.onCall((data, context) => {
+/*
 
-//     return newTripService().searchTrips(data.p1, data.p2, new Date('2021-09-01T00:01:03.334Z'), new Date('2021-09-20T23:59:03.334Z'), 1).then(response => {
-//         return `Found ${response.trips.length} Trips!`
-//     })
-// })
+{x: -81.3083762, y: 28.581269}, dropoffLocation: {x: -81.494272, y: 28.33599}
+
+searchTrips({
+    p1: {x: -81.3083762, y: 28.581269},
+    p2: {x: -81.494272, y: 28.33599}
+})
+*/
+
+export const searchTrips = functions.https.onCall((data, context) => {
+
+    const startAfter = new Date('2021-10-25T00:00:00.000Z')
+
+    const startBefore = new Date(startAfter.getTime())
+    startBefore.setUTCHours(23, 59, 59)
+
+    return newTripService().searchTrips(data.p1, data.p2, '', 1, startAfter, startBefore).then(response => {
+        return `Found ${response.trips.length} Trips!`
+    })
+
+})
 
 import * as decoder from 'google-polyline'
 import { newRouteDAO, newTripDAO, newTripService } from '.';

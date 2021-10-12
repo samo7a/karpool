@@ -36,6 +36,7 @@ export const getStartEndCoordinates = functions.https.onCall(async (data, contex
 
 })
 
+
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
     const uid = await validateAuthorization(context)
@@ -114,7 +115,7 @@ export const getDriverTrips = functions.https.onCall(async (data, context) => {
 export const getRiderTrips = functions.https.onCall(async (data, context) => {
 
     const uid = validateAuthorization(context)
-   // console.log(data.riderID, uid)
+    // console.log(data.riderID, uid)
     if (uid === data.riderID) {
         return newTripService().getRiderTrips(data.riderID)
     } else {
@@ -171,14 +172,14 @@ export const declineRiderRequest = functions.https.onCall(async (data, context) 
 
 export const acceptRiderRequest = functions.https.onCall(async (data, context) => {
 
-      const uid = validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
-      if (uid) {
-         return newTripService().acceptRiderRequest(data.riderID, data.tripID)
-      }
-      else {
-          throw new HttpsError('failed-precondition', 'Invalid User')
-     }
+    if (uid) {
+        return newTripService().acceptRiderRequest(data.riderID, data.tripID)
+    }
+    else {
+        throw new HttpsError('failed-precondition', 'Invalid User')
+    }
 
 })
 
@@ -207,15 +208,15 @@ export const getRiderCompletedTrips = functions.https.onCall(async (data, contex
 
 })
 
-export const riderRequestTrip = functions.https.onCall(async (data, context) =>{
-     const uid = validateAuthorization(context)
+export const riderRequestTrip = functions.https.onCall(async (data, context) => {
+    const uid = validateAuthorization(context)
 
-     if (uid) {
-        return newTripService().riderRequestTrip(data.riderID,data.tripID,data.pickup,data.dropoff,data.pickupAddress,data.dropoffAddress, data.passengers)
-     }
-     else {
+    if (uid) {
+        return newTripService().riderRequestTrip(data.riderID, data.tripID, data.pickup, data.dropoff, data.pickupAddress, data.dropoffAddress, data.passengers)
+    }
+    else {
         throw new HttpsError('failed-precondition', 'Invalid User')
     }
-    
+
 
 })
