@@ -14,7 +14,9 @@ export const FirestoreKey = {
 
     cachedRoutes: 'routes-cached',
 
-    FCMTokens: 'FCMTokens'
+    FCMTokens: 'FCMTokens',
+
+    earnings: 'earnings'
 
 }
 

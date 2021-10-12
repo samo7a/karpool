@@ -132,9 +132,14 @@ export const getUser = functions.https.onCall(async (data, context) => {
         })
 
 
-
+        
 })
 
 export const editUserProfile = functions.https.onCall(async (data, context) => {
     return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
 })
+
+export const getEarnings = functions.https.onCall(async (data,context) => {
+    return newAccountService().getEarnings(data.uid)
+})
+
