@@ -58,7 +58,6 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
       final user = await User.getRiderFromFireBase(uid);
       u.add(user);
     }
-    print("lenght of the array: should be 2: " + u.length.toString());
     setState(() {
       riders = u;
     });
@@ -113,7 +112,7 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                     width: size.BLOCK_WIDTH * 3,
                   ),
                   Text(
-                    widget.trip.date,
+                    trip.date,
                     style: TextStyle(
                       color: kWhite,
                       fontFamily: 'Glory',
@@ -135,7 +134,7 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                     width: size.BLOCK_WIDTH * 3,
                   ),
                   Text(
-                    widget.trip.time,
+                    trip.time,
                     style: TextStyle(
                       color: kWhite,
                       fontFamily: 'Glory',
@@ -164,7 +163,7 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                       Expanded(
                         child: Text(
                           // trip.fromAddress,
-                          widget.trip.fromAddress,
+                          trip.fromAddress,
                           maxLines: 10,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
@@ -197,7 +196,7 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                       ),
                       Expanded(
                         child: Text(
-                          widget.trip.toAddress,
+                          trip.toAddress,
                           maxLines: 10,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
@@ -219,40 +218,42 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
               SizedBox(
                 height: size.BLOCK_HEIGHT * 1,
               ),
-              SizedBox(
-                width: size.BLOCK_WIDTH * 78,
-                height: size.BLOCK_HEIGHT * 10,
-                child: ListView.separated(
-                  padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 4.6),
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      width: size.BLOCK_WIDTH * 4.6,
-                    );
-                  },
-                  scrollDirection: Axis.horizontal,
-                  itemCount: riders.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final rider = riders[index];
-                    return GestureDetector(
-                      onTap: () => showRiderModal(index),
-                      child: Container(
-                        width: size.BLOCK_WIDTH * 10,
-                        height: size.BLOCK_HEIGHT * 10,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage(rider.profileURL),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+              riders.length == 0
+                  ? Container()
+                  : SizedBox(
+                      width: size.BLOCK_WIDTH * 78,
+                      height: size.BLOCK_HEIGHT * 10,
+                      child: ListView.separated(
+                        padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 4.6),
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            width: size.BLOCK_WIDTH * 4.6,
+                          );
+                        },
+                        scrollDirection: Axis.horizontal,
+                        itemCount: riders.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final rider = riders[index];
+                          return GestureDetector(
+                            onTap: () => showRiderModal(index),
+                            child: Container(
+                              width: size.BLOCK_WIDTH * 10,
+                              height: size.BLOCK_HEIGHT * 10,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(rider.profileURL),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
               Center(
                 child: Text(
-                  '\$ ' + widget.trip.estimatedPrice.toString(),
+                  '\$ ' + trip.estimatedPrice.toString(),
                   style: TextStyle(
                     color: Colors.green[900],
                     fontFamily: 'Glory',
