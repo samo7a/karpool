@@ -351,9 +351,9 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                         ),
                         validator: MultiValidator(
                           [
-                            // RequiredValidator(
-                            //   errorText: "Email address is required!",
-                            // ),
+                            RequiredValidator(
+                              errorText: "Email address is required!",
+                            ),
                             EmailValidator(
                               errorText: "Please enter a valid email!",
                             ),
