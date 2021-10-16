@@ -164,7 +164,7 @@ export class TripService {
             subject: "The driver is heading toward your location for pickup",
             driverID: trip.driverID,
             tripID: tripID,
-            notificationID: 2
+            notificationID: 3
         }
 
         sendCustomNotification(tokens, message)
