@@ -133,14 +133,22 @@ export const getUser = functions.https.onCall(async (data, context) => {
         })
 
 
-        
+
 })
 
 export const editUserProfile = functions.https.onCall(async (data, context) => {
-    return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
+
+    const callerUID = validateAuthorization(context)
+
+    return newAccountService().editUserProfile(callerUID, data.phoneNum, data.email, data.pic)
+
 })
 
-export const getEarnings = functions.https.onCall(async (data,context) => {
-    return newAccountService().getEarnings(data.uid)
+export const getEarnings = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    return newAccountService().getEarnings(callerUID)
+
 })
 

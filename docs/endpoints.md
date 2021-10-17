@@ -188,3 +188,47 @@
 ```
 
 ### Returns: Empty Response
+
+
+
+## account-getEarnings
+
+### `No Request Data`
+
+### Returns: An array containing 2 arrays (Weeks and Months). The weeks array has objects shaped like
+
+```typescript
+[
+    [
+        {
+            weekNum: number
+            amount: number
+        }
+    ],
+    [
+        {
+            month: number
+            amount: number
+        }
+    ]
+]
+    
+```
+
+
+
+
+## account-editProfile
+
+### Request Data
+
+```typescript
+{
+    phoneNum: string
+    pic: string (Base64Encoded)
+    email: string
+    
+}
+```
+
+### Returns: Empty Response
