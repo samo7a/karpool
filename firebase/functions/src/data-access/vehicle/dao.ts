@@ -34,5 +34,12 @@ export class VehicleDAO implements VehicleDAOInterface {
         await this.db.collection(FirestoreKey.vehicles).doc().create(fireEncode(data))
     }
 
+    // async updateVehicle(data: VehicleSchema): Promise<void>{
+    //     const driver = this.db.collection(FirestoreKey.users).doc(data.uid)
+    //     await driver.update(fireEncode(data))
+    // }
 
 }
+
+
+
