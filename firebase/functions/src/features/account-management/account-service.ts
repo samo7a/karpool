@@ -333,32 +333,32 @@ export class AccountService {
 
     async getEarnings(driverID: string): Promise<(week[] | month[])[]> {
         const weekTemp: week = {
-            weekNum:0,
+            weekNum: 0,
             amount: 0
         }
         const monthTemp: month = {
-            month:0,
-            amount:0
+            month: 0,
+            amount: 0
         }
         var weekList: week[] = []
-        var monthList: month[]= [] 
-        for(let i=0; i<53;i++){
+        var monthList: month[] = []
+        for (let i = 0; i < 53; i++) {
             weekList.push(weekTemp)
         }
-        for(let i=0; i<12;i++){
+        for (let i = 0; i < 12; i++) {
             monthList.push(monthTemp)
         }
         const allDocs = await this.userDAO.getAllEarnings(driverID)
         allDocs.map(doc => {
-            const weekIndex= getWeek(doc.date.toDate(),0)
+            const weekIndex = getWeek(doc.date.toDate(), 0)
             const monthIndex = doc.date.toDate().getMonth()
             console.log(weekIndex)
             console.log(monthIndex)
-           
-           var tempWeekAmount = weekList[weekIndex].amount 
+
+            var tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
-                amount : tempWeekAmount += doc.amount,
+                amount: tempWeekAmount += doc.amount
             }
             var tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
@@ -371,12 +371,12 @@ export class AccountService {
         const earningList = [weekList, monthList]
 
         return earningList
-        
+
     }
 
 
 
-    
+
 
 }
 
@@ -388,30 +388,30 @@ export class AccountService {
  * @param int dowOffset
  * @return int
  */
- function getWeek(date: Date, dowOffset: number) {
+function getWeek(date: Date, offset: number) {
     /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
-    
-        dowOffset = typeof(dowOffset) == 'number' ? dowOffset : 0; //default dowOffset to zero
-        var newYear = new Date(date.getFullYear(),0,1);
-        var day = newYear.getDay() - dowOffset; //the day of week the year begins on
-        day = (day >= 0 ? day : day + 7);
-        var daynum = Math.floor((date.getTime() - newYear.getTime() - 
-        (date.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
-        var weeknum;
-        //if the year starts before the middle of a week
-        if(day < 4) {
-            weeknum = Math.floor((daynum+day-1)/7) + 1;
-            if(weeknum > 52) {
-                const nYear = new Date(date.getFullYear() + 1,0,1);
-                let nday = nYear.getDay() - dowOffset;
-                nday = nday >= 0 ? nday : nday + 7;
-                /*if the next year starts before the middle of
-                  the week, it is week #1 of that year*/
-                weeknum = nday < 4 ? 1 : 53;
-            }
+
+    const dowOffset = typeof (offset) == 'number' ? offset : 0; //default dowOffset to zero
+    var newYear = new Date(date.getFullYear(), 0, 1);
+    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
+    day = (day >= 0 ? day : day + 7);
+    var daynum = Math.floor((date.getTime() - newYear.getTime() -
+        (date.getTimezoneOffset() - newYear.getTimezoneOffset()) * 60000) / 86400000) + 1;
+    var weeknum;
+    //if the year starts before the middle of a week
+    if (day < 4) {
+        weeknum = Math.floor((daynum + day - 1) / 7) + 1;
+        if (weeknum > 52) {
+            const nYear = new Date(date.getFullYear() + 1, 0, 1);
+            let nday = nYear.getDay() - dowOffset;
+            nday = nday >= 0 ? nday : nday + 7;
+            /*if the next year starts before the middle of
+              the week, it is week #1 of that year*/
+            weeknum = nday < 4 ? 1 : 53;
         }
-        else {
-            weeknum = Math.floor((daynum+day-1)/7);
-        }
-        return weeknum;
+    }
+    else {
+        weeknum = Math.floor((daynum + day - 1) / 7);
+    }
+    return weeknum;
 }
