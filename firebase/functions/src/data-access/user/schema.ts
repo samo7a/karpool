@@ -158,6 +158,3 @@ export interface month{
     amount: number
 }
 
-export interface earningsList{
-    
-}

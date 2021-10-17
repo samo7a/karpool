@@ -285,16 +285,17 @@ export class AccountService {
          * Check if user exist
          * edit fields where necessary
          * assuming pic is given as string
-        */
+        **/
+        const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', pic, 'base64', true)
+
         const user = await this.userDAO.getAccountData(uid)
         const data: Partial<UserSchema> = {
             phone: phoneNum ? phoneNum : user.phone,
             email: email ? email : user.email,
-            profileURL: pic ? pic : user.profileURL
+            profileURL: pic ? downloadURL : user.profileURL
         }
 
         return this.userDAO.updateUserAccount(uid, data)
-
     }
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
@@ -352,15 +353,13 @@ export class AccountService {
         allDocs.map(doc => {
             const weekIndex = getWeek(doc.date.toDate(), 0)
             const monthIndex = doc.date.toDate().getMonth()
-            console.log(weekIndex)
-            console.log(monthIndex)
 
-            var tempWeekAmount = weekList[weekIndex].amount
+            let tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
                 amount: tempWeekAmount += doc.amount
             }
-            var tempMonthAmount = monthList[monthIndex].amount
+            let tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
                 month: monthIndex,
                 amount: tempMonthAmount += doc.amount
@@ -374,8 +373,23 @@ export class AccountService {
 
     }
 
-
-
+    // async updateDriverInfo(driverID: string, data: DriverAddRoleInfo ): Promise<void>{
+    //     //confirm that user is a driver
+    //     //update driver/car info
+    //    await this.vehicleDAO.createVehicle({
+    //        color: data.color,
+    //        insurance: {
+    //            provider: data.provider,
+    //            coverageType: data.coverage,
+    //            startDate: new Date(data.startDate),
+    //            endDate: new Date(data.endDate)
+    //        },
+    //        licensePlateNum: data.plateNum,
+    //        make: data.make,
+    //        year: data.year,
+    //        uid: driverID
+    //    })
+    // }
 
 
 }
@@ -391,7 +405,8 @@ export class AccountService {
 function getWeek(date: Date, offset: number) {
     /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
 
-    const dowOffset = typeof (offset) == 'number' ? offset : 0; //default dowOffset to zero
+    // eslint-disable-next-line no-param-reassign
+    const dowOffset = typeof (offset) === 'number' ? offset : 0; //default dowOffset to zero
     var newYear = new Date(date.getFullYear(), 0, 1);
     var day = newYear.getDay() - dowOffset; //the day of week the year begins on
     day = (day >= 0 ? day : day + 7);
