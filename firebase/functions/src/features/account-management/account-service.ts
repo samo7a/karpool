@@ -353,18 +353,16 @@ export class AccountService {
         allDocs.map(doc => {
             const weekIndex= getWeek(doc.date.toDate(),0)
             const monthIndex = doc.date.toDate().getMonth()
-            console.log(weekIndex)
-            console.log(monthIndex)
 
-
+            let tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
-                amount : weekList[weekIndex].amount  += doc.amount,
+                amount : tempWeekAmount  += doc.amount,
             }
-            
+            let tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
                 month: monthIndex,
-                amount:  monthList[monthIndex].amount += doc.amount
+                amount:  tempMonthAmount += doc.amount
             }
 
         })
