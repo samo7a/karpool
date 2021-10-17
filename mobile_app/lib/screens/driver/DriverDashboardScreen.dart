@@ -19,6 +19,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text("$title"),
         backgroundColor: kDashboardColor,
         centerTitle: true,
