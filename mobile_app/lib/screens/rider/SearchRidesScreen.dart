@@ -6,13 +6,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
-import 'package:mobile_app/util/Auth.dart';
-// import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/TripResultContainer.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -28,8 +25,6 @@ class SearchRidesScreen extends StatefulWidget {
 
 class _SearchRidesScreenState extends State<SearchRidesScreen> {
   GlobalKey<FormState> searchKey = GlobalKey<FormState>();
-  // late final auth = Provider.of<Auth>(context, listen: false);
-  // String dateTime = "";
   String startLoc = 'Address 1';
   String destination = 'Address 2';
   String rideDate = '';
@@ -83,8 +78,21 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
   }
 
   String getTime(DateTime dt) {
-    String iso = dt.toIso8601String();
-    String time = iso.split("T")[1];
+    int hr = dt.hour + 4;
+    int min = dt.minute;
+    String hour;
+    String minute;
+    if (hr < 10)
+      hour = "0" + hr.toString();
+    else
+      hour = hr.toString();
+    if (min < 10)
+      minute = "0" + min.toString();
+    else
+      minute = min.toString();
+    String time = hour + ":" + minute + ":00.000";
+    // String iso = dt.toString();
+    // String time = iso.split(" ")[1];
     return time;
   }
 
@@ -160,7 +168,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
       int length = data.length;
 
       print("search Results");
-      print(data);
+      print(result.data);
       print(length);
       if (length == 0) {
         print("no results");
@@ -173,28 +181,31 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
           String driverId = data[i]["driverID"];
           dynamic timestamp = data[i]["startTime"];
           DateTime ts =
-              Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
+              Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toLocal();
           String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
           String time = DateFormat('hh:mm a').format(ts);
           String startAddress = data[i]["startAddress"] ?? " ";
           String endAddress = data[i]["endAddress"] ?? " ";
           int seatCount = data[i]["seatsAvailable"];
+          print(seatCount);
           Map<String, double> startPoint = {
-            "latitude": data[i]["startLocation"]["_latitude"],
-            "longitude": data[i]["startLocation"]["_longitude"],
+            "latitude": data[i]["startLocation"]["_latitude"] * 1.0,
+            "longitude": data[i]["startLocation"]["_longitude"] * 1.0,
           };
           Map<String, double> endPoint = {
-            "latitude": data[i]["endLocation"]["_latitude"],
-            "longitude": data[i]["endLocation"]["_longitude"],
+            "latitude": data[i]["endLocation"]["_latitude"] * 1.0,
+            "longitude": data[i]["endLocation"]["_longitude"] * 1.0,
           };
 
           double estimatedPrice =
               double.parse((result.data["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+          print(estimatedPrice);
           String polyLine = data[i]["polyline"];
           bool isOpen = data[i]["isOpen"];
           double estimatedDistance =
               double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
           double estimatedDuration = data[i]["estimatedDistance"] / 60;
+          // print(estimatedDuration);
 
           futureTrips.add(
             RiderTrip(
@@ -217,10 +228,10 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
             ),
           );
         }
+        setState(() {
+          searchResults = futureTrips;
+        });
       }
-      setState(() {
-        searchResults = futureTrips;
-      });
       EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();

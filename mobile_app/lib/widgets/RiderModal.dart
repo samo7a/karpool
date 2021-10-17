@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
@@ -14,25 +13,10 @@ import 'package:provider/provider.dart';
 class RiderModal extends StatefulWidget {
   const RiderModal({
     Key? key,
-    // required this.profilePic,
-    // required this.fullName,
-    // required this.starRating,
-    // required this.date,
-    // required this.time,
-    // required this.estimatedPrice,
-    // required this.trip,
     required this.riderid,
     required this.status,
     required this.tripid,
   }) : super(key: key);
-
-  // final String profilePic;
-  // final String fullName;
-  // final int starRating; //change to double later
-  // final String date;
-  // final double estimatedPrice;
-  // final String time;
-  // final RiderTrip trip;
   final String riderid;
   final String? status;
   final String tripid;
@@ -46,7 +30,6 @@ class _RiderModalState extends State<RiderModal> {
   String? status;
   late String riderid;
   late String tripid;
-  // ignore: avoid_init_to_null
   User rider = User(
     uid: "",
     firstName: "",
@@ -208,77 +191,6 @@ class _RiderModalState extends State<RiderModal> {
                     SizedBox(
                       height: size.BLOCK_HEIGHT * 1,
                     ),
-
-                    // SizedBox(
-                    //   height: size.BLOCK_HEIGHT * 1,
-                    // ),
-                    // Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    // Row(
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: [
-                    //     Icon(
-                    //       Icons.location_searching,
-                    //       color: Colors.green[800],
-                    //     ),
-                    //     SizedBox(
-                    //       width: size.BLOCK_WIDTH * 3,
-                    //     ),
-                    //     Expanded(
-                    //       child: Text(
-                    //         widget.trip.fromAddress,
-                    //         maxLines: 10,
-                    //         overflow: TextOverflow.ellipsis,
-                    //         softWrap: false,
-                    //         style: TextStyle(
-                    //           color: kWhite,
-                    //           fontFamily: 'Glory',
-                    //           fontWeight: FontWeight.bold,
-                    //           fontSize: size.FONT_SIZE * 20,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 0.1),
-                    //   child: Icon(
-                    //     Icons.arrow_downward,
-                    //     size: size.BLOCK_HEIGHT * 3,
-                    //   ),
-                    // ),
-                    // Row(
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: [
-                    //     Icon(
-                    //       Icons.pin_drop_outlined,
-                    //       color: Colors.red,
-                    //     ),
-                    //     SizedBox(
-                    //       width: size.BLOCK_WIDTH * 3,
-                    //     ),
-                    //     Expanded(
-                    //       child: Text(
-                    //         widget.trip.toAddress,
-                    //         maxLines: 10,
-                    //         overflow: TextOverflow.ellipsis,
-                    //         softWrap: false,
-                    //         style: TextStyle(
-                    //           color: kWhite,
-                    //           fontFamily: 'Glory',
-                    //           fontWeight: FontWeight.bold,
-                    //           fontSize: size.FONT_SIZE * 20,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    //     SizedBox(
-                    //       height: size.BLOCK_HEIGHT * 1,
-                    //     ),
-                    //   ],
-                    // ),
                     Padding(
                       padding: EdgeInsets.all(size.BLOCK_WIDTH * 10),
                       child: status == "Requested"

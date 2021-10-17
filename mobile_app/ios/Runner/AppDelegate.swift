@@ -1,7 +1,8 @@
 import UIKit
 import Flutter
 import Firebase
-//import GoogleMaps
+import GoogleMaps
+import UserNotifications
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -10,9 +11,14 @@ import Firebase
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
-    //GMSServices.provideAPIKey("AIzaSyA9V1HwU9qQEGofwLLRRn8pjd1BRWq0PtM")
+    GMSServices.provideAPIKey("AIzaSyA9V1HwU9qQEGofwLLRRn8pjd1BRWq0PtM")
     GeneratedPluginRegistrant.register(with: self)
+//    UNUserNotificationCenter.current().delegate = self
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+//	override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+//    {
+//        completionHandler([.alert, .badge, .sound])
+//    }
 	
 }

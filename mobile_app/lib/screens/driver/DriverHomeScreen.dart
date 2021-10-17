@@ -50,12 +50,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       if (length == 0) {
         return tripList;
       }
-
+      print("start for loop");
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startAddress"] ?? " ";
@@ -94,13 +94,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
             riders: riders,
-            timestamp: ts,
+            ts: ts,
+            timestamp: timestamp,
           ),
         );
       }
       tripList.sort((a, b) {
-        var adate = a.timestamp; //before -> var adate = a.expiry;
-        var bdate = b.timestamp; //var bdate = b.expiry;
+        var adate = a.ts; //before -> var adate = a.expiry;
+        var bdate = b.ts; //var bdate = b.expiry;
         return adate.compareTo(bdate);
       });
       return tripList;
@@ -296,11 +297,66 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         } else {
                           //start a ride
                           //TODO: start the ride only on the right time.
-                          // DateTime today = DateTime.now();
-                          // print(today);
-                          // String tripTime = trip.date.toString() + " " + trip.time.toString();
-                          // String tripDate = DateFormat().format(DateTime(tripTime));
-                          // print(tripDate);
+                          DateTime today = DateTime.now();
+                          print("today : " + today.toString());
+                          // print(trip.timestamp);
+                          DateTime tripDate =
+                              Timestamp(trip.timestamp["_seconds"], trip.timestamp["_nanoseconds"])
+                                  .toDate();
+                          print("tripDate : " + tripDate.toString());
+                          if (tripDate.isAfter(today))
+                            return await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      backgroundColor: Color(0xff0353A4),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                                      ),
+                                      title: Text(
+                                        "You cannot start the ride now!",
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                        ),
+                                      ),
+                                      content: Text(
+                                        "The ride is scheduled on ${trip.date} at ${trip.time}",
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: size.FONT_SIZE * 22,
+                                        ),
+                                      ),
+                                      actions: [
+                                        Center(
+                                          child: TextButton(
+                                            onPressed: () => Navigator.of(context).pop(false),
+                                            child: Container(
+                                              height: size.BLOCK_HEIGHT * 7,
+                                              width: size.BLOCK_WIDTH * 30,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                                color: Color(0xffC80404),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  "OK",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Color(0xffffffff),
+                                                    fontFamily: 'Glory',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: size.FONT_SIZE * 22,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ]);
+                                });
                           return await showDialog(
                             context: context,
                             builder: (BuildContext context) {

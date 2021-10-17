@@ -29,7 +29,7 @@ class _TripResultContainerState extends State<TripResultContainer> {
           HeroDialogRoute(
             builder: (context) {
               return DriverModal(
-                showButtons: widget.trip.status == "Requseted" ? true : false,
+                showButtons: widget.trip.status == "Requseted" ? false : true,
                 trip: widget.trip,
                 driverId: widget.trip.driverId,
                 placeIds: widget.placeIds,

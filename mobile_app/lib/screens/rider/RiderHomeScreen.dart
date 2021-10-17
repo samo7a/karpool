@@ -54,7 +54,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate().toUtc();
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
         String date = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startAddress"] ?? " ";

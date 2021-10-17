@@ -15,6 +15,7 @@ class DriverTrip {
   final double estimatedFare;
   final dynamic timestamp;
   final List<Map<String, String>> riders;
+  final dynamic ts;
 
   DriverTrip({
     required this.tripId,
@@ -32,5 +33,6 @@ class DriverTrip {
     required this.estimatedFare,
     required this.riders,
     required this.timestamp,
+    required this.ts,
   });
 }

@@ -81,8 +81,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   String getTime(DateTime dt) {
-    String iso = dt.toIso8601String();
-    String time = iso.split("T")[1];
+    int hr = dt.hour + 4;
+    int min = dt.minute;
+    String hour;
+    String minute;
+    if (hr < 10)
+      hour = "0" + hr.toString();
+    else
+      hour = hr.toString();
+    if (min < 10)
+      minute = "0" + min.toString();
+    else
+      minute = min.toString();
+    String time = hour + ":" + minute + ":00.000";
+    // String iso = dt.toString();
+    // String time = iso.split(" ")[1];
     return time;
   }
 
@@ -123,7 +136,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     EasyLoading.show(status: "Adding Ride");
     HttpsCallable addRide = FirebaseFunctions.instance.httpsCallable("trip-createAddedTrip");
     print("addRide: date: " + date.toString());
-    var array = date.toIso8601String().split("T");
+    var array = date.toString().split(" ");
     String d = array[0] + "T" + time + "Z";
     print(d);
     Map<String, dynamic> obj = {
