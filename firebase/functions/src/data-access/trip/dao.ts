@@ -49,6 +49,13 @@ export interface TripDAOInterface {
 
     deleteCreatedTrip(docID: string): Promise<void>
 
+
+    createScheduledTrip(tripID: string, data: ScheduleTripSchema): Promise<string>
+
+    getSchedulededTrip(tripID: string): Promise<ScheduleTripSchema>
+
+    updateScheduledTrip(tripID: string, data: Partial<ScheduleTripSchema>): Promise<void>
+
 }
 
 export class TripDAO implements TripDAOInterface {
@@ -182,4 +189,25 @@ export class TripDAO implements TripDAOInterface {
     //     //this.db.collection(FirestoreKey.tripsCreated).doc(tripID).update({'riderStatus':FieldValue.arrayUnion([riderID,'Requested'])})
 
     // }
+
+
+    async createScheduledTrip(tripID: string, data: ScheduleTripSchema): Promise<string>{
+        const scheduledTripRef = this.db.collection(FirestoreKey.tripsScheduled).doc(tripID)
+        await scheduledTripRef.create(data)
+        return scheduledTripRef.id
+    }
+
+    async updateScheduledTrip(tripID: string, data: Partial<ScheduleTripSchema>): Promise<void> {
+        await this.db.collection(FirestoreKey.tripsScheduled).doc(tripID).update(data)
+    }
+
+    async getSchedulededTrip(tripID: string): Promise<ScheduleTripSchema>{
+        const doc = await this.db.collection(FirestoreKey.tripsScheduled).doc(tripID).get()
+        if (!doc.exists) {
+            throw new HttpsError('not-found', `Trip with id: ${tripID} not found.`)
+        } else {
+            return doc.data() as ScheduleTripSchema
+        }
+    }
+
 }

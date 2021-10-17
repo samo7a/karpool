@@ -20,3 +20,18 @@ export function validateAddTripData(data: any): TripCreationData {
 
     }
 }
+
+export function validateAddRatingData(data: any) {
+
+    return {
+
+        tripID: validateString(data.tripID, "1"),
+
+        riderID: validateString(data.riderID, "2"),
+
+        driverID: validateString(data.driverID, "3"),
+
+        rating: validateNumber(data.rating)
+
+    }
+}

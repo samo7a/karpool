@@ -14,6 +14,7 @@ import { GeoDistance } from "../../utils/misc";
 import { UserSchema } from "../../data-access/user/schema";
 import { sendCustomNotification } from "../../features/notifications/notifications";
 import { NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
+import {  VehicleDAOInterface } from "../../data-access/vehicle/dao";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
@@ -26,18 +27,21 @@ export class TripService {
     private tripDAO: TripDAOInterface
     private directionsDAO: RouteDAOInterface
     private notificationsDAO: NotificationsDAOInterface
+    private vehicleDAO: VehicleDAOInterface
     userDAO: any;
 
     constructor(
         userDAO: UserDAOInterface,
         tripDAO: TripDAOInterface,
         directionsDAO: RouteDAOInterface,
-        notificationsDAO: NotificationsDAOInterface
+        notificationsDAO: NotificationsDAOInterface,
+        vehicleDAO: VehicleDAOInterface
     ) {
         this.userDAO = userDAO
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
         this.notificationsDAO = notificationsDAO
+        this.vehicleDAO = vehicleDAO
     }
 
     /**
@@ -97,6 +101,73 @@ export class TripService {
         })
 
         await this.setTripRoute(tripID, route)
+
+        return tripID
+    }
+
+
+    async createScheduledTrip(tripID : string): Promise<String>{
+
+        const trip = await this.tripDAO.getCreatedTrip(tripID)
+
+        const car = await this.vehicleDAO.getVehicle(trip.driverID)
+
+        await this.tripDAO.createScheduledTrip(tripID, {
+
+            tripID: trip.docID,
+
+            driverID: trip.driverID,
+
+            vehicleID: car,
+
+            startTime: trip.startTime,
+
+            startAddress: trip.startAddress,
+
+            endAddress: trip.endAddress,
+            
+            startLocation: trip.startLocation,
+
+            endLocation: trip.endLocation,
+
+            tripStatus: 'STARTED',
+
+            riderInfo: trip.riderInfo,
+
+            distance: trip.estimatedDistance,
+
+            totalCost: trip.estimatedTotalFare,
+
+            duration: trip.estimatedDuration,
+
+            ridersRateDriver: {},
+
+            driverRatesRiders: {},
+
+            overallRating: 0,
+
+            polyline: trip.polyline
+
+        })
+
+        const tripIDs: string[] = []
+        const snapshot = trip.riderInfo
+
+        snapshot.forEach((element) => {
+            tripIDs.push(element.riderID)
+        })
+      
+        const tokens = await this.notificationsDAO.getTokenList(tripIDs)
+
+        //console.log(tokens)
+        const message = {
+            subject: "The driver is heading toward your location for pickup",
+            driverID: trip.driverID,
+            tripID: tripID,
+            notificationID: 3
+        }
+
+        sendCustomNotification(tokens, message)
 
         return tripID
     }
@@ -428,7 +499,7 @@ export class TripService {
         })
         //tripIDs.push(driverID)
 
-        console.log(tripIDs)
+        //console.log(tripIDs)
 
 
         const tokens = await this.notificationsDAO.getTokenList(tripIDs)
@@ -604,4 +675,31 @@ export class TripService {
 
         sendCustomNotification(token, message)
     }
+
+
+
+    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+
+        const trip = await this.tripDAO.getSchedulededTrip(tripID)
+
+         trip.ridersRateDriver[riderID] = rating
+
+         await this.tripDAO.updateScheduledTrip(tripID, trip)
+
+         return "Rating added Successfully!!"
+    }
+
+    async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+
+        const trip = await this.tripDAO.getSchedulededTrip(tripID)
+
+         trip.driverRatesRiders[riderID] = rating
+
+         await this.tripDAO.updateScheduledTrip(tripID, trip)
+
+         return "Rating added Successfully!!"
+    }
+
+
+
 }

@@ -102,7 +102,7 @@ export class AccountService {
 
         const tokens = await this.notificationsDAO.getTokenList([uid])
 
-        console.log(tokens)
+        //console.log(tokens)
 
 
         //const arr = tokenIDs.tokenIDs

@@ -82,7 +82,8 @@ export function newTripService(): TripService {
         newUserDao(),
         newTripDAO(),
         newRouteDAO(),
-        newNotificationDAO()
+        newNotificationDAO(),
+        newVehicleDAO(),
     )
 }
 

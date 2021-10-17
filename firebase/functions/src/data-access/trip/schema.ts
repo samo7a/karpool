@@ -3,6 +3,8 @@ import { firestore } from "firebase-admin";
 
 export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
 
+export type tripStatus = 'COMPLETED' | 'STARTED'
+
 
 export interface FCMTokens {
     tokenIDs: string[]
@@ -126,19 +128,18 @@ export interface ScheduleTripSchema {
  */
     // status: TripStatus
 
+    tripID: string
+
     /**
      * The id of the driver for the trip.
      */
     driverID: string
 
-    /**
-     * 
-     */
-    riders: Record<string, boolean>
-
+    duration: number
 
     vehicleID: string
 
+    tripStatus: tripStatus
 
     /**
      * 
@@ -146,23 +147,48 @@ export interface ScheduleTripSchema {
     distance: number
 
     /**
-     * Per person 
-     */
-    fare: number
-
-    /**
      * 
      */
     totalCost: number
 
+     /**
+     * Time the trip is scheduled.
+     */
     startTime: firestore.Timestamp
 
-    endTime: firestore.Timestamp
+      /**
+       * 
+       */
+    startLocation: firestore.GeoPoint
+  
+    endLocation: firestore.GeoPoint
+  
+    startAddress: string
+  
+    endAddress: string
+  
+  
+    riderInfo: TripRiderInfo[]
 
-    currentLocation: firestore.GeoPoint
+    /**
+     * Store all ratings related to
+     * driver and riders in a trip
+     */
 
+    ridersRateDriver: Record<string, number>
 
+    driverRatesRiders: Record<string, number>
+
+    overallRating: number
+  
+    /**
+     * 
+    */
+    polyline: string
+  
+      
 }
+
 
 export interface RiderInfoSchema {
 
