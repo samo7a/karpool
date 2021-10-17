@@ -24,6 +24,7 @@ class Notification {
 
   static init() async {
     // print("token : " + await getToken());
+
     firebaseMessaging.requestPermission(
       sound: true,
       badge: true,
@@ -49,18 +50,26 @@ class Notification {
         )
       ],
     );
-
+    await AwesomeNotifications().actionStream.listen((receivedNotification) {
+      // Navigator.of(context).pushNamed('/NotificationPage', arguments: {
+      //   id: receivedNotification.id
+      // } // your page params. I recommend to you to pass all *receivedNotification* object
+      //     );
+      print("Action rec");
+      print(receivedNotification);
+    });
     //when the app is terminated
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
       print('A new getInitialMessage event was published! $message');
+      // print('A new onBackgroundMessage event was published! ${message!.data}');
     });
 
     //when the app is on the foreground. works only on android
     FirebaseMessaging.onMessage.listen(_firebaseMessagingFrontgroundHandler);
-
     //when the app is in the background not terminated.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) async {
       Message m = Notification._getMessage(message);
+      print('A new onBackgroundMessage event was published! ${message!.data}');
       await AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 12223,
@@ -92,6 +101,7 @@ class Notification {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage? message) async {
+  print("back notification triggered");
   Message m = Notification._getMessage(message);
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
@@ -102,7 +112,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage? message) async {
       // notificationLayout: NotificationLayout.BigText,
     ),
   );
-  print('A new onBackgroundMessage event was published! ${message!.data}');
 }
 
 Future<void> _firebaseMessagingFrontgroundHandler(RemoteMessage? message) async {

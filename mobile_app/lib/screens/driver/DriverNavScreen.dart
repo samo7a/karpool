@@ -1,9 +1,6 @@
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/SlidePanel.dart';
-import 'package:location/location.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';

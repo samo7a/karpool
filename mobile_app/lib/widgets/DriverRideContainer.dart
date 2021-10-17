@@ -1,5 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/models/User.dart';
@@ -11,24 +9,8 @@ import 'package:mobile_app/widgets/RiderModal.dart';
 class DriverRideContainer extends StatefulWidget {
   const DriverRideContainer({
     Key? key,
-    // required this.date,
-    // required this.time,
-    // required this.fromAddress,
-    // required this.toAddress,
-    // required this.profilePic,
-    // required this.estimatedPrice,
-    // required this.status,
     required this.trip,
-    // required this.onPress,
   }) : super(key: key);
-
-  // final String date;
-  // final String time;
-  // final String fromAddress;
-  // final String toAddress;
-  // final String profilePic;
-  // final String estimatedPrice;
-  // final String status;
   final DriverTrip trip;
 
   @override
