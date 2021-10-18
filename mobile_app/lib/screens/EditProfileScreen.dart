@@ -2,6 +2,7 @@ import 'dart:convert';
 // import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/ForgotPassword.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -82,13 +83,10 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     HttpsCallable updatePhoto =
         FirebaseFunctions.instance.httpsCallable.call('account-editUserProfile');
     try {
-      print("inside the try");
-      final result = await updatePhoto(obj);
-      final data = result.data;
-      print(data);
-      //TODO; set the profileURL to the new profile pic url
-      //Size of the file needs review;
-      // user.setProfileURL = data.profileURL;
+      await updatePhoto(obj);
+      final u = await User.getDriverFromFireBase(user.uid);
+      user.setProfileURL = u.getProfileURL;
+      EasyLoading.dismiss();
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError("Error uploading the profile picture.");
@@ -260,8 +258,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
                     height: size.BLOCK_HEIGHT,
                   ),
                   Padding(
-                    padding:
-                        EdgeInsets.only(top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
+                    padding: EdgeInsets.only(top: size.BLOCK_HEIGHT, bottom: size.BLOCK_HEIGHT * 2),
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(context, ForgotPassword.id),
                       child: Text(
