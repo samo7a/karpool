@@ -92,7 +92,7 @@ class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
       tripList.sort((a, b) {
         var adate = a.timestamp;
         var bdate = b.timestamp;
-        return adate.compareTo(bdate);
+        return bdate.compareTo(adate);
       });
 
       return tripList;
@@ -126,14 +126,8 @@ class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
             builder: (BuildContext context, AsyncSnapshot<List<RiderTrip>> snapshot) {
               if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                 EasyLoading.dismiss();
-                return ListView.separated(
+                return ListView.builder(
                   itemCount: snapshot.data!.length,
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider(
-                      thickness: 1,
-                      color: Colors.red,
-                    );
-                  },
                   padding: EdgeInsets.only(bottom: size.BLOCK_HEIGHT * 10),
                   itemBuilder: (BuildContext context, int index) {
                     final trip = snapshot.data![index];
