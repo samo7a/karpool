@@ -31,7 +31,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
   }
 
   Future<List<RiderTrip>> tripFromFireBase() async {
-    print("calling trip from firebase rider side");
     String uid = user.uid;
     final obj = <String, dynamic>{
       "riderID": uid,
