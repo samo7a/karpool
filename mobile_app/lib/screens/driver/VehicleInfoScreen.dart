@@ -18,17 +18,18 @@ class VehicleInfoScreen extends StatefulWidget {
 }
 
 class _VehicleInfoScreen extends State<VehicleInfoScreen> {
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> carYearKey = GlobalKey<FormState>();
+  GlobalKey<FormState> plateKey = GlobalKey<FormState>();
+  GlobalKey<FormState> insStartKey = GlobalKey<FormState>();
+  GlobalKey<FormState> insEndKey = GlobalKey<FormState>();
 
   // Original Driver Car Info Strings
   String initCarBrand = 'Nissan';
   String initCarColor = 'Black';
-  String initLicenseEnd = '12/31/2021';
   String initInsProvider = 'Progressive';
   String initInsType = 'Standard';
   String initCarYear = '2015';
   String initCarPlate = 'FH12HF';
-  String initDriverLicense = 'W123456789012';
   String initInsStartDate = '01/01/2021';
   String initInsEndDate = '01/01/2022';
   // DateTime initLicenseEnd = DateTime(2021, 12, 31);
@@ -38,8 +39,6 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   String newCarColor = '';
   String newCarYear = '';
   String newCarPlate = '';
-  String newDriverLicense = '';
-  String newLicenseEnd = '';
   String newInsProvider = '';
   String newInsType = '';
   String newInsStartDate = '';
@@ -56,18 +55,41 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
     }
   }
 
+  bool validateInput() {
+    bool res1 = false;
+    bool res2 = false;
+    bool res3 = false;
+    bool res4 = false;
+
+    if (carYearKey.currentState!.validate()) res1 = true;
+
+    if (plateKey.currentState!.validate()) res2 = true;
+
+    if (insStartKey.currentState!.validate()) res3 = true;
+
+    if (insEndKey.currentState!.validate()) res4 = true;
+
+    if (res1 && res2 && res3 && res4)
+      return true;
+    else
+      return false;
+  }
+
   // void changeCarInfo() async {
+  //   if (!validateInput()) {
+  //     EasyLoading.showError("Please fix your input and try again.");
+  //     return;
+  //   }
+
   //   if (newCarBrand == '') newCarBrand = initCarBrand;
   //   if (newCarColor == '') newCarColor = initCarColor;
   //   if (newCarYear == '') newCarYear = initCarYear;
   //   if (newCarPlate == '') newCarPlate = initCarPlate;
-  //   if (newDriverLicense == '') newDriverLicense = initDriverLicense;
-  //   if (newLicenseEnd == '') newLicenseEnd = initLicenseEnd;
   //   if (newInsProvider == '') newInsProvider = initInsProvider;
   //   if (newInsType == '') newInsType = initInsType;
   //   if (newInsStartDate == '') newInsStartDate = initInsStartDate;
   //   if (newInsEndDate == '') newInsEndDate = initInsEndDate;
-    
+
   //   // TODO: validate new info
   //   HttpsCallable changeVehicleInfo =
   //       FirebaseFunctions.instance.httpsCallable("account-editCarInfo");
@@ -81,8 +103,6 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   //     "coverage": newInsType.trim(),
   //     "startDate": newInsStartDate.trim(),
   //     "endDate": newInsEndDate.trim(),
-  //     "licenseNum": newDriverLicense.trim(),
-  //     "licenseExpDate": newLicenseEnd.trim(),
   //   };
   //   try {
   //     print("inside the try");
@@ -123,107 +143,45 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
             vertical: size.BLOCK_HEIGHT * 2,
             horizontal: size.BLOCK_WIDTH * 3.5),
         child: Center(
-          child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              Text(
+                'Current Car Brand',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current Car Brand',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initCarBrand,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initCarBrand,
-                  decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
-                ),
-                DropdownSearch<String>(
-                    autoValidateMode: AutovalidateMode.always,
-                    mode: Mode.BOTTOM_SHEET,
-                    showSearchBox: true,
-                    validator:
-                        RequiredValidator(errorText: "Car Brand is required!"),
-                    dropdownSearchDecoration: InputDecoration(
-                        fillColor: kWhite.withOpacity(0.4),
-                        filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.car, color: kIconColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
-                          borderSide: BorderSide(
-                            color: kGreen,
-                          ),
-                        ),
-                        errorBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: kRed, width: size.BLOCK_WIDTH * 1),
-                        ),
-                        labelStyle: TextStyle(color: kIconColor),
-                        labelText: "New Car Brand"),
-                    items: carModels,
-                    onChanged: (value) => setState(() => newCarBrand = value!),
-                    selectedItem: ""),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                Text(
-                  'Current Car Color',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initCarColor,
-                  decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.palette, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
-                ),
-                DropdownSearch<String>(
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              DropdownSearch<String>(
                   autoValidateMode: AutovalidateMode.always,
                   mode: Mode.BOTTOM_SHEET,
                   showSearchBox: true,
-                  validator:
-                      RequiredValidator(errorText: "Car Color is required!"),
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.palette, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
                         borderRadius:
                             BorderRadius.circular(size.BLOCK_HEIGHT * 1),
@@ -231,33 +189,79 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           color: kGreen,
                         ),
                       ),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                            color: kRed, width: size.BLOCK_WIDTH * 1),
-                      ),
                       labelStyle: TextStyle(color: kIconColor),
-                      labelText: "New Car Color"),
-                  items: colors,
-                  onChanged: (value) {
-                    setState(() {
-                      newCarColor = value!;
-                    });
-                  },
-                  selectedItem: "",
+                      labelText: "New Car Brand"),
+                  items: carModels,
+                  onChanged: (value) => setState(() => newCarBrand = value!),
+                  selectedItem: ""),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2.5),
+              ),
+              Text(
+                'Current Car Color',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initCarColor,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
                 ),
-                Text(
-                  'Current Year of Manufacture',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              DropdownSearch<String>(
+                autoValidateMode: AutovalidateMode.always,
+                mode: Mode.BOTTOM_SHEET,
+                showSearchBox: true,
+                dropdownSearchDecoration: InputDecoration(
+                    fillColor: kWhite.withOpacity(0.4),
+                    filled: true,
+                    prefixIcon:
+                        Icon(FontAwesomeIcons.palette, color: kIconColor),
+                    enabledBorder: UnderlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                      borderSide: BorderSide(
+                        color: kGreen,
+                      ),
+                    ),
+                    labelStyle: TextStyle(color: kIconColor),
+                    labelText: "New Car Color"),
+                items: colors,
+                onChanged: (value) {
+                  setState(() {
+                    newCarColor = value!;
+                  });
+                },
+                selectedItem: "",
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2.5),
+              ),
+              Text(
+                'Current Year of Manufacture',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Padding(
+                textAlign: TextAlign.start,
+              ),
+              Form(
+                key: carYearKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Padding(
                   padding: EdgeInsets.only(
                     top: size.BLOCK_HEIGHT,
                   ),
@@ -304,18 +308,22 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Text(
+                'Current License Plate Number',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current License Plate Number',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                Padding(
+                textAlign: TextAlign.start,
+              ),
+              Form(
+                key: plateKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Padding(
                   padding: EdgeInsets.only(
                     top: size.BLOCK_HEIGHT,
                   ),
@@ -351,317 +359,164 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       keyboardType: TextInputType.text,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Text(
+                'Current Insurance Provider',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current Driver\'s License Number',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initInsProvider,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon:
+                      Icon(FontAwesomeIcons.carCrash, color: kIconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: size.BLOCK_HEIGHT,
-                  ),
-                  child: TextFormField(
-                    initialValue: initDriverLicense,
-                    decoration: InputDecoration(
-                        fillColor: kWhite.withOpacity(0.4),
-                        filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.idCard, color: kIconColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
-                          borderSide: BorderSide(
-                            color: kGreen,
-                          ),
-                        ),
-                        errorBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: kRed, width: size.BLOCK_WIDTH * 1),
-                        ),
-                        hintStyle: TextStyle(color: kIconColor),
-                        hintText: "Drivers's License Number"),
-                    validator: MultiValidator([
-                      RequiredValidator(
-                          errorText: "Driver License Number is Required!"),
-                      PatternValidator(r"^(.*[A-Za-z]){1}.[0-9]{11}$",
-                          errorText:
-                              "Please enter a valid driver's license number!"), // 11 but should be 12 numbers
-                    ]),
-                    onChanged: (value) =>
-                        setState(() => newDriverLicense = value),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.text,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
-                ),
-                Text(
-                  'Current License Expiration Date',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initLicenseEnd,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                child: DropdownButtonFormField(
                   decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.idCard, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
-                  child: FormBuilderDateTimePicker(
-                    // initialValue: initLicenseEnd,
-                    name: 'licenseEnd',
-                    onChanged: (value) {
-                      String mm;
-                      if (value!.month < 10) {
-                        mm = "0" + value.month.toString();
-                      } else {
-                        mm = value.month.toString();
-                      }
-                      String yyyy = value.year.toString();
-                      String givenDate = yyyy + '-' + mm;
-                      setState(() => newLicenseEnd = givenDate);
-                    },
-                    validator: (value) {
-                      var isAfter;
-                      if (value != null) {
-                        String dd;
-                        if (value.day < 10) {
-                          dd = "0" + value.day.toString();
-                        } else {
-                          dd = value.day.toString();
-                        }
-                        String mm;
-                        if (value.month < 10) {
-                          mm = "0" + value.month.toString();
-                        } else {
-                          mm = value.month.toString();
-                        }
-                        String yyyy = value.year.toString();
-                        String givenDate = yyyy + '-' + mm + '-' + dd;
-                        var dateNow = new DateTime.now();
-                        var givenDateFormat = DateTime.parse(givenDate);
-                        isAfter = dateNow.isAfter(givenDateFormat);
-                      } else {
-                        isAfter = true;
-                      }
-                      if (isAfter == false)
-                        return null;
-                      else
-                        return ('Your driver\'s license is expired!');
-                    },
-                    inputType: InputType.date,
-                    decoration: InputDecoration(
-                        fillColor: kWhite.withOpacity(0.4),
-                        filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.idCard, color: kIconColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
-                          borderSide: BorderSide(
-                            color: kGreen,
-                          ),
+                      fillColor: kWhite.withOpacity(0.4),
+                      filled: true,
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.carCrash, color: kIconColor),
+                      enabledBorder: UnderlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
                         ),
-                        errorBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: kRed, width: size.BLOCK_WIDTH * 1),
-                        ),
-                        labelStyle: TextStyle(
-                            color: kIconColor, fontWeight: FontWeight.bold),
-                        labelText: 'New License Expiration Date'),
-                  ),
+                      ),
+                      labelStyle: TextStyle(
+                          color: kIconColor, fontWeight: FontWeight.bold),
+                      labelText: "New Insurance Provider"),
+                  value: newInsProvider,
+                  items: insuranceProviders
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                            color: kBlack, fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }).toList(),
+                  dropdownColor: kBackgroundColor,
+                  onChanged: (String? value) {
+                    setState(() {
+                      newInsProvider = value!;
+                    });
+                  },
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Text(
+                'Current Coverage Type',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current Insurance Provider',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initInsType,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initInsProvider,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                child: DropdownButtonFormField(
                   decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.carCrash, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
-                  child: DropdownButtonFormField(
-                    decoration: InputDecoration(
-                        fillColor: kWhite.withOpacity(0.4),
-                        filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.carCrash, color: kIconColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
-                          borderSide: BorderSide(
-                            color: kGreen,
-                          ),
+                      fillColor: kWhite.withOpacity(0.4),
+                      filled: true,
+                      prefixIcon:
+                          Icon(FontAwesomeIcons.stream, color: kIconColor),
+                      enabledBorder: UnderlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderSide: BorderSide(
+                          color: kGreen,
                         ),
-                        errorBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: kRed, width: size.BLOCK_WIDTH * 1),
-                        ),
-                        labelStyle: TextStyle(
-                            color: kIconColor, fontWeight: FontWeight.bold),
-                        labelText: "New Insurance Provider"),
-                    value: newInsProvider,
-                    items: insuranceProviders
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyle(
-                              color: kBlack, fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    dropdownColor: kBackgroundColor,
-                    validator: RequiredValidator(
-                        errorText: "Insurance Provider is Required!"),
-                    onChanged: (String? value) {
-                      setState(() {
-                        newInsProvider = value!;
-                      });
-                    },
-                  ),
+                      ),
+                      labelStyle: TextStyle(
+                          color: kIconColor, fontWeight: FontWeight.bold),
+                      labelText: "New Coverage Type"),
+                  value: newInsType,
+                  items: <String>[
+                    '',
+                    'Standard',
+                    'Full',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                            color: kBlack, fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }).toList(),
+                  dropdownColor: kBackgroundColor,
+                  onChanged: (String? value) {
+                    setState(() {
+                      newInsType = value!;
+                    });
+                  },
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Text(
+                'Current Insurance Start Date',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current Coverage Type',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initInsStartDate,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon:
+                      Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initInsType,
-                  decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.stream, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
-                  child: DropdownButtonFormField(
-                    decoration: InputDecoration(
-                        fillColor: kWhite.withOpacity(0.4),
-                        filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.stream, color: kIconColor),
-                        enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
-                          borderSide: BorderSide(
-                            color: kGreen,
-                          ),
-                        ),
-                        errorBorder: UnderlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                              color: kRed, width: size.BLOCK_WIDTH * 1),
-                        ),
-                        labelStyle: TextStyle(
-                            color: kIconColor, fontWeight: FontWeight.bold),
-                        labelText: "New Coverage Type"),
-                    value: newInsType,
-                    items: <String>[
-                      '',
-                      'Standard',
-                      'Full',
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyle(
-                              color: kBlack, fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    dropdownColor: kBackgroundColor,
-                    validator: RequiredValidator(
-                        errorText: "Coverage Type is Required!"),
-                    onChanged: (String? value) {
-                      setState(() {
-                        newInsType = value!;
-                      });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
-                ),
-                Text(
-                  'Current Insurance Start Date',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initInsStartDate,
-                  decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Form(
+                key: insStartKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Padding(
                   padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
                   child: FormBuilderDateTimePicker(
                     name: 'insuranceStartDate',
@@ -699,7 +554,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       } else {
                         isBefore = false;
                       }
-                      if (isBefore == true)
+                      if (isBefore == true || newInsStartDate == '')
                         return null;
                       else
                         return ('Your Insurance policy cannot start in the future!');
@@ -727,32 +582,36 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         labelText: 'New Insurance Start Date'),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
+              ),
+              Text(
+                'Current Insurance End Date',
+                style: TextStyle(
+                  color: kWhite,
+                  fontSize: size.FONT_SIZE * 15,
                 ),
-                Text(
-                  'Current Insurance End Date',
-                  style: TextStyle(
-                    color: kWhite,
-                    fontSize: size.FONT_SIZE * 15,
-                  ),
-                  textAlign: TextAlign.start,
+                textAlign: TextAlign.start,
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+              ),
+              TextFormField(
+                enabled: false,
+                initialValue: initInsEndDate,
+                decoration: InputDecoration(
+                  fillColor: kWhite.withOpacity(0.4),
+                  filled: true,
+                  prefixIcon:
+                      Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
-                ),
-                TextFormField(
-                  enabled: false,
-                  initialValue: initInsEndDate,
-                  decoration: InputDecoration(
-                    fillColor: kWhite.withOpacity(0.4),
-                    filled: true,
-                    prefixIcon:
-                        Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
-                  ),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Padding(
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Form(
+                key: insEndKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Padding(
                   padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
                   child: FormBuilderDateTimePicker(
                     autovalidateMode: AutovalidateMode.always,
@@ -791,7 +650,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       } else {
                         isAfter = true;
                       }
-                      if (isAfter == false)
+                      if (isAfter == false || newInsEndDate == '')
                         return null;
                       else
                         return ('Your Insurance policy is expired!');
@@ -819,61 +678,91 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         labelText: 'Insurance End Date'),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
-                  // ignore: deprecated_member_use
-                  child: FlatButton(
-                    minWidth: size.BLOCK_WIDTH * 36,
-                    height: size.BLOCK_HEIGHT * 6,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                // ignore: deprecated_member_use
+                child: FlatButton(
+                  minWidth: size.BLOCK_WIDTH * 36,
+                  height: size.BLOCK_HEIGHT * 6,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  color: Colors.green,
+                  child: Text(
+                    'Confirm Changes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: size.FONT_SIZE * 20,
                     ),
-                    color: Colors.green,
-                    child: Text(
-                      'Confirm Changes',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: size.FONT_SIZE * 20,
-                      ),
-                    ),
-                    onPressed: () async {
-                      return showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                  ),
+                  onPressed: () async {
+                    return showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                          ),
+                          title: Text(
+                            "Update Vehicle Information",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
                             ),
-                            title: Text(
-                              "Update Vehicle Information",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
+                          ),
+                          content: Text(
+                            "Are you sure you want to update your vehicle information?",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
+                              fontFamily: 'Glory',
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.FONT_SIZE * 22,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Container(
+                                height: size.BLOCK_HEIGHT * 7,
+                                width: size.BLOCK_WIDTH * 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      size.BLOCK_WIDTH * 5),
+                                  color: Color(0xff001233),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "No",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xffffffff),
+                                      fontFamily: 'Glory',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: size.FONT_SIZE * 22,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            content: Text(
-                              "Are you sure you want to update your vehicle information?",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
-                                fontFamily: 'Glory',
-                                fontWeight: FontWeight.bold,
-                                fontSize: size.FONT_SIZE * 22,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: size.BLOCK_WIDTH * 2.5),
+                              child: TextButton(
+                                onPressed: () {
+                                  // TODO: changeCarInfo();
+                                },
                                 child: Container(
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(
                                         size.BLOCK_WIDTH * 5),
-                                    color: Color(0xff001233),
+                                    color: Color(0xffC80404),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      "No",
+                                      "Yes",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Color(0xffffffff),
@@ -885,47 +774,17 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    right: size.BLOCK_WIDTH * 2.5),
-                                child: TextButton(
-                                  onPressed: () {
-                                    // TODO: changeCarInfo();
-                                  },
-                                  child: Container(
-                                    height: size.BLOCK_HEIGHT * 7,
-                                    width: size.BLOCK_WIDTH * 30,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          size.BLOCK_WIDTH * 5),
-                                      color: Color(0xffC80404),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "Yes",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: Color(0xffffffff),
-                                          fontFamily: 'Glory',
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: size.FONT_SIZE * 22,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                            backgroundColor: Color(0xff0353A4),
-                          );
-                        },
-                        barrierDismissible: true,
-                      );
-                    },
-                  ),
+                            ),
+                          ],
+                          backgroundColor: Color(0xff0353A4),
+                        );
+                      },
+                      barrierDismissible: true,
+                    );
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
