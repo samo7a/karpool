@@ -30,7 +30,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
   double currentLong = 0;
   Location location = new Location();
   GoogleMapController? mapController;
-  List<PointLatLng> result = [];
+  List<PointLatLng> polyline = [];
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -61,20 +61,20 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
 
     location.enableBackgroundMode(enable: false);
 
-    // location.onLocationChanged.listen((LocationData currentLocation) {
-    //   _locationData = currentLocation;
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      _locationData = currentLocation;
 
-    //   mapController.animateCamera(
-    //     CameraUpdate.newCameraPosition(
-    //       CameraPosition(
-    //         bearing: 270.0,
-    //         target: LatLng(_locationData.latitude!, _locationData.longitude!),
-    //         tilt: 30.0,
-    //         zoom: 15.5,
-    //       ),
-    //     ),
-    //   );
-    // });
+      mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            bearing: 270.0,
+            target: LatLng(_locationData.latitude!, _locationData.longitude!),
+            tilt: 30.0,
+            zoom: 15.5,
+          ),
+        ),
+      );
+    });
 
     _locationData = await location.getLocation();
   }
@@ -97,7 +97,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
   void initState() {
     super.initState();
     listenToLocation();
-    result = PolylinePoints().decodePolyline(poly);
+    polyline = PolylinePoints().decodePolyline(poly);
   }
 
   @override
@@ -126,6 +126,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
+            compassEnabled: true,
             initialCameraPosition: _initialLocation,
             zoomControlsEnabled: false,
             polylines: {
@@ -133,22 +134,22 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                 polylineId: const PolylineId("polyId"),
                 color: Colors.blue,
                 width: 5,
-                points: result.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+                points: polyline.map((e) => LatLng(e.latitude, e.longitude)).toList(),
               )
             },
             onMapCreated: _onMapCreated,
           ),
-          SlidePanel(
-            title: title,
-            role: role,
-            profileURL: profileURL,
-            money: money,
-            rating: rating,
-            source: from,
-            destination: to,
-            fullname: name,
-            moneyTitle: moneyTitle,
-          ),
+          // SlidePanel(
+          //   title: title,
+          //   role: role,
+          //   profileURL: profileURL,
+          //   money: money,
+          //   rating: rating,
+          //   source: from,
+          //   destination: to,
+          //   fullname: name,
+          //   moneyTitle: moneyTitle,
+          // ),
         ],
       ),
     );
