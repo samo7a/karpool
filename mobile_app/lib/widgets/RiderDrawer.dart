@@ -27,6 +27,7 @@ class RiderDrawer extends StatefulWidget {
 
 class _RiderDrawerState extends State<RiderDrawer> {
   bool isDriver = false;
+  String userUID = '';
 
   @override
   void initState() {
@@ -56,9 +57,38 @@ class _RiderDrawerState extends State<RiderDrawer> {
     });
   }
 
+  // void deleteAccount() async {
+  //   EasyLoading.show(status: "Deleting account");
+  //   HttpsCallable delete =
+  //       FirebaseFunctions.instance.httpsCallable("account-deleteUser");
+  //   Map<String, dynamic> obj = {
+  //     "uid": userUID,
+  //   };
+  //   try {
+  //     print("inside the try");
+  //     final result = await delete(obj);
+  //     final data = result.data;
+  //     print(result);
+  //     print(data);
+  //     EasyLoading.dismiss();
+  //     EasyLoading.showSuccess("Account deleted.");
+  //     Navigator.pushAndRemoveUntil(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => MainScreen(),
+  //       ),
+  //       (Route<dynamic> route) => false,
+  //     );
+  //   } catch (e) {
+  //     EasyLoading.dismiss();
+  //     EasyLoading.showError("Error deleting account, try again later.");
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: false);
+    userUID = user.uid;
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -139,7 +169,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
                             ),
                             title: Text(
                               "Start Driver Application",
@@ -163,7 +194,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
                                     color: Color(0xff001233),
                                   ),
                                   child: Center(
@@ -181,7 +213,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                padding: EdgeInsets.only(
+                                    right: size.BLOCK_WIDTH * 2.5),
                                 child: TextButton(
                                   onPressed: () {
                                     //api call to add role as a rider to become a driver
@@ -189,7 +222,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DriverApplication(),
+                                        builder: (context) =>
+                                            DriverApplication(),
                                         settings: RouteSettings(
                                           arguments: user,
                                         ),
@@ -200,7 +234,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      borderRadius: BorderRadius.circular(
+                                          size.BLOCK_WIDTH * 5),
                                       color: Color(0xff3CB032),
                                     ),
                                     child: Center(
@@ -367,7 +402,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_WIDTH * 7),
                       ),
                       title: Text(
                         "Delete Confirmation",
@@ -391,7 +427,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                             height: size.BLOCK_HEIGHT * 7,
                             width: size.BLOCK_WIDTH * 30,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 5),
                               color: Color(0xff001233),
                             ),
                             child: Center(
@@ -409,16 +446,18 @@ class _RiderDrawerState extends State<RiderDrawer> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                          padding:
+                              EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
                             onPressed: () {
-                              //api call to delete account
+                              // TODO: deleteAccount();
                             },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                 color: Color(0xffC80404),
                               ),
                               child: Center(

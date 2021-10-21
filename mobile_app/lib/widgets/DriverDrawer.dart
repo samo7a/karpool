@@ -30,6 +30,7 @@ class DriverDrawer extends StatefulWidget {
 
 class _DriverDrawerState extends State<DriverDrawer> {
   bool isRider = false;
+  String userUID = '';
 
   @override
   void initState() {
@@ -59,9 +60,38 @@ class _DriverDrawerState extends State<DriverDrawer> {
     });
   }
 
+  // void deleteAccount() async {
+  //   EasyLoading.show(status: "Deleting account");
+  //   HttpsCallable delete =
+  //       FirebaseFunctions.instance.httpsCallable("account-deleteUser");
+  //   Map<String, dynamic> obj = {
+  //     "uid": userUID,
+  //   };
+  //   try {
+  //     print("inside the try");
+  //     final result = await delete(obj);
+  //     final data = result.data;
+  //     print(result);
+  //     print(data);
+  //     EasyLoading.dismiss();
+  //     EasyLoading.showSuccess("Account deleted.");
+  //     Navigator.pushAndRemoveUntil(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => MainScreen(),
+  //       ),
+  //       (Route<dynamic> route) => false,
+  //     );
+  //   } catch (e) {
+  //     EasyLoading.dismiss();
+  //     EasyLoading.showError("Error deleting account, try again later.");
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: false);
+    userUID = user.uid;
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
@@ -142,7 +172,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
                             ),
                             title: Text(
                               "Become A Rider",
@@ -166,7 +197,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
                                     color: Color(0xff001233),
                                   ),
                                   child: Center(
@@ -184,12 +216,15 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                padding: EdgeInsets.only(
+                                    right: size.BLOCK_WIDTH * 2.5),
                                 child: TextButton(
                                   onPressed: () async {
-                                    EasyLoading.show(status: "Working on it...");
-                                    HttpsCallable addRole =
-                                        FirebaseFunctions.instance.httpsCallable("account-addRole");
+                                    EasyLoading.show(
+                                        status: "Working on it...");
+                                    HttpsCallable addRole = FirebaseFunctions
+                                        .instance
+                                        .httpsCallable("account-addRole");
                                     final Map<String, dynamic> obj = {
                                       "uid": user.uid,
                                       "role": "Rider",
@@ -198,20 +233,24 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                       final result = await addRole(obj);
                                       if (result.data == null) {
                                         EasyLoading.dismiss();
-                                        EasyLoading.showSuccess("Congratulations!");
+                                        EasyLoading.showSuccess(
+                                            "Congratulations!");
                                         Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => SplashScreen(),
+                                            builder: (context) =>
+                                                SplashScreen(),
                                           ),
                                           (Route<dynamic> route) => false,
                                         );
                                         return;
                                       }
                                     } catch (e) {
-                                      print("error adding role: " + e.toString());
+                                      print(
+                                          "error adding role: " + e.toString());
                                       EasyLoading.dismiss();
-                                      EasyLoading.showError("Something went wrong!");
+                                      EasyLoading.showError(
+                                          "Something went wrong!");
                                       Navigator.pop(context);
                                       return;
                                     }
@@ -220,7 +259,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      borderRadius: BorderRadius.circular(
+                                          size.BLOCK_WIDTH * 5),
                                       color: Color(0xff3CB032),
                                     ),
                                     child: Center(
@@ -422,7 +462,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_WIDTH * 7),
                       ),
                       title: Text(
                         "Delete Confirmation",
@@ -446,7 +487,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                             height: size.BLOCK_HEIGHT * 7,
                             width: size.BLOCK_WIDTH * 30,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 5),
                               color: Color(0xff001233),
                             ),
                             child: Center(
@@ -464,16 +506,18 @@ class _DriverDrawerState extends State<DriverDrawer> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                          padding:
+                              EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
                             onPressed: () {
-                              //Api Call to delete the account
+                              // TODO: deleteAccount();
                             },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                 color: Color(0xffC80404),
                               ),
                               child: Center(
