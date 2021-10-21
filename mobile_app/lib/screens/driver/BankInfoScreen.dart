@@ -13,7 +13,8 @@ class BankInfoScreen extends StatefulWidget {
 }
 
 class _BankInfoScreen extends State<BankInfoScreen> {
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> routingKey = GlobalKey<FormState>();
+  GlobalKey<FormState> accountKey = GlobalKey<FormState>();
   String initAccountNum = '123456789';
   String initRoutingNum = '987654321';
   String newAccountNum = '';
@@ -48,27 +49,50 @@ class _BankInfoScreen extends State<BankInfoScreen> {
     }
   }*/
 
-  // void updateBankInfo() async {
-  //   if (newAccountNum == '') newAccountNum = initAccountNum;
-  //   if (newRoutingNum == '') newRoutingNum = initRoutingNum;
+  bool validateInput() {
+    bool res1 = false;
+    bool res2 = false;
 
-  //   HttpsCallable getInfo =
-  //       FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
-  //   Map<String, dynamic> obj = {
-  //     "uid": user.uid,
-  //     "accountNum": newAccountNum,
-  //     "routingNum": newRoutingNum,
-  //   };
-  //   try {
-  //     print("inside the try");
-  //     final result = await getInfo(obj);
-  //     final data = result.data;
-  //     print(result);
-  //     print(data);
-  //   } catch (e) {
-  //     EasyLoading.showError("Error updating bank information.");
-  //   }
-  // }
+    if (routingKey.currentState!.validate()) res1 = true;
+    if (accountKey.currentState!.validate()) res2 = true;
+
+    if (res1 && res2)
+      return true;
+    else
+      return false;
+  }
+
+  void updateBankInfo() async {
+    if ((newAccountNum == '' && newRoutingNum == '') || (newAccountNum == initAccountNum && newRoutingNum == initRoutingNum)) {
+      EasyLoading.showError("Bank information already exists.");
+      return;
+    }
+
+    if (!validateInput()) {
+      EasyLoading.showError("Please fix your input and try again.");
+      return;
+    }
+    
+    if (newAccountNum == '') newAccountNum = initAccountNum;
+    if (newRoutingNum == '') newRoutingNum = initRoutingNum;
+
+    HttpsCallable getInfo =
+        FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
+    Map<String, dynamic> obj = {
+      // "uid": user.uid,
+      "accountNum": newAccountNum,
+      "routingNum": newRoutingNum,
+    };
+    try {
+      print("inside the try");
+      final result = await getInfo(obj);
+      final data = result.data;
+      print(result);
+      print(data);
+    } catch (e) {
+      EasyLoading.showError("Error updating bank information.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,28 +116,28 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: size.BLOCK_HEIGHT * 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 5,
+              ),
+              Text(
+                'Routing Number',
+                style: TextStyle(
+                  fontSize: size.FONT_SIZE * 18,
+                  color: kWhite,
                 ),
-                Text(
-                  'Routing Number',
-                  style: TextStyle(
-                    fontSize: size.FONT_SIZE * 18,
-                    color: kWhite,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT,
-                ),
-                Container(
+                textAlign: TextAlign.left,
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT,
+              ),
+              Form(
+                key: routingKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Container(
                   child: TextFormField(
                     onChanged: (value) => setState(() {
                       newRoutingNum = value;
@@ -138,8 +162,6 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     ),
                     validator: MultiValidator(
                       [
-                        RequiredValidator(
-                            errorText: "Routing Number is Required!"),
                         MinLengthValidator(9,
                             errorText: "Please enter a valid Routing Number!"),
                         MaxLengthValidator(9,
@@ -154,30 +176,34 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     color: kWhite,
                   ),
                 ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT * 5,
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 3,
+              ),
+              Text(
+                'Account Number',
+                style: TextStyle(
+                  fontSize: size.FONT_SIZE * 18,
+                  color: kWhite,
                 ),
-                Text(
-                  initAccountNum,
-                  style: TextStyle(
-                    fontSize: size.FONT_SIZE * 18,
-                    color: kWhite,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT,
-                ),
-                Container(
+                textAlign: TextAlign.left,
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT,
+              ),
+              Form(
+                key: accountKey,
+                autovalidateMode: AutovalidateMode.always,
+                child: Container(
                   child: TextFormField(
                     onChanged: (value) => setState(() {
                       newAccountNum = value;
                     }),
-                    initialValue: '987654321',
+                    initialValue: initAccountNum,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Routing Number",
+                      hintText: "Account Number",
                       hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
                       contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
                       errorBorder: UnderlineInputBorder(
@@ -193,8 +219,6 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     ),
                     validator: MultiValidator(
                       [
-                        RequiredValidator(
-                            errorText: "Account Number is Required!"),
                         MinLengthValidator(9,
                             errorText: "Please enter a valid Account Number!"),
                         MaxLengthValidator(12,
@@ -209,62 +233,92 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     color: kWhite,
                   ),
                 ),
-                SizedBox(
-                  height: size.BLOCK_HEIGHT * 5,
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 4,
+              ),
+              // ignore: deprecated_member_use
+              FlatButton(
+                minWidth: size.BLOCK_WIDTH * 30,
+                height: size.BLOCK_HEIGHT * 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
                 ),
-                // ignore: deprecated_member_use
-                FlatButton(
-                  minWidth: size.BLOCK_WIDTH * 30,
-                  height: size.BLOCK_HEIGHT * 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                color: Colors.green,
+                child: Text(
+                  'Confirm Change',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: size.FONT_SIZE * 18,
                   ),
-                  color: Colors.green,
-                  child: Text(
-                    'Confirm Change',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: size.FONT_SIZE * 18,
-                    ),
-                  ),
-                  onPressed: () async {
-                    return showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                ),
+                onPressed: () async {
+                  return showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                        ),
+                        title: Text(
+                          "Update Bank Information",
+                          style: TextStyle(
+                            color: Color(0xffffffff),
                           ),
-                          title: Text(
-                            "Update Bank Information",
-                            style: TextStyle(
-                              color: Color(0xffffffff),
+                        ),
+                        content: Text(
+                          "Are you sure you want to update your bank information?",
+                          style: TextStyle(
+                            color: Color(0xffffffff),
+                            fontFamily: 'Glory',
+                            fontWeight: FontWeight.bold,
+                            fontSize: size.FONT_SIZE * 22,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Container(
+                              height: size.BLOCK_HEIGHT * 7,
+                              width: size.BLOCK_WIDTH * 30,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                color: Color(0xff001233),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "No",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xffffffff),
+                                    fontFamily: 'Glory',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: size.FONT_SIZE * 22,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          content: Text(
-                            "Are you sure you want to update your bank information?",
-                            style: TextStyle(
-                              color: Color(0xffffffff),
-                              fontFamily: 'Glory',
-                              fontWeight: FontWeight.bold,
-                              fontSize: size.FONT_SIZE * 22,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
+                          Padding(
+                            padding:
+                                EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                            child: TextButton(
+                              onPressed: () {
+                                // TODO: call --> updateBankInfo();
+                              },
                               child: Container(
                                 height: size.BLOCK_HEIGHT * 7,
                                 width: size.BLOCK_WIDTH * 30,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
                                       size.BLOCK_WIDTH * 5),
-                                  color: Color(0xff001233),
+                                  color: Color(0xffC80404),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "No",
+                                    "Yes",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Color(0xffffffff),
@@ -276,46 +330,16 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  right: size.BLOCK_WIDTH * 2.5),
-                              child: TextButton(
-                                onPressed: () {
-                                  // TODO: updateBankInfo();
-                                },
-                                child: Container(
-                                  height: size.BLOCK_HEIGHT * 7,
-                                  width: size.BLOCK_WIDTH * 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        size.BLOCK_WIDTH * 5),
-                                    color: Color(0xffC80404),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "Yes",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xffffffff),
-                                        fontFamily: 'Glory',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: size.FONT_SIZE * 22,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                          backgroundColor: Color(0xff0353A4),
-                        );
-                      },
-                      barrierDismissible: true,
-                    );
-                  },
-                ),
-              ],
-            ),
+                          ),
+                        ],
+                        backgroundColor: Color(0xff0353A4),
+                      );
+                    },
+                    barrierDismissible: true,
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
