@@ -49,6 +49,9 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   }*/
 
   // void updateBankInfo() async {
+  //   if (newAccountNum == '') newAccountNum = initAccountNum;
+  //   if (newRoutingNum == '') newRoutingNum = initRoutingNum;
+
   //   HttpsCallable getInfo =
   //       FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
   //   Map<String, dynamic> obj = {
@@ -224,8 +227,91 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                       fontSize: size.FONT_SIZE * 18,
                     ),
                   ),
-                  onPressed: () {
-                    // updateBankInfo();
+                  onPressed: () async {
+                    return showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                          ),
+                          title: Text(
+                            "Update Bank Information",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
+                            ),
+                          ),
+                          content: Text(
+                            "Are you sure you want to update your bank information?",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
+                              fontFamily: 'Glory',
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.FONT_SIZE * 22,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Container(
+                                height: size.BLOCK_HEIGHT * 7,
+                                width: size.BLOCK_WIDTH * 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      size.BLOCK_WIDTH * 5),
+                                  color: Color(0xff001233),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "No",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xffffffff),
+                                      fontFamily: 'Glory',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: size.FONT_SIZE * 22,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: size.BLOCK_WIDTH * 2.5),
+                              child: TextButton(
+                                onPressed: () {
+                                  // TODO: updateBankInfo();
+                                },
+                                child: Container(
+                                  height: size.BLOCK_HEIGHT * 7,
+                                  width: size.BLOCK_WIDTH * 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
+                                    color: Color(0xffC80404),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Yes",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          backgroundColor: Color(0xff0353A4),
+                        );
+                      },
+                      barrierDismissible: true,
+                    );
                   },
                 ),
               ],
