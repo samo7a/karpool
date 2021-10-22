@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/DepositContainer.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile_app/models/User.dart';
 
 class DriverDepositsScreen extends StatefulWidget {
   const DriverDepositsScreen({Key? key}) : super(key: key);
@@ -34,4 +37,3 @@ class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
     );
   }
 }
-
