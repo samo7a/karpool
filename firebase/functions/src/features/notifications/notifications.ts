@@ -23,11 +23,14 @@ export function sendCustomNotification(tokenIDs: string[], data: NotificationDat
             token: token,
 
             data: {
-                body: "Driver ID: " + data.driverID + "Trip number: " + data.tripID
+                notificationID: data.notificationID.toString(),
+                driverID: data.driverID,
+                tripID: data.tripID
             }
 
         }
-        admin.messaging().send(message).
+           
+            admin.messaging().send(message).
             then(response => {
                 console.log("Message sent successfully")
             }).
@@ -35,9 +38,6 @@ export function sendCustomNotification(tokenIDs: string[], data: NotificationDat
                 console.log("Error sending Message")
             })
     })
-
-
-
 }
 
 //Function to send notification to users 3 hours before the trip's start

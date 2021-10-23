@@ -1,7 +1,7 @@
 {
   "stripe": {
-    "private_key": "sk_test_51JR83uJIU8d9wquz1NJrNfbjI7QpPtin1zW8StYEwlmIk89avGQFGMUjCdYAEnnIJ8wamNA3UcVAlRthPfZRD5Wl00KOJRYDRb",
-    "pubic_key": "pk_test_51JR83uJIU8d9wquzsDhMJrc9nMGIAUGbDzJc7YP6Cngaz0bRFyLsrFd3P4M83TXdkXEijMSY3BfAOZk4OuiUBPC300QLOU9GVg"
+    "pubic_key": "pk_test_51JR83uJIU8d9wquzsDhMJrc9nMGIAUGbDzJc7YP6Cngaz0bRFyLsrFd3P4M83TXdkXEijMSY3BfAOZk4OuiUBPC300QLOU9GVg",
+    "private_key": "sk_test_51JR83uJIU8d9wquz1NJrNfbjI7QpPtin1zW8StYEwlmIk89avGQFGMUjCdYAEnnIJ8wamNA3UcVAlRthPfZRD5Wl00KOJRYDRb"
   },
   "directions_api": {
     "private_key": "AIzaSyAoHyLx1w8fhOod1ppf0T-NYzwU99tcPHc"
