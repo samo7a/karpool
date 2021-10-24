@@ -84,9 +84,14 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
         FirebaseFunctions.instance.httpsCallable.call('account-editUserProfile');
     try {
       await updatePhoto(obj);
-      final u = await User.getDriverFromFireBase(user.uid);
+      final u;
+      if (user.isDriver == true)
+        u = await User.getDriverFromFireBase(user.uid);
+      else
+        u = await User.getRiderFromFireBase(user.uid);
       user.setProfileURL = u.getProfileURL;
       EasyLoading.dismiss();
+      EasyLoading.showSuccess("Profile picture updated");
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError("Error uploading the profile picture.");

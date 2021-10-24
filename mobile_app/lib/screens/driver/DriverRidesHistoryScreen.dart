@@ -49,7 +49,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
         String startAddress = data[i]["startAddress"] ?? " ";
         String endAddress = data[i]["endAddress"] ?? " ";
         int seatCount = data[i]["seatsAvailable"];
-
+        List<Map<String, dynamic>> ridersInfo = [];
         List<Map<String, String>> riders = [];
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
         rider.forEach((k, v) => {
@@ -66,6 +66,14 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
         double estimatedDuration = data[i]["estimatedDistance"] / 60;
+        Map<String, double> startPoint = {
+          "latitude": data[i]["startLocation"]["_latitude"],
+          "longitude": data[i]["startLocation"]["_longitude"],
+        };
+        Map<String, double> endPoint = {
+          "latitude": data[i]["endLocation"]["_latitude"],
+          "longitude": data[i]["endLocation"]["_longitude"],
+        };
         tripList.add(
           DriverTrip(
             tripId: tripId,
@@ -84,6 +92,9 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
             riders: riders,
             ts: ts,
             timestamp: timestamp,
+            ridersInfo: ridersInfo,
+            startPoint: startPoint,
+            endPoint: endPoint,
           ),
         );
       }

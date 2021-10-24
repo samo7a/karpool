@@ -1,7 +1,9 @@
 // import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/screens/EditProfileScreen.dart';
 
 class Message {
   String? title;
@@ -22,17 +24,20 @@ class Notification {
 
   static List<Message> messages = [];
 
-  static init() async {
+  static init(BuildContext context) async {
     // print("token : " + await getToken());
-
-    firebaseMessaging.requestPermission(
+    await firebaseMessaging.setAutoInitEnabled(true);
+    await firebaseMessaging.requestPermission(
       sound: true,
       badge: true,
       alert: true,
       criticalAlert: true,
       provisional: false,
+      announcement: true,
+      carPlay: true,
     );
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    // await firebaseMessaging.
+    await firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -51,20 +56,20 @@ class Notification {
         )
       ],
     );
-    await AwesomeNotifications().actionStream.listen((receivedNotification) {
-      // Navigator.of(context).pushNamed('/NotificationPage', arguments: {
-      //   id: receivedNotification.id
-      // } // your page params. I recommend to you to pass all *receivedNotification* object
-      //     );
-      // Navigator.of(context).pushNamed('/NotificationPage');
-      print("Action rec");
-      print(receivedNotification);
-    });
+    // await AwesomeNotifications().actionStream.listen((receivedNotification) {
+    //   // Navigator.of(context).pushNamed('/NotificationPage', arguments: {
+    //   //   id: receivedNotification.id
+    //   // } // your page params. I recommend to you to pass all *receivedNotification* object
+    //   //     );
+    //   // Navigator.of(context).pushNamed('/NotificationPage');
+    //   print("Action rec");
+    //   print(receivedNotification);
+    // });
 
     //when the app is terminated
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
       print('A new getInitialMessage event was published! $message');
-      // print('A new onBackgroundMessage event was published! ${message!.data}');
+      // Navigator.pushNamed(context, EditProfilScreen.id);
     });
 
     //when the app is on the foreground. works only on android
@@ -103,6 +108,7 @@ class Notification {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage? message) async {
+  await Firebase.initializeApp();
   print("background notification triggered");
   Message m = Notification._getMessage(message);
   print(m.title);
@@ -121,6 +127,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage? message) async {
 
 Future<void> _firebaseMessagingFrontgroundHandler(RemoteMessage? message) async {
   print("foreground notification triggered");
+  await Firebase.initializeApp();
   Message m = Notification._getMessage(message);
   print(m.title);
   print(m.body);

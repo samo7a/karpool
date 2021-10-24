@@ -5,6 +5,7 @@ import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/models/User.dart' as user;
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
+import 'package:mobile_app/screens/driver/DriverRatingScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';
 import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/AddCreditCardScreen.dart';
@@ -31,8 +32,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
-  await notification.Notification.init();
-  notification.Notification.getToken();
 
   runApp(MyApp());
   configLoading();
@@ -49,7 +48,18 @@ void configLoading() {
     ..dismissOnTap = false;
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  void initState() {
+    super.initState();
+    notification.Notification.init(context);
+    notification.Notification.getToken();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -100,6 +110,7 @@ class MyApp extends StatelessWidget {
             DriverApplication.id: (context) => DriverApplication(),
             DriverNavScreen.id: (context) => DriverNavScreen(),
             RiderNavScreen.id: (context) => RiderNavScreen(),
+            DriverRatingScreen.id: (context) => DriverRatingScreen(),
           },
         );
       },

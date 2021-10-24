@@ -51,6 +51,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         return tripList;
       }
       print("start for loop");
+      print(data);
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
@@ -61,8 +62,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         String startAddress = data[i]["startAddress"] ?? " ";
         String endAddress = data[i]["endAddress"] ?? " ";
         int seatCount = data[i]["seatsAvailable"];
-
+        List<Map<String, dynamic>> ridersInfo = [];
         List<Map<String, String>> riders = [];
+
+        var ridersInfoFromFireBase = data[i]["riderInfo"];
+        if (ridersInfoFromFireBase.length != 0)
+          for (int j = 0; j < ridersInfoFromFireBase.length; j++) {
+            ridersInfo.add({
+              "riderID": ridersInfoFromFireBase[j]["riderID"],
+              "pickupIndex": ridersInfoFromFireBase[j]["pickupIndex"],
+              "dropoffIndex": ridersInfoFromFireBase[j]["dropoffIndex"],
+              "pickupLocation": {
+                "latitude": ridersInfoFromFireBase[j]["pickupLocation"]["_latitude"] * 1.0,
+                "longitude": ridersInfoFromFireBase[j]["pickupLocation"]["_longitude"] * 1.0,
+              },
+              "dropoffLocation": {
+                "latitude": ridersInfoFromFireBase[j]["dropoffLocation"]["_latitude"] * 1.0,
+                "longitude": ridersInfoFromFireBase[j]["dropoffLocation"]["_longitude"] * 1.0,
+              }
+            });
+          }
         Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
         rider.forEach((k, v) => {
               riders.add({
@@ -78,6 +97,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
         double estimatedDuration = data[i]["estimatedDistance"] / 60;
+
+        Map<String, double> startPoint = {
+          "latitude": data[i]["startLocation"]["_latitude"],
+          "longitude": data[i]["startLocation"]["_longitude"],
+        };
+        Map<String, double> endPoint = {
+          "latitude": data[i]["endLocation"]["_latitude"],
+          "longitude": data[i]["endLocation"]["_longitude"],
+        };
         tripList.add(
           DriverTrip(
             tripId: tripId,
@@ -96,6 +124,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             riders: riders,
             ts: ts,
             timestamp: timestamp,
+            ridersInfo: ridersInfo,
+            startPoint: startPoint,
+            endPoint: endPoint,
           ),
         );
       }
@@ -296,7 +327,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           );
                         } else {
                           //start a ride
-                          //TODO: start the ride only on the right time.
                           DateTime today = DateTime.now();
                           print("today : " + today.toString());
                           // print(trip.timestamp);
@@ -304,7 +334,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               Timestamp(trip.timestamp["_seconds"], trip.timestamp["_nanoseconds"])
                                   .toDate();
                           print("tripDate : " + tripDate.toString());
-                          if (tripDate.isAfter(today))
+                          if (!tripDate.isAfter(today)) // remove the !
                             return await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
