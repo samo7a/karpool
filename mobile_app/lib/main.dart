@@ -92,6 +92,7 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           initialRoute: SplashScreen.id,
           // initialRoute: RiderNavScreen.id,
+          // initialRoute: DriverRatingScreen.id,
           routes: {
             SplashScreen.id: (context) => SplashScreen(),
             MainScreen.id: (context) => MainScreen(),

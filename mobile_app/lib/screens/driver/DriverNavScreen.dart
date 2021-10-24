@@ -102,7 +102,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
               HttpsCallable startRide =
                   FirebaseFunctions.instance.httpsCallable("trip-createScheduledTrip");
               try {
-                await startRide({"tripID": trip.tripId});
+                // await startRide({"tripID": trip.tripId});
                 print(trip.ridersInfo.toString() + " howa fih aa??");
                 print("start Multi stop");
                 List ridersInfo = trip.ridersInfo;
@@ -165,27 +165,27 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                 wayPoints.add(destination);
                 print(destination);
                 print(wayPoints);
-                await _directions.startNavigation(
-                  wayPoints: wayPoints,
-                  options: MapBoxOptions(
-                    mode: MapBoxNavigationMode.driving,
-                    simulateRoute: true,
-                    language: "en",
-                    allowsUTurnAtWayPoints: true,
-                    units: VoiceUnits.imperial,
-                  ),
-                );
+                // _directions.startNavigation(
+                //   wayPoints: wayPoints,
+                //   options: MapBoxOptions(
+                //     mode: MapBoxNavigationMode.driving,
+                //     simulateRoute: true,
+                //     language: "en",
+                //     allowsUTurnAtWayPoints: true,
+                //     units: VoiceUnits.imperial,
+                //   ),
+                // );
                 print("push ya m3lm");
                 // tripFromRealTimeDb.set({"lat": -22, "long": 22});
-                Timer(
-                  Duration(seconds: 1),
-                  () async => await Navigator.pushNamed(
-                    context,
-                    DriverRatingScreen.id,
-                    arguments: trip,
-                  ),
-                );
-                //await Navigator.pushNamed(context, DriverDashboardScreen.id);
+                // Timer(
+                //   Duration(seconds: 1),
+                //   () async => await Navigator.pushNamedAndRemoveUntil(
+                //     context,
+                //     DriverRatingScreen.id,
+                //     (Route<dynamic> route) => false,
+                //     arguments: trip,
+                //   ),
+                // );
               } catch (e) {
                 print(e);
               }
