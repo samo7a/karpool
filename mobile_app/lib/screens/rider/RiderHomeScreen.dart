@@ -48,7 +48,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       if (length == 0) {
         return tripList;
       }
-
+      print("riders Trips from firebase: " + result.data.toString());
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
@@ -93,8 +93,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
             estimatedDistance: estimatedDistance,
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
-            endPoint: endPoint,
             startPoint: startPoint,
+            endPoint: endPoint,
           ),
         );
       }

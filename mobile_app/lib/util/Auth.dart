@@ -23,6 +23,7 @@ class Auth {
       String email = user.email ?? "";
       HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
+      print("user from auth: " + result.data.toString());
       String firstName = result.data['firstName'] ?? "";
       String lastName = result.data['lastName'] ?? "";
       String phone = result.data['phone'] ?? "";

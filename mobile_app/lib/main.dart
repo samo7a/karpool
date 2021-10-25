@@ -31,8 +31,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await dotenv.load(fileName: ".env");
-  await notification.Notification.init();
-  notification.Notification.getToken();
 
   runApp(MyApp());
   configLoading();
@@ -49,7 +47,18 @@ void configLoading() {
     ..dismissOnTap = false;
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  void initState() {
+    super.initState();
+    notification.Notification.init(context);
+    notification.Notification.getToken();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -82,6 +91,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: SplashScreen.id,
           // initialRoute: RiderNavScreen.id,
+          // initialRoute: DriverRatingScreen.id,
           routes: {
             SplashScreen.id: (context) => SplashScreen(),
             MainScreen.id: (context) => MainScreen(),

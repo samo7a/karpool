@@ -144,7 +144,6 @@ class _DriverRideContainerState extends State<DriverRideContainer> {
                       ),
                       Expanded(
                         child: Text(
-                          // trip.fromAddress,
                           trip.fromAddress,
                           maxLines: 10,
                           overflow: TextOverflow.ellipsis,

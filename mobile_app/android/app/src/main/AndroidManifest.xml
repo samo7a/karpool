@@ -56,6 +56,9 @@
             android:value="2" />
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyA9V1HwU9qQEGofwLLRRn8pjd1BRWq0PtM"/>
+        <!-- <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id"/> -->
                <!-- android:value="@string/GOOGLE_API_KEY"/> -->
     </application>
 </manifest>
