@@ -5,7 +5,6 @@ import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/models/User.dart' as user;
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
-import 'package:mobile_app/screens/driver/DriverRatingScreen.dart';
 import 'package:mobile_app/screens/driver/ScheduleScreen.dart';
 import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/AddCreditCardScreen.dart';
@@ -111,7 +110,6 @@ class _MyAppState extends State<MyApp> {
             DriverApplication.id: (context) => DriverApplication(),
             DriverNavScreen.id: (context) => DriverNavScreen(),
             RiderNavScreen.id: (context) => RiderNavScreen(),
-            DriverRatingScreen.id: (context) => DriverRatingScreen(),
           },
         );
       },
