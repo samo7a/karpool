@@ -51,8 +51,8 @@ export interface UserDAOInterface {
     updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void>
 
     getAllEarnings(uid: string): Promise<earnings[]>
-    
-    getEarningsByMonth(uid: string, start: string, end: string): Promise<number> 
+
+    getEarningsByMonth(uid: string, start: string, end: string): Promise<number>
 }
 
 
@@ -128,39 +128,39 @@ export class UserDAO implements UserDAOInterface {
         await doc.update(data)
     }
 
-    async createEarning(driverID: string, data: earnings ){
+    async createEarning(driverID: string, data: earnings) {
         const userEarnings = this.db.collection(FirestoreKey.users).doc(driverID).collection(FirestoreKey.earnings).doc()
 
         await userEarnings.create(data)
     }
 
     async getAllEarnings(uid: string): Promise<earnings[]> {
-        
+
         // return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
         //     return snap.docs.map(doc => doc.data()) as CreditCardSchema[]
         // })
         return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
-           return snap.docs.map(doc =>doc.data()) as earnings[]
+            return snap.docs.map(doc => doc.data()) as earnings[]
         })
         // const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get()
         // .then((snapshot) => {
         //     snapshot.docs.map(doc => console.log(doc.data()))
         // })
 
-       
+
     }
 
     async getEarningsByMonth(uid: string, start: string, end: string): Promise<number> {
         const startMonth = new Date(start)
         const endMonth = new Date(end)
         var monthlyEarnings: number = 0
-        const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).where('date','>=',startMonth).where('date','<=',endMonth).get()
-        .then((snapshot) => {
-            snapshot.docs.map(doc => monthlyEarnings += doc.data().amount)
-        })
-       console.log(documents)
-       console.log(monthlyEarnings)
-       return monthlyEarnings
+        const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).where('date', '>=', startMonth).where('date', '<=', endMonth).get()
+            .then((snapshot) => {
+                snapshot.docs.map(doc => monthlyEarnings += doc.data().amount)
+            })
+        console.log(documents)
+        console.log(monthlyEarnings)
+        return monthlyEarnings
     }
 
 

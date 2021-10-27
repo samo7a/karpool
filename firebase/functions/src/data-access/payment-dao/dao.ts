@@ -13,6 +13,8 @@ export interface PaymentDAOInterface {
      */
     createCustomer(): Promise<string>
 
+    deleteCustomer(id: string): Promise<void>
+
 
     /**
      * Creates a card object in stripe and in Firestore given a token generated on the client.
@@ -36,7 +38,7 @@ export interface PaymentDAOInterface {
     deleteCreditCard(creditCardID: string): Promise<void>
 
 
-    setBankAccount(uid: string, customerID: string, accountToken: string): Promise<void>
+    setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any>
 
 
 }
@@ -58,6 +60,10 @@ export class PaymentDAO implements PaymentDAOInterface {
         return this.api.customers.create().then(res => {
             return res.id
         })
+    }
+
+    async deleteCustomer(id: string): Promise<void> {
+        await this.api.customers.del(id)
     }
 
     async createCreditCard(uid: string, customerID: string, cardToken: string): Promise<void> {
@@ -94,12 +100,24 @@ export class PaymentDAO implements PaymentDAOInterface {
     }
 
 
-    setBankAccount(uid: string, customerID: string, accountToken: string): Promise<void> {
-        //Create token client side and send to the server for PCI compliance.
-        //Create bank account object attached to the customer, server side.
-        return this.api.customers.createSource(customerID, { source: accountToken }).then(res => {
-            console.log(res.object, res) //TODO: Update user document.
+    setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any> {
+        return this.api.tokens.create({
+            bank_account: {
+                country: 'US',
+                currency: 'usd',
+                account_holder_name: 'Jenny Rosen',
+                account_holder_type: 'individual',
+                routing_number: routingNum,
+                account_number: accountNum
+            }
+        }).then(res => {
+            return this.api.customers.createSource(customerID, { source: res.id })
         })
+        // //Create token client side and send to the server for PCI compliance.
+        // //Create bank account object attached to the customer, server side.
+        // return this.api.customers.createSource(customerID, { source: accountToken }).then(res => {
+        //     console.log(res.object, res) //TODO: Update user document.
+        // })
     }
 
 
@@ -114,7 +132,7 @@ export class PaymentDAO implements PaymentDAOInterface {
         //TRIP ID
         //Amount
     }
-    //TODO:Creat ep
+
 
     async createPayout(amount: number): Promise<void> {
         await this.api.payouts.create({

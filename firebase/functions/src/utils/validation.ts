@@ -92,3 +92,11 @@ export function validateDate(value: any): Date {
         throw new HttpsError('failed-precondition', `Validation failed: ${typeof value} is not convertible to Date.`)
     }
 }
+
+export function validateDateOptional(value: any): Date | undefined {
+    if (value == undefined) {
+        return undefined
+    } else {
+        return validateDate(value)
+    }
+}

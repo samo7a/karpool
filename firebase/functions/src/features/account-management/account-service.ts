@@ -62,7 +62,7 @@ export class AccountService {
                 }
             })
 
-            const createVehiclePromise = this.vehicleDAO.createVehicle({
+            const createVehiclePromise = this.vehicleDAO.setVehicle(uid, {
                 color: driverInfo.color,
                 insurance: {
                     provider: driverInfo.provider,
@@ -87,9 +87,9 @@ export class AccountService {
                 roles: roles,
                 riderInfo: {
                     rating: 0,
-                    ratingCount: 0,
-                    stripeCustomerID: stripeCustomerID
-                }
+                    ratingCount: 0
+                },
+                stripeCustomerID: stripeCustomerID
             })
 
         } else {
@@ -133,7 +133,7 @@ export class AccountService {
     async registerUser(data: UserRegistrationData): Promise<void> {
 
         try {
-            const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
+            const { downloadURL, storagePath } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
 
             //Create credit card document if applicable.
             let stripeCustomerID: string = ''
@@ -153,8 +153,7 @@ export class AccountService {
 
             const riderInfo: RiderInfoSchema = {
                 rating: 0,
-                ratingCount: 0,
-                stripeCustomerID: stripeCustomerID
+                ratingCount: 0
             }
 
             //Create user document
@@ -169,12 +168,14 @@ export class AccountService {
                 roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
                 driverInfo: data.isDriver ? driverInfo : undefined,
                 riderInfo: data.isDriver ? undefined : riderInfo,
-                profileURL: downloadURL
+                profileURL: downloadURL,
+                profilePicStoragePath: storagePath,
+                stripeCustomerID: stripeCustomerID
             })
 
             //Create vehicle document if applicable
             if (data.isDriver) {
-                await this.vehicleDAO.createVehicle({
+                await this.vehicleDAO.setVehicle(data.uid, {
                     color: data.color!,
                     insurance: {
                         provider: data.provider!,
@@ -217,7 +218,11 @@ export class AccountService {
                     phone: user.phone,
                     profileURL: user.profileURL,
                     driverRating: user.driverInfo?.rating,
-                    roles: user.roles
+                    roles: user.roles,
+                    bankAccount: {
+                        routing: user.driverInfo?.routingNum ?? '',
+                        account: user.driverInfo?.accountNum ?? ''
+                    }
                 }
             } else {
                 throw new HttpsError('failed-precondition', `User ${uid} is not a driver.`)
@@ -263,22 +268,8 @@ export class AccountService {
         })
     }
 
-    /**
-     * 
-     * @param uid 
-     * @returns 
-     */
-    deleteRiderProfile(uid: string): Promise<void> {
-        /**
-         * TODO:
-         * If account is only registered as a rider, delete the entire account.
-         * If the account is registered as a driver as well, only delete the rider specific account content.
-         * Delete reviews of the rider.
-         * Delete reviews authored by the rider.
-         * Delete payment info if not stored in user document.
-         */
-        return Promise.reject(new Error('Unimplemented.'))
-    }
+
+
 
     async editUserProfile(uid: string, phoneNum?: string, email?: string, pic?: string): Promise<void> {
         /**
@@ -300,7 +291,7 @@ export class AccountService {
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
         const user = await this.userDAO.getAccountData(uid)
-        const customerID = await user.riderInfo?.stripeCustomerID
+        const customerID = await user.stripeCustomerID
         if (customerID === undefined) {
             throw new Error(`User needs a customer id to add a credit card.`)
         }
@@ -310,6 +301,28 @@ export class AccountService {
 
     async getCreditCards(uid: string): Promise<CreditCardSchema[]> {
         return this.paymentDAO.getCreditCards(uid)
+    }
+
+
+    async deleteAccount(uid: string): Promise<void> {
+        //delete Auth account
+        //Move User record to archived users
+        //Vehicle  to archive
+        //Delete stripe customer
+        //Delete profile picture
+
+        const user = await this.userDAO.getAccountData(uid)
+
+        await this.cloudStorageDAO.deleteFile(user.profilePicStoragePath!)
+
+        await this.paymentDAO.deleteCustomer(user.stripeCustomerID)
+
+        await this.userDAO.deleteAccountData(uid)
+
+        await this.vehicleDAO.deleteVehicle(uid)
+
+        await this.authDAO.deleteAccount(uid)
+
     }
 
 
@@ -390,6 +403,9 @@ export class AccountService {
     //        uid: driverID
     //    })
     // }
+
+
+
 
 
 }

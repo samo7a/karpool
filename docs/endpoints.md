@@ -1,5 +1,3 @@
-  
-
 # Trip Methods
 
   
@@ -132,7 +130,101 @@
 ]
 ```
 
-# User Methods
+# Account Methods
+
+## account-getUser
+
+### Request data 
+
+```typescript
+{
+    uid: string (id of the target account being requested)
+    driver: boolean
+}
+```
+
+### Returns 
+
+```typescript 
+{
+    firstName: string
+    lastName: string
+    email?: string
+    phone: string
+    gender?: string
+    joinDate?: Date
+    driverRating?: number
+    driverRatingCount?: number
+    riderRating?: number
+    riderRatingCount?: number
+    profileURL?: string
+    licenseNum?: string
+    roles?: Record<string, boolean>
+    bankAccount?: { (Exists only when requestData.driver == true)
+        account: string
+        routing: string
+    }
+}
+```
+
+## account-getVehicle
+
+### `No Request data`
+
+### Returns
+
+```typescript
+{
+    color: string
+    insurance: {
+        provider: string
+        coverageType: string
+        startDate: Date
+        endDate: Date
+    }
+    licensePlateNum: string
+    make: string
+    year: string
+    uid: string
+}
+```
+
+## account-updateVehicle
+
+### Request Data
+
+`NOTE: All fields in request data are optional so you can specify only the ones you want updated.`
+
+```typescript
+{
+    color: string,
+    insurance: {
+        provider: string
+        coverageType: string
+        startDate: Date (ISO8601String)
+        endDate: Date (ISO8601String)
+    },
+    licensePlateNum: string
+    make: string
+    year: string
+}
+```
+
+### Returns 
+
+Empty response
+
+
+
+## account-deleteAccount
+
+### `No Request Data`
+
+### Returns empty response
+
+
+
+
 
 ## account-getCreditCards
 

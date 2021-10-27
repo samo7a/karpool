@@ -1,13 +1,24 @@
 
 
 import * as functions from 'firebase-functions'
-import { newAccountService } from '../../index'
+import { newAccountService, newVehicleDAO } from '../../index'
 import { validateRegistrationData } from './validation'
-import { validateBool, validateString } from '../../utils/validation'
+import { validateBool, validateDateOptional, validateString, validateStringOptional } from '../../utils/validation'
 import { validateAuthorization } from '../../data-access/auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
+import { VehicleSchema } from '../../data-access/vehicle/types'
 
 
+
+export const deleteAccount = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    await newAccountService().deleteAccount(callerUID).catch(err => {
+        throw new HttpsError('internal', `Cannot delete user account. Reason: ${err.message}`)
+    })
+
+})
 
 
 /**
@@ -76,6 +87,8 @@ export const deleteCreditCard = functions.https.onCall(async (data, context) => 
     return newAccountService().deleteCreditCard(uid, cardID)
 
 })
+
+
 
 
 /**
@@ -151,4 +164,49 @@ export const getEarnings = functions.https.onCall(async (data, context) => {
     return newAccountService().getEarnings(callerUID)
 
 })
+
+
+export const updateVehicle = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    //Only the authenticated caller can update their vehicle.
+    return newVehicleDAO().updateVehicle(callerUID, validateVehicleUpdateData(data))
+})
+
+export const getVehicle = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    //Only the authenticated caller can get their vehicle.
+    return newVehicleDAO().getVehicle(callerUID)
+})
+
+
+
+/**
+ * https://stackoverflow.com/a/47914631/6738247
+ * Allows optional values for nested properties.
+ */
+export type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+};
+
+function validateVehicleUpdateData(data: any): RecursivePartial<VehicleSchema> {
+    return {
+        color: validateStringOptional(data.color),
+        insurance: {
+            provider: validateStringOptional(data.provider),
+            coverageType: validateStringOptional(data.coverageType),
+            startDate: validateDateOptional(data.startDate),
+            endDate: validateDateOptional(data.endDate)
+        },
+        licensePlateNum: validateStringOptional(data.licensePlateNum),
+        make: validateStringOptional(data.make),
+        year: validateStringOptional(data.year)
+    }
+}
+
+
+
 

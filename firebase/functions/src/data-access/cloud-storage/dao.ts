@@ -5,6 +5,7 @@ import * as path from 'path'
 
 interface FileMeta {
     downloadURL: string
+    storagePath: string
 }
 
 
@@ -29,6 +30,8 @@ export interface CloudStorageDAOInterface {
      */
     readFile(filePath: string): Promise<any>
 
+    deleteFile(storagepath: string): Promise<any>
+
 }
 
 
@@ -38,6 +41,10 @@ export class CloudStorageDAO implements CloudStorageDAOInterface {
 
     constructor(storage: admin.storage.Storage) {
         this.storage = storage
+    }
+
+    async deleteFile(storagePath: string): Promise<any> {
+        await this.storage.bucket().file(storagePath).delete()
     }
 
 
@@ -66,7 +73,8 @@ export class CloudStorageDAO implements CloudStorageDAOInterface {
         fs.unlinkSync(tmpPath)
 
         return Promise.resolve({
-            downloadURL: downloadURL
+            downloadURL: downloadURL,
+            storagePath: storagePath
         })
 
     }

@@ -151,23 +151,23 @@ export interface ScheduleTripSchema {
      */
     totalCost: number
 
-     /**
-     * Time the trip is scheduled.
-     */
+    /**
+    * Time the trip is scheduled.
+    */
     startTime: firestore.Timestamp
 
-      /**
-       * 
-       */
+    /**
+     * 
+     */
     startLocation: firestore.GeoPoint
-  
+
     endLocation: firestore.GeoPoint
-  
+
     startAddress: string
-  
+
     endAddress: string
-  
-  
+
+
     riderInfo: TripRiderInfo[]
 
     /**
@@ -180,13 +180,13 @@ export interface ScheduleTripSchema {
     driverRatesRiders: Record<string, number>
 
     overallRating: number
-  
+
     /**
      * 
     */
     polyline: string
-  
-      
+
+
 }
 
 
