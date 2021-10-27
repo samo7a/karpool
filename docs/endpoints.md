@@ -132,6 +132,22 @@
 
 # Account Methods
 
+## account-setBankAccount
+
+### Request data
+
+```typescript
+{
+    accountNum: string
+    routingNum: string
+}
+```
+
+### Returns
+
+Empty response
+
+
 ## account-getUser
 
 ### Request data 

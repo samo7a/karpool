@@ -1,5 +1,7 @@
 
-import { validateBool, validateString } from "../../utils/validation"
+import { VehicleSchema } from "../../data-access/vehicle/types";
+import { DeepPartial } from "../../utils/types";
+import { validateBool, validateDateOptional, validateString, validateStringOptional } from "../../utils/validation"
 import { UserRegistrationData } from "./types";
 
 
@@ -21,6 +23,23 @@ import { UserRegistrationData } from "./types";
     year: 
 }
 */
+
+export function validateVehicleUpdateData(data: any): DeepPartial<VehicleSchema> {
+    return {
+        color: validateStringOptional(data.color),
+        insurance: {
+            provider: validateStringOptional(data.provider),
+            coverageType: validateStringOptional(data.coverageType),
+            startDate: validateDateOptional(data.startDate),
+            endDate: validateDateOptional(data.endDate)
+        },
+        licensePlateNum: validateStringOptional(data.licensePlateNum),
+        make: validateStringOptional(data.make),
+        year: validateStringOptional(data.year)
+    }
+}
+
+
 
 
 /**

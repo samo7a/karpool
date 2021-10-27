@@ -2,11 +2,10 @@
 
 import * as functions from 'firebase-functions'
 import { newAccountService, newVehicleDAO } from '../../index'
-import { validateRegistrationData } from './validation'
-import { validateBool, validateDateOptional, validateString, validateStringOptional } from '../../utils/validation'
+import { validateRegistrationData, validateVehicleUpdateData } from './validation'
+import { validateBool, validateString } from '../../utils/validation'
 import { validateAuthorization } from '../../data-access/auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
-import { VehicleSchema } from '../../data-access/vehicle/types'
 
 
 
@@ -60,6 +59,17 @@ export const addRole = functions.https.onCall(async (data, context) => {
 
 })
 
+
+export const setBankAccount = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    const accountNum: string = validateString(data.accountNum)
+    const routingNum: string = validateString(data.routingNum)
+
+    return newAccountService().setBankAccount(callerUID, routingNum, accountNum)
+
+})
 
 
 export const addCreditCard = functions.https.onCall(async (data, context) => {
@@ -174,6 +184,7 @@ export const updateVehicle = functions.https.onCall(async (data, context) => {
     return newVehicleDAO().updateVehicle(callerUID, validateVehicleUpdateData(data))
 })
 
+
 export const getVehicle = functions.https.onCall(async (data, context) => {
 
     const callerUID = validateAuthorization(context)
@@ -181,31 +192,6 @@ export const getVehicle = functions.https.onCall(async (data, context) => {
     //Only the authenticated caller can get their vehicle.
     return newVehicleDAO().getVehicle(callerUID)
 })
-
-
-
-/**
- * https://stackoverflow.com/a/47914631/6738247
- * Allows optional values for nested properties.
- */
-export type RecursivePartial<T> = {
-    [P in keyof T]?: RecursivePartial<T[P]>;
-};
-
-function validateVehicleUpdateData(data: any): RecursivePartial<VehicleSchema> {
-    return {
-        color: validateStringOptional(data.color),
-        insurance: {
-            provider: validateStringOptional(data.provider),
-            coverageType: validateStringOptional(data.coverageType),
-            startDate: validateDateOptional(data.startDate),
-            endDate: validateDateOptional(data.endDate)
-        },
-        licensePlateNum: validateStringOptional(data.licensePlateNum),
-        make: validateStringOptional(data.make),
-        year: validateStringOptional(data.year)
-    }
-}
 
 
 

@@ -136,10 +136,7 @@ export class AccountService {
             const { downloadURL, storagePath } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
 
             //Create credit card document if applicable.
-            let stripeCustomerID: string = ''
-            if (!data.isDriver) {
-                stripeCustomerID = await this.paymentDAO.createCustomer()
-            }
+            let stripeCustomerID: string = await this.paymentDAO.createCustomer()
 
             const driverInfo: DriverInfoSchema = {
                 rating: 0,
@@ -289,6 +286,15 @@ export class AccountService {
         return this.userDAO.updateUserAccount(uid, data)
     }
 
+    async setBankAccount(uid: string, routingNum: string, accountNum: string): Promise<void> {
+
+        const user = await this.userDAO.getAccountData(uid)
+
+        const last4 = accountNum.substr(accountNum.length - 4, 4)
+
+        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, last4, routingNum)
+    }
+
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
         const user = await this.userDAO.getAccountData(uid)
         const customerID = await user.stripeCustomerID
@@ -313,7 +319,7 @@ export class AccountService {
 
         const user = await this.userDAO.getAccountData(uid)
 
-        await this.cloudStorageDAO.deleteFile(user.profilePicStoragePath!)
+        await this.cloudStorageDAO.deleteFile(user.profilePicStoragePath)
 
         await this.paymentDAO.deleteCustomer(user.stripeCustomerID)
 

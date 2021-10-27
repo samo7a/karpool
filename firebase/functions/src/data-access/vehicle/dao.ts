@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin'
-import { HttpsError } from 'firebase-functions/v1/https';
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 import { FirestoreKey } from '../../constants';
-import { RecursivePartial } from '../../features/account-management/cloud-functions';
+import { DeepPartial } from '../../utils/types'
 import { fireEncode } from '../utils/encode';
 
 import { VehicleSchema } from "./types";
@@ -32,7 +32,7 @@ export class VehicleDAO implements VehicleDAOInterface {
     }
 
 
-    async updateVehicle(id: string, data: RecursivePartial<VehicleSchema>): Promise<void> {
+    async updateVehicle(id: string, data: DeepPartial<VehicleSchema>): Promise<void> {
         const driver = this.db.collection(FirestoreKey.users).doc(id)
         await driver.update(fireEncode(data))
     }

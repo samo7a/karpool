@@ -4,6 +4,8 @@ import Stripe from 'stripe'
 import { FirestoreKey } from '../../constants'
 import { CreditCardSchema } from './schema'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
+import { UserSchema } from '../user/schema'
+import { DeepPartial } from '../../utils/types'
 // import { AccountSubtype, CountryCode, LinkTokenCreateRequest, PlaidApi } from 'plaid'
 
 export interface PaymentDAOInterface {
@@ -100,19 +102,30 @@ export class PaymentDAO implements PaymentDAOInterface {
     }
 
 
-    setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any> {
-        return this.api.tokens.create({
-            bank_account: {
-                country: 'US',
-                currency: 'usd',
-                account_holder_name: 'Jenny Rosen',
-                account_holder_type: 'individual',
-                routing_number: routingNum,
-                account_number: accountNum
+    async setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any> {
+
+        const data: DeepPartial<UserSchema> = {
+            driverInfo: {
+                accountNum: accountNum,
+                routingNum: routingNum
             }
-        }).then(res => {
-            return this.api.customers.createSource(customerID, { source: res.id })
-        })
+        }
+
+        await this.db.collection(FirestoreKey.users).doc(uid).update(data)
+
+        //TODO: Stripe Integration
+        // return this.api.tokens.create({
+        //     bank_account: {
+        //         country: 'US',
+        //         currency: 'usd',
+        //         account_holder_name: 'Jenny Rosen',
+        //         account_holder_type: 'individual',
+        //         routing_number: routingNum,
+        //         account_number: accountNum
+        //     }
+        // }).then(res => {
+        //     return this.api.customers.createSource(customerID, { source: res.id })
+        // })
         // //Create token client side and send to the server for PCI compliance.
         // //Create bank account object attached to the customer, server side.
         // return this.api.customers.createSource(customerID, { source: accountToken }).then(res => {
