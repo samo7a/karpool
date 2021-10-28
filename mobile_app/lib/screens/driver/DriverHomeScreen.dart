@@ -50,7 +50,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       if (length == 0) {
         return tripList;
       }
-      print("start for loop");
       print(data);
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
@@ -90,21 +89,20 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               })
             });
 
-        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
-
+        double estimatedPrice =
+            double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2)) * 1.0;
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
-            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
-        double estimatedDuration = data[i]["estimatedDistance"] / 60;
-
+            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2)) * 1.0;
+        double estimatedDuration = data[i]["estimatedDistance"] / 60.0;
         Map<String, double> startPoint = {
-          "latitude": data[i]["startLocation"]["_latitude"],
-          "longitude": data[i]["startLocation"]["_longitude"],
+          "latitude": data[i]["startLocation"]["_latitude"] * 1.0,
+          "longitude": data[i]["startLocation"]["_longitude"] * 1.0,
         };
         Map<String, double> endPoint = {
-          "latitude": data[i]["endLocation"]["_latitude"],
-          "longitude": data[i]["endLocation"]["_longitude"],
+          "latitude": data[i]["endLocation"]["_latitude"] * 1.0,
+          "longitude": data[i]["endLocation"]["_longitude"] * 1.0,
         };
         tripList.add(
           DriverTrip(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/screens/rider/RiderNavScreen.dart';
 import 'package:mobile_app/screens/rider/SearchRidesScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -48,7 +49,6 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       if (length == 0) {
         return tripList;
       }
-      print("riders Trips from firebase: " + result.data.toString());
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
@@ -67,15 +67,15 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
-            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
-        double estimatedDuration = data[i]["estimatedDistance"] / 60;
+            double.parse((data[i]["estimatedDistance"] / 1609.0).toStringAsFixed(2));
+        double estimatedDuration = data[i]["estimatedDistance"] / 60.0;
         Map<String, double> startPoint = {
-          "latitude": data[i]["startLocation"]["_latitude"],
-          "longitude": data[i]["startLocation"]["_longitude"],
+          "latitude": data[i]["startLocation"]["_latitude"] * 1.0,
+          "longitude": data[i]["startLocation"]["_longitude"] * 1.0,
         };
         Map<String, double> endPoint = {
-          "latitude": data[i]["endLocation"]["_latitude"],
-          "longitude": data[i]["endLocation"]["_longitude"],
+          "latitude": data[i]["endLocation"]["_latitude"] * 1.0,
+          "longitude": data[i]["endLocation"]["_longitude"] * 1.0,
         };
         tripList.add(
           RiderTrip(
@@ -149,99 +149,87 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     final trip = snapshot.data![index];
                     return Dismissible(
-                      direction: DismissDirection.endToStart,
+                      // direction: DismissDirection.endToStart,
                       key: Key(trip.tripId),
                       onDismissed: (direction) async {
-                        EasyLoading.show(status: "Canceling ...");
-                        Map<String, String> obj = {
-                          "riderID": user.uid,
-                          "tripID": trip.tripId,
-                        };
-                        HttpsCallable cancelRide =
-                            FirebaseFunctions.instance.httpsCallable("trip-cancelRidebyRider");
-                        try {
-                          await cancelRide(obj);
-                          EasyLoading.dismiss();
-                          EasyLoading.showSuccess("Ride Canceled");
+                        if (direction == DismissDirection.endToStart) {
+                          EasyLoading.show(status: "Canceling ...");
+                          Map<String, String> obj = {
+                            "riderID": user.uid,
+                            "tripID": trip.tripId,
+                          };
+                          HttpsCallable cancelRide =
+                              FirebaseFunctions.instance.httpsCallable("trip-cancelRidebyRider");
+                          try {
+                            await cancelRide(obj);
+                            EasyLoading.dismiss();
+                            EasyLoading.showSuccess("Ride Canceled");
+                            snapshot.data!.removeAt(index);
+                          } catch (e) {
+                            EasyLoading.dismiss();
+                            EasyLoading.showError(
+                                "Error Occured while canceling your ride, Please try again!");
+                            print(e.toString());
+                          }
+                        } else if (direction == DismissDirection.startToEnd) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            RiderNavScreen.id,
+                            (Route<dynamic> route) => false,
+                            arguments: trip,
+                          );
                           snapshot.data!.removeAt(index);
-                        } catch (e) {
-                          EasyLoading.dismiss();
-                          EasyLoading.showError(
-                              "Error Occured while canceling your ride, Please try again!");
-                          print(e.toString());
                         }
                       },
                       confirmDismiss: (direction) async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
-                              ),
-                              title: Text(
-                                "Confirm Ride Cancellation",
-                                style: TextStyle(
-                                  color: Color(0xffffffff),
+                        if (direction == DismissDirection.endToStart) {
+                          //delete
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
                                 ),
-                              ),
-                              content: Container(
-                                height: size.BLOCK_HEIGHT * 25,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.warning,
-                                          color: Colors.yellow,
-                                        ),
-                                        SizedBox(
-                                          width: size.BLOCK_WIDTH * 4,
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            "If the ride is within 3 hrs before starting time, you will be charged \$5.",
-                                            style: TextStyle(
-                                              color: Color(0xffffffff),
-                                            ),
-                                            maxLines: 10,
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                            textAlign: TextAlign.left,
+                                title: Text(
+                                  "Confirm Ride Cancellation",
+                                  style: TextStyle(
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
+                                content: Container(
+                                  height: size.BLOCK_HEIGHT * 25,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.warning,
+                                            color: Colors.yellow,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "Are you sure you want to cancel your ride?",
-                                      style: TextStyle(
-                                        color: Color(0xffffffff),
-                                        fontFamily: 'Glory',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: size.FONT_SIZE * 22,
+                                          SizedBox(
+                                            width: size.BLOCK_WIDTH * 4,
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              "If the ride is within 3 hrs before starting time, you will be charged \$5.",
+                                              style: TextStyle(
+                                                color: Color(0xffffffff),
+                                              ),
+                                              maxLines: 10,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
-                                  child: Container(
-                                    height: size.BLOCK_HEIGHT * 7,
-                                    width: size.BLOCK_WIDTH * 30,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                      color: Color(0xff001233),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "No",
-                                        textAlign: TextAlign.center,
+                                      Text(
+                                        "Are you sure you want to cancel your ride?",
                                         style: TextStyle(
                                           color: Color(0xffffffff),
                                           fontFamily: 'Glory',
@@ -249,23 +237,22 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                                           fontSize: size.FONT_SIZE * 22,
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
-                                  child: TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
                                     child: Container(
                                       height: size.BLOCK_HEIGHT * 7,
                                       width: size.BLOCK_WIDTH * 30,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                        color: Color(0xffC80404),
+                                        color: Color(0xff001233),
                                       ),
                                       child: Center(
                                         child: Text(
-                                          "Yes",
+                                          "No",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Color(0xffffffff),
@@ -277,12 +264,177 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                                       ),
                                     ),
                                   ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                    child: TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: Container(
+                                        height: size.BLOCK_HEIGHT * 7,
+                                        width: size.BLOCK_WIDTH * 30,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                          color: Color(0xffC80404),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Yes",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                              fontFamily: 'Glory',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: size.FONT_SIZE * 22,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                backgroundColor: Color(0xff0353A4),
+                              );
+                            },
+                          );
+                        } else {
+                          //start the ride
+                          DateTime today = DateTime.now();
+                          print("today : " + today.toString());
+                          // print(trip.timestamp);
+                          DateTime tripDate =
+                              Timestamp(trip.timestamp["_seconds"], trip.timestamp["_nanoseconds"])
+                                  .toDate();
+                          print("tripDate : " + tripDate.toString());
+                          if (!tripDate.isAfter(today)) // remove the !
+                            return await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      backgroundColor: Color(0xff0353A4),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                                      ),
+                                      title: Text(
+                                        "You cannot start the ride now!",
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                        ),
+                                      ),
+                                      content: Text(
+                                        "The ride is scheduled on ${trip.date} at ${trip.time}",
+                                        style: TextStyle(
+                                          color: Color(0xffffffff),
+                                          fontFamily: 'Glory',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: size.FONT_SIZE * 22,
+                                        ),
+                                      ),
+                                      actions: [
+                                        Center(
+                                          child: TextButton(
+                                            onPressed: () => Navigator.of(context).pop(false),
+                                            child: Container(
+                                              height: size.BLOCK_HEIGHT * 7,
+                                              width: size.BLOCK_WIDTH * 30,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                                color: Color(0xffC80404),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  "OK",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Color(0xffffffff),
+                                                    fontFamily: 'Glory',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: size.FONT_SIZE * 22,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ]);
+                                });
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
                                 ),
-                              ],
-                              backgroundColor: Color(0xff0353A4),
-                            );
-                          },
-                        );
+                                title: Text(
+                                  "Start Ride",
+                                  style: TextStyle(
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
+                                content: Text(
+                                  "Are you sure you want to start this ride?",
+                                  style: TextStyle(
+                                    color: Color(0xffffffff),
+                                    fontFamily: 'Glory',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: size.FONT_SIZE * 22,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: Container(
+                                      height: size.BLOCK_HEIGHT * 7,
+                                      width: size.BLOCK_WIDTH * 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                        color: Color(0xffC80404),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "No",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Color(0xffffffff),
+                                            fontFamily: 'Glory',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: size.FONT_SIZE * 22,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                    child: TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: Container(
+                                        height: size.BLOCK_HEIGHT * 7,
+                                        width: size.BLOCK_WIDTH * 30,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                          color: Color(0xff001233),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Yes",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Color(0xffffffff),
+                                              fontFamily: 'Glory',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: size.FONT_SIZE * 22,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                backgroundColor: Color(0xff0353A4),
+                              );
+                            },
+                          );
+                        }
                       },
                       background: Container(
                         child: Row(

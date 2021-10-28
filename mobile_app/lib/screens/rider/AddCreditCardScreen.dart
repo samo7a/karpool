@@ -105,6 +105,7 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
             content: Text("Card Added Successfully"),
           ),
         );
+        EasyLoading.dismiss();
         Navigator.pop(
           context,
           CreditCardObject.CreditCard(
