@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
@@ -57,34 +59,29 @@ class _RiderDrawerState extends State<RiderDrawer> {
     });
   }
 
-  // void deleteAccount() async {
-  //   EasyLoading.show(status: "Deleting account");
-  //   HttpsCallable delete =
-  //       FirebaseFunctions.instance.httpsCallable("account-deleteUser");
-  //   Map<String, dynamic> obj = {
-  //     "uid": userUID,
-  //   };
-  //   try {
-  //     print("inside the try");
-  //     final result = await delete(obj);
-  //     final data = result.data;
-  //     print(result);
-  //     print(data);
-  //     EasyLoading.dismiss();
-  //     EasyLoading.showSuccess("Account deleted.");
-  //     Navigator.pushAndRemoveUntil(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => MainScreen(),
-  //       ),
-  //       (Route<dynamic> route) => false,
-  //     );
-  //   } catch (e) {
-  //     EasyLoading.dismiss();
-  //     EasyLoading.showError("Error deleting account, try again later.");
-  //   }
-  // }
-
+  void deleteAccount() async {
+    EasyLoading.show(status: "Deleting account");
+    HttpsCallable delete =
+        FirebaseFunctions.instance.httpsCallable("account-deleteAccount");
+    try {
+      print("inside the try");
+      await delete();
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Account deleted.");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Error deleting account, try again later.");
+      print(e);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: false);
@@ -450,7 +447,7 @@ class _RiderDrawerState extends State<RiderDrawer> {
                               EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
                             onPressed: () {
-                              // TODO: deleteAccount();
+                              deleteAccount();
                             },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
