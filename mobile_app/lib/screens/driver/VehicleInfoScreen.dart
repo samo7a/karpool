@@ -25,14 +25,13 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
 
   // Original Driver Car Info Strings
   String initCarBrand = 'Nissan';
-  String initCarColor = 'Black';
-  String initInsProvider = 'Progressive';
+  String initCarColor = 'Silver';
+  String initInsProvider = 'Geico';
   String initInsType = 'Standard';
-  String initCarYear = '2015';
-  String initCarPlate = 'FH12HF';
-  String initInsStartDate = '01/01/2021';
-  String initInsEndDate = '01/01/2022';
-  // DateTime initLicenseEnd = DateTime(2021, 12, 31);
+  String initCarYear = '2020';
+  String initCarPlate = 'HN3456';
+  String initInsStartDate = '08/15/2021';
+  String initInsEndDate = '08/15/2022';
 
   // New Driver Car Info Strings
   String newCarBrand = '';
@@ -53,6 +52,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
     for (int i = 0; i < carColors.length; i++) {
       colors.add(carColors[i]['label']);
     }
+    // getVehicleInfo();
   }
 
   bool validateInput() {
@@ -75,9 +75,33 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
       return false;
   }
 
+  // void getVehicleInfo() async {
+  //   // String initCarBrand = '';
+  //   // String initCarColor = '';
+  //   // String initInsProvider = '';
+  //   // String initInsType = '';
+  //   // String initCarYear = '';
+  //   // String initCarPlate = '';
+  //   // String initInsStartDate = '';
+  //   // String initInsEndDate = '';
+
+  //   HttpsCallable vehicleInfo =
+  //       FirebaseFunctions.instance.httpsCallable("account-getVehicle");
+  //   try {
+  //     print("inside the try");
+  //     final result = await vehicleInfo();
+  //     final data = result.data;
+  //     print(result);
+  //     print(data);
+  //   } catch (e) {
+  //     EasyLoading.showError("Error loading original vehicle information.");
+  //     print(e);
+  //   }
+  // }
+
   // void changeCarInfo() async {
   //   if (!validateInput()) {
-  //     EasyLoading.showError("Please fix your input and try again.");
+  //     EasyLoading.showError("Please adjust your input and try again.");
   //     return;
   //   }
 
@@ -90,20 +114,22 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   //   if (newInsStartDate == '') newInsStartDate = initInsStartDate;
   //   if (newInsEndDate == '') newInsEndDate = initInsEndDate;
 
-  //   // TODO: validate new info
   //   HttpsCallable changeVehicleInfo =
   //       FirebaseFunctions.instance.httpsCallable("account-editCarInfo");
+
   //   Map<String, dynamic> obj = {
-  //     "uid": uid,
+  //     "color": newCarColor.trim(),
+  //     "insurance": {
+  //       "provider": newInsProvider.trim(),
+  //       "coverageType": newInsType.trim(),
+  //       "startDate": newInsStartDate.trim(),
+  //       "endDate": newInsEndDate.trim(),
+  //     },
+  //     "licensePlateNum": newCarPlate.trim(),
   //     "make": newCarBrand.trim(),
   //     "year": newCarYear.trim(),
-  //     "color": newCarColor.trim(),
-  //     "plateNum": newCarPlate.trim(),
-  //     "provider": newInsProvider.trim(),
-  //     "coverage": newInsType.trim(),
-  //     "startDate": newInsStartDate.trim(),
-  //     "endDate": newInsEndDate.trim(),
   //   };
+  //   print(obj);
   //   try {
   //     print("inside the try");
   //     final result = await changeVehicleInfo(obj);
@@ -114,6 +140,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   //     EasyLoading.showSuccess("Vehicle information has been updated!");
   //   } catch (e) {
   //     EasyLoading.dismiss();
+  //     print(e);
   //     EasyLoading.showError("Error updating the vehicle information.");
   //   }
   // }
@@ -554,10 +581,14 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       } else {
                         isBefore = false;
                       }
-                      if (isBefore == true || newInsStartDate == '')
+                      if (isBefore == true ||
+                          newInsStartDate == '' ||
+                          newInsStartDate == initInsStartDate)
                         return null;
-                      else
+                      else {
+                        print("We are here: $newInsStartDate");
                         return ('Your Insurance policy cannot start in the future!');
+                      }
                     },
                     inputType: InputType.date,
                     decoration: InputDecoration(
@@ -650,7 +681,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       } else {
                         isAfter = true;
                       }
-                      if (isAfter == false || newInsEndDate == '')
+                      if (isAfter == false ||
+                          newInsEndDate == '' ||
+                          newInsEndDate == initInsEndDate)
                         return null;
                       else
                         return ('Your Insurance policy is expired!');
@@ -750,7 +783,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                   right: size.BLOCK_WIDTH * 2.5),
                               child: TextButton(
                                 onPressed: () {
-                                  // TODO: changeCarInfo();
+                                  // changeCarInfo();
+                                  Navigator.pop(context);
                                 },
                                 child: Container(
                                   height: size.BLOCK_HEIGHT * 7,
