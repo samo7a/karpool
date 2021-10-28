@@ -63,7 +63,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   }
 
   void updateBankInfo() async {
-    if ((newAccountNum == '' && newRoutingNum == '') || (newAccountNum == initAccountNum && newRoutingNum == initRoutingNum)) {
+    if ((newAccountNum == '' && newRoutingNum == '') ||
+        (newAccountNum == initAccountNum && newRoutingNum == initRoutingNum)) {
       EasyLoading.showError("Bank information already exists.");
       return;
     }
@@ -72,23 +73,24 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       EasyLoading.showError("Please fix your input and try again.");
       return;
     }
-    
+
     if (newAccountNum == '') newAccountNum = initAccountNum;
     if (newRoutingNum == '') newRoutingNum = initRoutingNum;
 
     HttpsCallable getInfo =
-        FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
+        FirebaseFunctions.instance.httpsCallable("account-setBankAccount");
     Map<String, dynamic> obj = {
-      // "uid": user.uid,
       "accountNum": newAccountNum,
       "routingNum": newRoutingNum,
     };
+
     try {
       print("inside the try");
       final result = await getInfo(obj);
       final data = result.data;
       print(result);
       print(data);
+      EasyLoading.showSuccess("Bank information successfully updated.");
     } catch (e) {
       EasyLoading.showError("Error updating bank information.");
     }
@@ -306,7 +308,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                                 EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                             child: TextButton(
                               onPressed: () {
-                                // TODO: call --> updateBankInfo();
+                                updateBankInfo();
+                                Navigator.pop(context);
                               },
                               child: Container(
                                 height: size.BLOCK_HEIGHT * 7,
