@@ -83,7 +83,7 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       "accountNum": newAccountNum,
       "routingNum": newRoutingNum,
     };
-
+    EasyLoading.show(status: "Updating bank information");
     try {
       print("inside the try");
       final result = await getInfo(obj);
@@ -91,8 +91,11 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       print(result);
       print(data);
       EasyLoading.showSuccess("Bank information successfully updated.");
+      EasyLoading.dismiss();
     } catch (e) {
+      EasyLoading.dismiss();
       EasyLoading.showError("Error updating bank information.");
+      print(e);
     }
   }
 
