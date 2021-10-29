@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mobile_app/models/RiderTrip.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
-import 'package:mobile_app/screens/rider/RiderHomeScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/SlidePanel.dart';
@@ -17,8 +15,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
-
-import '../SplashScreen.dart';
 
 class RiderNavScreen extends StatefulWidget {
   static const String id = 'riderNavigationScreen';

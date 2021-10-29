@@ -1,9 +1,7 @@
-// import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app/screens/EditProfileScreen.dart';
 
 class Message {
   String? title;
@@ -69,7 +67,6 @@ class Notification {
     //when the app is terminated
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
       print('A new getInitialMessage event was published! $message');
-      // Navigator.pushNamed(context, EditProfilScreen.id);
     });
 
     //when the app is on the foreground. works only on android

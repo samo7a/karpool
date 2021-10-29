@@ -9,7 +9,6 @@ import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/ModalButton.dart';
 import 'package:provider/provider.dart';
 
-//TODO: add no. of seats left, car info (car make, color, maybe year)
 class RiderModal extends StatefulWidget {
   const RiderModal({
     Key? key,

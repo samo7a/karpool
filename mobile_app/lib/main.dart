@@ -82,6 +82,8 @@ class _MyAppState extends State<MyApp> {
             uid: "",
             isVerified: false,
             profileURL: "",
+            accountNum: "",
+            routingNum: "",
           ),
         ),
       ],

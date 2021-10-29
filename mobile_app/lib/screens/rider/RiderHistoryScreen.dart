@@ -145,9 +145,8 @@ class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
                 EasyLoading.dismiss();
                 return Container(
                   child: Center(
-                    child: Text(
-                      //TODO: Make it Cool
-                      "Empty | No Rides | Edit this | Make it cool",
+                    child: Icon(
+                      Icons.mood_bad,
                     ),
                   ),
                 );

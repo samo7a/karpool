@@ -58,6 +58,8 @@ class _SplashScreenState extends State<SplashScreen> {
       currentUser.setPhoneNumber = user.phoneNumber;
       currentUser.setRating = user.rating;
       currentUser.setProfileURL = user.profileURL;
+      currentUser.setAccountNum = user.accountNum!;
+      currentUser.setRoutingNum = user.routingNum!;
 
       bool verified = user.isVerified;
       if (!verified) {

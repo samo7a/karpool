@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:mobile_app/widgets/rounded-button.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

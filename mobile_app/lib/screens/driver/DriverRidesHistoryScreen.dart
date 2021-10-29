@@ -25,6 +25,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
     final obj = <String, dynamic>{
       "driverID": uid,
     };
+    //TODO: change the name of the function
     HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
     List<DriverTrip> tripList = [];
     final result;
@@ -153,9 +154,8 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
                 EasyLoading.dismiss();
                 return Container(
                   child: Center(
-                    child: Text(
-                      //TODO: Make it Cool
-                      "Empty | No Rides | Edit this | Make it cool",
+                    child: Icon(
+                      Icons.mood_bad,
                     ),
                   ),
                 );

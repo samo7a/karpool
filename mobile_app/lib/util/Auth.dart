@@ -28,6 +28,9 @@ class Auth {
       String lastName = result.data['lastName'] ?? "";
       String phone = result.data['phone'] ?? "";
       String url = result.data['profileURL'] ?? "";
+      var accountNum = result.data["bankAccount"]["account"] ?? "";
+      var routingNum = result.data["bankAccount"]["routing"] ?? "";
+      print("routing: $routingNum, account: $accountNum");
       // double weight = (json['weight'] as num).toDouble();
       double rating;
       if (isDriver)
@@ -50,6 +53,8 @@ class Auth {
         isDriver: driverRole,
         isRider: riderRole,
         email: email,
+        accountNum: accountNum,
+        routingNum: routingNum,
       );
     }
   }

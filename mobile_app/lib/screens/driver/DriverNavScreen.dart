@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,6 @@ import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/driver/DriverDashboardScreen.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
-import 'package:mobile_app/widgets/SlidePanel.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -68,9 +69,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   String _platformVersion = 'Unknown';
   String _instruction = "";
   late MapBoxNavigation _directions;
-
   
-
   void listenToLocation() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;

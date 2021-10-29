@@ -14,6 +14,10 @@ class User with ChangeNotifier {
   bool isVerified = false;
   bool isRider = false;
   double rating = 0;
+
+  String? accountNum = '';
+  String? routingNum = '';
+
   User({
     required this.uid,
     required this.firstName,
@@ -27,8 +31,10 @@ class User with ChangeNotifier {
     required this.profileURL,
     required this.email,
     required this.phoneNumber,
+    this.routingNum,
+    this.accountNum,
   });
-  
+
   String get getUid => uid;
   set setUid(String value) {
     uid = value;
@@ -89,6 +95,18 @@ class User with ChangeNotifier {
     notifyListeners();
   }
 
+  String get getAccountNum => accountNum!;
+  set setAccountNum(String value) {
+    accountNum = value;
+    notifyListeners();
+  }
+
+  String get getRoutingNum => routingNum!;
+  set setRoutingNum(String value) {
+    routingNum = value;
+    notifyListeners();
+  }
+
   static Future<User> getDriverFromFireBase(String uid) async {
     final obj = <String, dynamic>{
       "uid": uid,
@@ -108,6 +126,9 @@ class User with ChangeNotifier {
     print(rating.runtimeType);
     var riderRole = result.data['roles']['Rider'] ?? false;
     var driverRole = result.data["roles"]["Driver"] ?? false;
+    var accountNum = result.data["bankAccount"]["account"] ?? "";
+    var routingNum = result.data["bankAccount"]["routing"] ?? "";
+    print("routing: $routingNum, account: $accountNum");
     return User(
       uid: uid,
       firstName: firstName,
@@ -119,6 +140,8 @@ class User with ChangeNotifier {
       isDriver: driverRole,
       isRider: riderRole,
       email: email,
+      accountNum: accountNum,
+      routingNum: routingNum,
     );
   }
 
