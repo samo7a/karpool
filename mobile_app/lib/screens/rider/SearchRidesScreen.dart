@@ -209,7 +209,8 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
 
           futureTrips.add(
             RiderTrip(
-              timestamp: ts,
+              timestamp: timestamp,
+              ts: ts,
               tripId: tripId,
               date: date,
               time: time,

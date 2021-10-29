@@ -69,6 +69,8 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   String _instruction = "";
   late MapBoxNavigation _directions;
 
+  
+
   void listenToLocation() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -98,7 +100,8 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
       _locationData = currentLocation;
       double? lat = _locationData.latitude;
       double? long = _locationData.longitude;
-      await tripFromRealTimeDb.set({"lat": lat, "long": long});
+      double? heading = _locationData.heading;
+      await tripFromRealTimeDb.set({"lat": lat, "long": long, "heading": heading});
     });
 
     _locationData = await location.getLocation();
@@ -272,7 +275,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                     HttpsCallable startRide =
                         FirebaseFunctions.instance.httpsCallable("trip-createScheduledTrip");
                     try {
-                      // await startRide({"tripID": trip.tripId});
+                      await startRide({"tripID": trip.tripId});
                       print(trip.ridersInfo.toString() + " howa fih aa??");
                       print("start Multi stop");
                       List ridersInfo = trip.ridersInfo;

@@ -79,7 +79,8 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         };
         tripList.add(
           RiderTrip(
-            timestamp: ts,
+            timestamp: timestamp,
+            ts: ts,
             tripId: tripId,
             date: date,
             time: time,
@@ -300,6 +301,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                           DateTime today = DateTime.now();
                           print("today : " + today.toString());
                           // print(trip.timestamp);
+
                           DateTime tripDate =
                               Timestamp(trip.timestamp["_seconds"], trip.timestamp["_nanoseconds"])
                                   .toDate();
@@ -437,6 +439,34 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
                         }
                       },
                       background: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: size.BLOCK_WIDTH * 2,
+                            ),
+                            Text(
+                              'Start Trip',
+                              style: TextStyle(
+                                color: kWhite,
+                                fontFamily: 'Glory',
+                                fontWeight: FontWeight.bold,
+                                fontSize: size.FONT_SIZE * 26,
+                              ),
+                            ),
+                            SizedBox(
+                              width: size.BLOCK_WIDTH * 2,
+                            ),
+                            Icon(
+                              Icons.drive_eta_outlined,
+                              color: Colors.white,
+                              size: size.FONT_SIZE * 30,
+                            ),
+                          ],
+                        ),
+                        color: kGreen,
+                      ),
+                      secondaryBackground: Container(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

@@ -17,6 +17,7 @@ class RiderTrip {
   final dynamic timestamp;
   final Map<String, double> startPoint;
   final Map<String, double> endPoint;
+  final dynamic ts;
 
   RiderTrip({
     required this.timestamp,
@@ -35,5 +36,6 @@ class RiderTrip {
     required this.estimatedFare,
     required this.startPoint,
     required this.endPoint,
+    required this.ts,
   });
 }

@@ -70,7 +70,8 @@ class _RiderHistoryScreenState extends State<RiderHistoryScreen> {
         };
         tripList.add(
           RiderTrip(
-            timestamp: ts,
+            timestamp: timestamp,
+            ts: ts,
             tripId: tripId,
             date: date,
             time: time,
