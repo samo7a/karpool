@@ -20,35 +20,6 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   String newAccountNum = '';
   String newRoutingNum = '';
 
-  // TODO: get user from user object (either as argument or call user)
-  // getting account number and routing number will be added to getUser on backend
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // getOriginalInfo();
-  // }
-
-  // use this if getUser does not include routing/account num, make
-  // sure backend has a function deployed for getBankInfo in this case...
-  /*void getOriginalInfo() async {
-    HttpsCallable getInfo =
-        FirebaseFunctions.instance.httpsCallable("account-getBankInfo");
-    Map<String, dynamic> obj = {
-      "uid": user.uid,
-    };
-    try {
-      print("inside the try");
-      final result = await getInfo(obj);
-      final data = result.data;
-      print(result);
-      print(data);
-      // TODO: store data from response in initAccountNum, initRoutingNum
-    } catch (e) {
-      EasyLoading.showError("Error retrieving bank information.");
-    }
-  }*/
-
   bool validateInput() {
     bool res1 = false;
     bool res2 = false;
