@@ -145,7 +145,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
       "make": newCarBrand.trim(),
       "year": newCarYear.trim(),
     };
-    EasyLoading.show(status: "Updating vehcile information");
+    EasyLoading.show(status: "Updating vehicle information");
     print(obj);
     try {
       print("inside the try");
