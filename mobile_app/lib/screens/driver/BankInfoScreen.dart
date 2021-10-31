@@ -24,7 +24,10 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   String newAccountNum = '';
   String newRoutingNum = '';
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> endpoints
   bool validateInput() {
     bool res1 = false;
     bool res2 = false;
@@ -52,20 +55,29 @@ class _BankInfoScreen extends State<BankInfoScreen> {
     if (newAccountNum == '') newAccountNum = initAccountNum;
     if (newRoutingNum == '') newRoutingNum = initRoutingNum;
 
+<<<<<<< HEAD
     HttpsCallable getInfo = FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
+=======
+    HttpsCallable getInfo =
+        FirebaseFunctions.instance.httpsCallable("account-setBankAccount");
+>>>>>>> endpoints
     Map<String, dynamic> obj = {
-      // "uid": user.uid,
       "accountNum": newAccountNum,
       "routingNum": newRoutingNum,
     };
+    EasyLoading.show(status: "Updating bank information");
     try {
       print("inside the try");
       final result = await getInfo(obj);
       final data = result.data;
       print(result);
       print(data);
+      EasyLoading.showSuccess("Bank information successfully updated.");
+      EasyLoading.dismiss();
     } catch (e) {
+      EasyLoading.dismiss();
       EasyLoading.showError("Error updating bank information.");
+      print(e);
     }
   }
 
@@ -274,7 +286,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                             padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                             child: TextButton(
                               onPressed: () {
-                                // TODO: call --> updateBankInfo();
+                                updateBankInfo();
+                                Navigator.pop(context);
                               },
                               child: Container(
                                 height: size.BLOCK_HEIGHT * 7,
