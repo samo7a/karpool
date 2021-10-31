@@ -74,6 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
           currentUser.setPhoneNumber = res.phoneNumber;
           currentUser.setRating = res.rating;
           currentUser.setProfileURL = res.profileURL;
+          currentUser.setAccountNum = res.accountNum!;
+          currentUser.setRoutingNum = res.routingNum!;
           bool driverRole = res.isDriver;
           bool riderRole = res.isRider;
           print("token : $token");
