@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:mobile_app/util/InsuranceProviders.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/Size.dart';
+import 'package:intl/intl.dart';
+import 'package:mobile_app/widgets/InitialVehicleInfo.dart';
 
 class VehicleInfoScreen extends StatefulWidget {
   const VehicleInfoScreen({Key? key}) : super(key: key);
@@ -24,14 +27,14 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   GlobalKey<FormState> insEndKey = GlobalKey<FormState>();
 
   // Original Driver Car Info Strings
-  String initCarBrand = 'Nissan';
-  String initCarColor = 'Silver';
-  String initInsProvider = 'Geico';
-  String initInsType = 'Standard';
-  String initCarYear = '2020';
-  String initCarPlate = 'HN3456';
-  String initInsStartDate = '08/15/2021';
-  String initInsEndDate = '08/15/2022';
+  String initCarBrand = '';
+  String initCarColor = '';
+  String initInsProvider = '';
+  String initInsType = '';
+  String initCarYear = '';
+  String initCarPlate = '';
+  String initInsStartDate = '';
+  String initInsEndDate = '';
 
   // New Driver Car Info Strings
   String newCarBrand = '';
@@ -52,7 +55,12 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
     for (int i = 0; i < carColors.length; i++) {
       colors.add(carColors[i]['label']);
     }
-    // getVehicleInfo();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getVehicleInfo();
   }
 
   bool validateInput() {
@@ -75,76 +83,84 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
       return false;
   }
 
-  // void getVehicleInfo() async {
-  //   // String initCarBrand = '';
-  //   // String initCarColor = '';
-  //   // String initInsProvider = '';
-  //   // String initInsType = '';
-  //   // String initCarYear = '';
-  //   // String initCarPlate = '';
-  //   // String initInsStartDate = '';
-  //   // String initInsEndDate = '';
+  void getVehicleInfo() async {
+    HttpsCallable vehicleInfo =
+        FirebaseFunctions.instance.httpsCallable("account-getVehicle");
+    try {
+      print("inside the try 1");
+      final result = await vehicleInfo();
+      final data = result.data;
+      print(data);
+      setState(() {
+        initCarColor = data['vehicle']['color'] ?? '';
+        initCarPlate = data['vehicle']['licensePlateNum'] ?? '';
+        initCarBrand = data['vehicle']['make'] ?? '';
+        initCarYear = data['vehicle']['year'] ?? '';
+        initInsProvider = data['vehicle']['insurance']['provider'] ?? '';
+        initInsType = data['vehicle']['insurance']['coverageType'] ?? '';
+        dynamic timestamp = data['vehicle']['insurance']['startDate'];
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        initInsStartDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+        timestamp = data['vehicle']['insurance']['endDate'];
+        ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        initInsEndDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+      });
+    } catch (e) {
+      EasyLoading.showError("Error loading original vehicle information.");
+      print(e);
+    }
+  }
 
-  //   HttpsCallable vehicleInfo =
-  //       FirebaseFunctions.instance.httpsCallable("account-getVehicle");
-  //   try {
-  //     print("inside the try");
-  //     final result = await vehicleInfo();
-  //     final data = result.data;
-  //     print(result);
-  //     print(data);
-  //   } catch (e) {
-  //     EasyLoading.showError("Error loading original vehicle information.");
-  //     print(e);
-  //   }
-  // }
+  void changeCarInfo() async {
+    if (!validateInput()) {
+      EasyLoading.showError("Please adjust your input and try again.");
+      return;
+    }
 
-  // void changeCarInfo() async {
-  //   if (!validateInput()) {
-  //     EasyLoading.showError("Please adjust your input and try again.");
-  //     return;
-  //   }
+    if (newCarBrand == '') newCarBrand = initCarBrand;
+    if (newCarColor == '') newCarColor = initCarColor;
+    if (newCarYear == '') newCarYear = initCarYear;
+    if (newCarPlate == '') newCarPlate = initCarPlate;
+    if (newInsProvider == '') newInsProvider = initInsProvider;
+    if (newInsType == '') newInsType = initInsType;
+    if (newInsStartDate == '') newInsStartDate = initInsStartDate;
+    if (newInsEndDate == '') newInsEndDate = initInsEndDate;
 
-  //   if (newCarBrand == '') newCarBrand = initCarBrand;
-  //   if (newCarColor == '') newCarColor = initCarColor;
-  //   if (newCarYear == '') newCarYear = initCarYear;
-  //   if (newCarPlate == '') newCarPlate = initCarPlate;
-  //   if (newInsProvider == '') newInsProvider = initInsProvider;
-  //   if (newInsType == '') newInsType = initInsType;
-  //   if (newInsStartDate == '') newInsStartDate = initInsStartDate;
-  //   if (newInsEndDate == '') newInsEndDate = initInsEndDate;
+    HttpsCallable changeVehicleInfo =
+        FirebaseFunctions.instance.httpsCallable("account-updateVehicle");
 
-  //   HttpsCallable changeVehicleInfo =
-  //       FirebaseFunctions.instance.httpsCallable("account-editCarInfo");
+    var array = newInsStartDate.toString().split(" ");
+    String d = array[0] + "T" + '00:00:000' + "Z";
+    print(d);
 
-  //   Map<String, dynamic> obj = {
-  //     "color": newCarColor.trim(),
-  //     "insurance": {
-  //       "provider": newInsProvider.trim(),
-  //       "coverageType": newInsType.trim(),
-  //       "startDate": newInsStartDate.trim(),
-  //       "endDate": newInsEndDate.trim(),
-  //     },
-  //     "licensePlateNum": newCarPlate.trim(),
-  //     "make": newCarBrand.trim(),
-  //     "year": newCarYear.trim(),
-  //   };
-  //   EasyLoading.show(status: "Updating vehcile information");
-  //   print(obj);
-  //   try {
-  //     print("inside the try");
-  //     final result = await changeVehicleInfo(obj);
-  //     final data = result.data;
-  //     print(result);
-  //     print(data);
-  //     EasyLoading.dismiss();
-  //     EasyLoading.showSuccess("Vehicle information has been updated!");
-  //   } catch (e) {
-  //     EasyLoading.dismiss();
-  //     print(e);
-  //     EasyLoading.showError("Error updating the vehicle information.");
-  //   }
-  // }
+    Map<String, dynamic> obj = {
+      "color": newCarColor.trim(),
+      "insurance": {
+        "provider": newInsProvider.trim(),
+        "coverageType": newInsType.trim(),
+        "startDate": d.trim(),
+        "endDate": d.trim(),
+      },
+      "licensePlateNum": newCarPlate.trim(),
+      "make": newCarBrand.trim(),
+      "year": newCarYear.trim(),
+    };
+    EasyLoading.show(status: "Updating vehcile information");
+    print(obj);
+    try {
+      print("inside the try");
+      final result = await changeVehicleInfo(obj);
+      final data = result.data;
+      print(result);
+      print(data);
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Vehicle information has been updated!");
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(e);
+      EasyLoading.showError("Error updating the vehicle information.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,16 +205,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initCarBrand,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              InitialVehicleInfo(field: initCarBrand),
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
               ),
@@ -236,16 +243,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initCarColor,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              InitialVehicleInfo(field: initCarColor),
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
               ),
@@ -286,15 +284,18 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                 ),
                 textAlign: TextAlign.start,
               ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+                child: InitialVehicleInfo(field: initCarYear),
+              ),
               Form(
                 key: carYearKey,
                 autovalidateMode: AutovalidateMode.always,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    top: size.BLOCK_HEIGHT,
+                    top: size.BLOCK_HEIGHT * 2,
                   ),
                   child: TextFormField(
-                    initialValue: initCarYear,
                     decoration: InputDecoration(
                         fillColor: kWhite.withOpacity(0.4),
                         filled: true,
@@ -315,9 +316,10 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         hintStyle: TextStyle(
                           color: kIconColor,
                         ),
-                        hintText: "Year of Manufacture"),
+                        hintText: "New Year of Manufacture"),
                     validator: (value) {
                       int diff;
+                      if (newCarYear == '') return null;
                       if (value != null) {
                         int currentYear = DateTime.now().year;
                         int val;
@@ -325,9 +327,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         diff = currentYear - val;
                       } else
                         diff = 16;
-                      if (diff > 15 || diff < 0)
+                      if (diff > 15 || diff < 0) {
                         return "The car should be no more than 15 years old!";
-                      else
+                      } else
                         return null;
                     },
                     onChanged: (value) => setState(() => newCarYear = value),
@@ -348,12 +350,16 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                 ),
                 textAlign: TextAlign.start,
               ),
+              Padding(
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
+                child: InitialVehicleInfo(field: initCarPlate),
+              ),
               Form(
                 key: plateKey,
                 autovalidateMode: AutovalidateMode.always,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    top: size.BLOCK_HEIGHT,
+                    top: size.BLOCK_HEIGHT * 2,
                   ),
                   child: TextFormField(
                       initialValue: initCarPlate,
@@ -377,8 +383,6 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           hintStyle: TextStyle(color: kIconColor),
                           hintText: "License Plate Number"),
                       validator: MultiValidator([
-                        RequiredValidator(
-                            errorText: "License Plate Number is Required!"),
                         PatternValidator(r"^[0-9a-zA-Z]{6}$",
                             errorText: "Please enter a valid license plate!"),
                       ]),
@@ -402,19 +406,11 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initInsProvider,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon:
-                      Icon(FontAwesomeIcons.carCrash, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
+              InitialVehicleInfo(
+                field: initInsProvider,
               ),
               Padding(
-                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
                 child: DropdownButtonFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
@@ -465,18 +461,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initInsType,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              InitialVehicleInfo(field: initInsType),
               Padding(
-                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
                 child: DropdownButtonFormField(
                   decoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
@@ -530,22 +517,12 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initInsStartDate,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon:
-                      Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              InitialVehicleInfo(field: initInsStartDate),
               Form(
                 key: insStartKey,
                 autovalidateMode: AutovalidateMode.always,
                 child: Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
                   child: FormBuilderDateTimePicker(
                     name: 'insuranceStartDate',
                     onChanged: (value) {
@@ -629,22 +606,12 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
               Padding(
                 padding: EdgeInsets.only(top: size.BLOCK_HEIGHT),
               ),
-              TextFormField(
-                enabled: false,
-                initialValue: initInsEndDate,
-                decoration: InputDecoration(
-                  fillColor: kWhite.withOpacity(0.4),
-                  filled: true,
-                  prefixIcon:
-                      Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
-                ),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              InitialVehicleInfo(field: initInsEndDate),
               Form(
                 key: insEndKey,
                 autovalidateMode: AutovalidateMode.always,
                 child: Padding(
-                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 3),
+                  padding: EdgeInsets.only(top: size.BLOCK_HEIGHT * 2),
                   child: FormBuilderDateTimePicker(
                     autovalidateMode: AutovalidateMode.always,
                     name: 'insuranceEndDate',
@@ -784,7 +751,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                   right: size.BLOCK_WIDTH * 2.5),
                               child: TextButton(
                                 onPressed: () {
-                                  // changeCarInfo();
+                                  changeCarInfo();
                                   Navigator.pop(context);
                                 },
                                 child: Container(
