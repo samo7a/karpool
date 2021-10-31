@@ -19,15 +19,11 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   GlobalKey<FormState> accountKey = GlobalKey<FormState>();
   late final user = Provider.of<User>(context, listen: false);
 
-  String initAccountNum = '123456789';
-  String initRoutingNum = '987654321';
+  String initAccountNum = '';
+  String initRoutingNum = '';
   String newAccountNum = '';
   String newRoutingNum = '';
 
-<<<<<<< HEAD
-
-=======
->>>>>>> endpoints
   bool validateInput() {
     bool res1 = false;
     bool res2 = false;
@@ -55,12 +51,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
     if (newAccountNum == '') newAccountNum = initAccountNum;
     if (newRoutingNum == '') newRoutingNum = initRoutingNum;
 
-<<<<<<< HEAD
-    HttpsCallable getInfo = FirebaseFunctions.instance.httpsCallable("account-updateBankInfo");
-=======
     HttpsCallable getInfo =
         FirebaseFunctions.instance.httpsCallable("account-setBankAccount");
->>>>>>> endpoints
     Map<String, dynamic> obj = {
       "accountNum": newAccountNum,
       "routingNum": newRoutingNum,
@@ -84,6 +76,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
+    initAccountNum = user.getAccountNum;
+    initRoutingNum = user.getRoutingNum;
     return Scaffold(
       backgroundColor: Color(0xff33415C),
       appBar: AppBar(
@@ -129,7 +123,7 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     onChanged: (value) => setState(() {
                       newRoutingNum = value;
                     }),
-                    initialValue: user.getRoutingNum,
+                    initialValue: initRoutingNum,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -149,8 +143,10 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     ),
                     validator: MultiValidator(
                       [
-                        MinLengthValidator(9, errorText: "Please enter a valid Routing Number!"),
-                        MaxLengthValidator(9, errorText: "Please enter a valid Routing Number!"),
+                        MinLengthValidator(9,
+                            errorText: "Please enter a valid Routing Number!"),
+                        MaxLengthValidator(9,
+                            errorText: "Please enter a valid Routing Number!"),
                       ],
                     ),
                   ),
@@ -184,7 +180,7 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     onChanged: (value) => setState(() {
                       newAccountNum = value;
                     }),
-                    initialValue: user.getAccountNum,
+                    initialValue: initAccountNum,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -204,8 +200,10 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     ),
                     validator: MultiValidator(
                       [
-                        MinLengthValidator(9, errorText: "Please enter a valid Account Number!"),
-                        MaxLengthValidator(12, errorText: "Please enter a valid Account Number!")
+                        MinLengthValidator(9,
+                            errorText: "Please enter a valid Account Number!"),
+                        MaxLengthValidator(12,
+                            errorText: "Please enter a valid Account Number!")
                       ],
                     ),
                   ),
@@ -241,7 +239,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                          borderRadius:
+                              BorderRadius.circular(size.BLOCK_WIDTH * 7),
                         ),
                         title: Text(
                           "Update Bank Information",
@@ -265,7 +264,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                 color: Color(0xff001233),
                               ),
                               child: Center(
@@ -283,7 +283,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                            padding:
+                                EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                             child: TextButton(
                               onPressed: () {
                                 updateBankInfo();
@@ -293,7 +294,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                                 height: size.BLOCK_HEIGHT * 7,
                                 width: size.BLOCK_WIDTH * 30,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                  borderRadius: BorderRadius.circular(
+                                      size.BLOCK_WIDTH * 5),
                                   color: Color(0xffC80404),
                                 ),
                                 child: Center(
