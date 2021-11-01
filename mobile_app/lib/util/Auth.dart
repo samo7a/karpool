@@ -34,9 +34,11 @@ class Auth {
       // double weight = (json['weight'] as num).toDouble();
       double rating;
       if (isDriver)
-        rating = (result.data['driverRating'] as num).toDouble();
+        // ignore: unnecessary_cast
+        rating = (result.data['driverRating'] ?? 0.0 as num).toDouble();
       else
-        rating = (result.data['riderRating'] as num).toDouble();
+        // ignore: unnecessary_cast
+        rating = (result.data['riderRating'] ?? 0.0 as num).toDouble();
       print("rating from auth");
       print(rating);
       print(rating.runtimeType);
