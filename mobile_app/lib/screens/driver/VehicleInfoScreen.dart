@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:mobile_app/screens/driver/DriverDashboardScreen.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/CarModels.dart';
@@ -35,6 +36,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   String initCarPlate = '';
   String initInsStartDate = '';
   String initInsEndDate = '';
+  bool success = false;
 
   // New Driver Car Info Strings
   String newCarBrand = '';
@@ -99,11 +101,22 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
         initInsProvider = data['vehicle']['insurance']['provider'] ?? '';
         initInsType = data['vehicle']['insurance']['coverageType'] ?? '';
         dynamic timestamp = data['vehicle']['insurance']['startDate'];
-        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-        initInsStartDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+        DateTime ts =
+            Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"])
+                .toDate();
+        initInsStartDate = ts.month.toString() +
+            "-" +
+            ts.day.toString() +
+            "-" +
+            ts.year.toString();
         timestamp = data['vehicle']['insurance']['endDate'];
-        ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
-        initInsEndDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
+        ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"])
+            .toDate();
+        initInsEndDate = ts.month.toString() +
+            "-" +
+            ts.day.toString() +
+            "-" +
+            ts.year.toString();
       });
     } catch (e) {
       EasyLoading.showError("Error loading original vehicle information.");
@@ -126,20 +139,24 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
     if (newInsStartDate == '') newInsStartDate = initInsStartDate;
     if (newInsEndDate == '') newInsEndDate = initInsEndDate;
 
+    print(
+        "$newCarBrand $newCarColor $newCarYear $newCarPlate $newInsProvider $newInsType $newInsStartDate $newInsEndDate");
+
     HttpsCallable changeVehicleInfo =
         FirebaseFunctions.instance.httpsCallable("account-updateVehicle");
 
     var array = newInsStartDate.toString().split(" ");
-    String d = array[0] + "T" + '00:00:000' + "Z";
-    print(d);
+    newInsStartDate = array[0] + "T" + '00:00:000' + "Z";
+    array = newInsEndDate.toString().split(" ");
+    newInsEndDate = array[0] + "T" + '00:00:000' + "Z";
 
     Map<String, dynamic> obj = {
       "color": newCarColor.trim(),
       "insurance": {
         "provider": newInsProvider.trim(),
         "coverageType": newInsType.trim(),
-        "startDate": d.trim(),
-        "endDate": d.trim(),
+        "startDate": newInsStartDate,
+        "endDate": newInsEndDate,
       },
       "licensePlateNum": newCarPlate.trim(),
       "make": newCarBrand.trim(),
@@ -155,6 +172,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
       print(data);
       EasyLoading.dismiss();
       EasyLoading.showSuccess("Vehicle information has been updated!");
+      success = true;
     } catch (e) {
       EasyLoading.dismiss();
       print(e);
@@ -325,7 +343,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         int val;
                         val = int.tryParse(value) ?? 0;
                         diff = currentYear - val;
-                      } else
+                      } else if (value == null)
+                        return null;
+                      else
                         diff = 16;
                       if (diff > 15 || diff < 0) {
                         return "The car should be no more than 15 years old!";
@@ -538,6 +558,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     },
                     validator: (value) {
                       var isBefore;
+                      if (newInsStartDate == '') return null;
                       if (value != null) {
                         String dd;
                         if (value.day < 10) {
@@ -556,7 +577,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         var dateNow = new DateTime.now();
                         var givenDateFormat = DateTime.parse(givenDate);
                         isBefore = givenDateFormat.isBefore(dateNow);
-                      } else {
+                      } else if (value == null)
+                        return null;
+                      else {
                         isBefore = false;
                       }
                       if (isBefore == true ||
@@ -628,6 +651,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     },
                     validator: (value) {
                       var isAfter;
+                      if (newInsEndDate == '') return null;
                       if (value != null) {
                         String dd;
                         if (value.day < 10) {
@@ -646,7 +670,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         var dateNow = new DateTime.now();
                         var givenDateFormat = DateTime.parse(givenDate);
                         isAfter = dateNow.isAfter(givenDateFormat);
-                      } else {
+                      } else if (value == null)
+                        return null;
+                      else {
                         isAfter = true;
                       }
                       if (isAfter == false ||
@@ -752,7 +778,17 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                               child: TextButton(
                                 onPressed: () {
                                   changeCarInfo();
-                                  Navigator.pop(context);
+                                  if (success)
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DriverDashboardScreen(),
+                                      ),
+                                      (Route<dynamic> route) => false,
+                                    );
+                                  else
+                                    Navigator.pop(context);
                                 },
                                 child: Container(
                                   height: size.BLOCK_HEIGHT * 7,
