@@ -3,7 +3,7 @@ import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../data-access/auth/utils"
 import { newRouteDAO, newTripService, newUserDao } from '../../index'
-import { validateDate, validateNumber, validateString } from "../../utils/validation"
+import { validateBool, validateDate, validateNumber, validateString } from "../../utils/validation"
 import { validateAddRatingData, validateAddTripData } from "./validation"
 
 /*
@@ -184,29 +184,21 @@ export const acceptRiderRequest = functions.https.onCall(async (data, context) =
 })
 
 
-export const getDriverCompletedTrips = functions.https.onCall(async (data, context) => {
+export const getCompletedTrips = functions.https.onCall(async (data, context) => {
+
     const uid = validateAuthorization(context)
-    if (uid) {
-        return newTripService().getDriverCompletedTrips(data.driverID)
-    }
-    else {
-        throw new HttpsError('failed-precondition', 'Invalid User')
-    }
-})
+    const isDriver = validateBool(data.isDriver)
 
-
-
-export const getRiderCompletedTrips = functions.https.onCall(async (data, context) => {
-    const uid = validateAuthorization(context)
-    if (uid) {
-        return newTripService().getRiderCompletedTrips(data.riderID)
+    if(isDriver){
+    return newTripService().getDriverCompletedTrips(uid)
     }
-    else {
-        throw new HttpsError('failed-precondition', 'Invalid User')
+    else{
+    return newTripService().getRiderCompletedTrips(uid)
     }
 
 
 })
+
 
 export const riderRequestTrip = functions.https.onCall(async (data, context) => {
     const uid = validateAuthorization(context)

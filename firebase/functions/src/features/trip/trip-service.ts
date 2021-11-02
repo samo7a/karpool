@@ -112,6 +112,9 @@ export class TripService {
 
         const car = await this.vehicleDAO.getVehicle(trip.driverID)
 
+        const riders: Record<string, boolean> = {} 
+        trip.riderInfo.forEach(r => riders[r.riderID]= true)
+
         await this.tripDAO.createScheduledTrip(tripID, {
 
             tripID: trip.docID,
@@ -146,7 +149,9 @@ export class TripService {
 
             overallRating: 0,
 
-            polyline: trip.polyline
+            polyline: trip.polyline,
+
+            riders: riders
 
         })
 

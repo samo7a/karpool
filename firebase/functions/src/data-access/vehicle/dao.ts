@@ -17,6 +17,7 @@ export interface VehicleDAOInterface {
 
     getVehicle(driverID: string): Promise <string>
 
+    updateVehicle(uid: string, data: VehicleSchema): Promise<void>
 
     //Edit Vehicle
     //Delete vehicle
@@ -37,10 +38,10 @@ export class VehicleDAO implements VehicleDAOInterface {
     }
 
 
-    // async updateVehicle(data: VehicleSchema): Promise<void>{
-    //     const driver = this.db.collection(FirestoreKey.users).doc(data.uid)
-    //     await driver.update(fireEncode(data))
-    // }
+    async updateVehicle(uid: string, data: Partial<VehicleSchema>): Promise<void>{
+        const driver = this.db.collection(FirestoreKey.users).doc(uid)
+        await driver.update(fireEncode(data))
+    }
 
     async getVehicle(driverID: string): Promise<string>{
 
