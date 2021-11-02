@@ -14,7 +14,9 @@ export class User implements UserSchema {
     joinDate: Date
     driverInfo?: DriverInfoSchema
     riderInfo?: RiderInfoSchema
-    profileURL?: string
+    profileURL: string
+    profilePicStoragePath: string
+    stripeCustomerID: string
     roles: Record<string, boolean>
 
     bankAccount?: {
@@ -31,9 +33,11 @@ export class User implements UserSchema {
         dob: string,
         joinDate: Date,
         roles: Record<string, boolean>,
+        profilePicStoragePath: string,
+        stripeCustomerID: string,
+        profileURL: string,
         driverInfo?: DriverInfoSchema,
         riderInfo?: RiderInfoSchema,
-        profileURL?: string,
         bankAccount?: {
             accountNum: string,
             routingNum: string
@@ -50,6 +54,8 @@ export class User implements UserSchema {
         this.driverInfo = driverInfo
         this.riderInfo = riderInfo
         this.profileURL = profileURL
+        this.stripeCustomerID = stripeCustomerID
+        this.profilePicStoragePath = profilePicStoragePath
         this.bankAccount = bankAccount
     }
 

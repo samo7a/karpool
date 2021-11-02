@@ -14,7 +14,7 @@ import { GeoDistance } from "../../utils/misc";
 import { UserSchema } from "../../data-access/user/schema";
 import { sendCustomNotification } from "../../features/notifications/notifications";
 import { NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
-import {  VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
@@ -106,7 +106,7 @@ export class TripService {
     }
 
 
-    async createScheduledTrip(tripID : string): Promise<String>{
+    async createScheduledTrip(tripID: string): Promise<String> {
 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
@@ -121,14 +121,14 @@ export class TripService {
 
             driverID: trip.driverID,
 
-            vehicleID: car,
+            vehicleID: car.id,
 
             startTime: trip.startTime,
 
             startAddress: trip.startAddress,
 
             endAddress: trip.endAddress,
-            
+
             startLocation: trip.startLocation,
 
             endLocation: trip.endLocation,
@@ -161,7 +161,7 @@ export class TripService {
         snapshot.forEach((element) => {
             tripIDs.push(element.riderID)
         })
-      
+
         const tokens = await this.notificationsDAO.getTokenList(tripIDs)
 
         //console.log(tokens)
@@ -683,26 +683,26 @@ export class TripService {
 
 
 
-    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string> {
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
-         trip.ridersRateDriver[riderID] = rating
+        trip.ridersRateDriver[riderID] = rating
 
-         await this.tripDAO.updateScheduledTrip(tripID, trip)
+        await this.tripDAO.updateScheduledTrip(tripID, trip)
 
-         return "Rating added Successfully!!"
+        return "Rating added Successfully!!"
     }
 
-    async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+    async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string> {
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
-         trip.driverRatesRiders[riderID] = rating
+        trip.driverRatesRiders[riderID] = rating
 
-         await this.tripDAO.updateScheduledTrip(tripID, trip)
+        await this.tripDAO.updateScheduledTrip(tripID, trip)
 
-         return "Rating added Successfully!!"
+        return "Rating added Successfully!!"
     }
 
 

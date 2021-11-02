@@ -1,5 +1,7 @@
 import * as admin from 'firebase-admin'
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 import { FirestoreKey } from '../../constants';
+import { DeepPartial } from '../../utils/types'
 import { fireEncode } from '../utils/encode';
 
 import { VehicleSchema } from "./types";
@@ -7,21 +9,16 @@ import { VehicleSchema } from "./types";
 
 export interface VehicleDAOInterface {
 
-    //Create vehicle
+    setVehicle(id: string, data: VehicleSchema): Promise<void>
 
-    /**
-     * This function creates a vehicle in the vehicles table.
-     * @param data 
-     */
-    createVehicle(data: VehicleSchema): Promise<void>
-
-    getVehicle(driverID: string): Promise <string>
+    getVehicle(driverID: string): Promise<{ id: string, vehicle: VehicleSchema }>
 
     updateVehicle(uid: string, data: VehicleSchema): Promise<void>
 
     //Edit Vehicle
     //Delete vehicle
 
+    deleteVehicle(id: string): Promise<void>
 }
 
 
@@ -33,24 +30,32 @@ export class VehicleDAO implements VehicleDAOInterface {
         this.db = db
     }
 
-    async createVehicle(data: VehicleSchema): Promise<void> {
-        await this.db.collection(FirestoreKey.vehicles).doc().create(fireEncode(data))
+    async setVehicle(id: string, data: VehicleSchema): Promise<void> {
+        await this.db.collection(FirestoreKey.vehicles).doc(id).set(fireEncode(data))
     }
 
 
-    async updateVehicle(uid: string, data: Partial<VehicleSchema>): Promise<void>{
+    async updateVehicle(uid: string, data: DeepPartial<VehicleSchema>): Promise<void>{
         const driver = this.db.collection(FirestoreKey.users).doc(uid)
+
         await driver.update(fireEncode(data))
     }
 
-    async getVehicle(driverID: string): Promise<string>{
+    getVehicle(driverID: string): Promise<{ id: string, vehicle: VehicleSchema }> {
 
-        const car = await this.db.collection(FirestoreKey.vehicles).where('uid', '==', driverID).get()
-            
-        return car.docs[0].id
+        return this.db.collection(FirestoreKey.vehicles).doc(driverID).get().then(doc => {
+            if (doc.exists) {
+                return { id: doc.id, vehicle: doc.data()! as VehicleSchema }
+            } else {
+                return Promise.reject(new HttpsError('not-found', `Vehicle for id: ${driverID} not found.`))
+            }
+        })
 
     }
 
+    async deleteVehicle(id: string): Promise<void> {
+        await this.db.collection(FirestoreKey.vehicles).doc(id).delete()
+    }
 
 
 }

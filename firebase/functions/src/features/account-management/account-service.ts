@@ -62,7 +62,7 @@ export class AccountService {
                 }
             })
 
-            const createVehiclePromise = this.vehicleDAO.createVehicle({
+            const createVehiclePromise = this.vehicleDAO.setVehicle(uid, {
                 color: driverInfo.color,
                 insurance: {
                     provider: driverInfo.provider,
@@ -87,9 +87,9 @@ export class AccountService {
                 roles: roles,
                 riderInfo: {
                     rating: 0,
-                    ratingCount: 0,
-                    stripeCustomerID: stripeCustomerID
-                }
+                    ratingCount: 0
+                },
+                stripeCustomerID: stripeCustomerID
             })
 
         } else {
@@ -133,13 +133,10 @@ export class AccountService {
     async registerUser(data: UserRegistrationData): Promise<void> {
 
         try {
-            const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
+            const { downloadURL, storagePath } = await this.cloudStorageDAO.writeFile('profile-pictures', data.uid, 'jpg', data.profilePicData, 'base64', true)
 
             //Create credit card document if applicable.
-            let stripeCustomerID: string = ''
-            if (!data.isDriver) {
-                stripeCustomerID = await this.paymentDAO.createCustomer()
-            }
+            let stripeCustomerID: string = await this.paymentDAO.createCustomer()
 
             const driverInfo: DriverInfoSchema = {
                 rating: 0,
@@ -153,8 +150,7 @@ export class AccountService {
 
             const riderInfo: RiderInfoSchema = {
                 rating: 0,
-                ratingCount: 0,
-                stripeCustomerID: stripeCustomerID
+                ratingCount: 0
             }
 
             //Create user document
@@ -169,12 +165,14 @@ export class AccountService {
                 roles: data.isDriver ? { 'Driver': true } : { 'Rider': true },
                 driverInfo: data.isDriver ? driverInfo : undefined,
                 riderInfo: data.isDriver ? undefined : riderInfo,
-                profileURL: downloadURL
+                profileURL: downloadURL,
+                profilePicStoragePath: storagePath,
+                stripeCustomerID: stripeCustomerID
             })
 
             //Create vehicle document if applicable
             if (data.isDriver) {
-                await this.vehicleDAO.createVehicle({
+                await this.vehicleDAO.setVehicle(data.uid, {
                     color: data.color!,
                     insurance: {
                         provider: data.provider!,
@@ -217,7 +215,11 @@ export class AccountService {
                     phone: user.phone,
                     profileURL: user.profileURL,
                     driverRating: user.driverInfo?.rating,
-                    roles: user.roles
+                    roles: user.roles,
+                    bankAccount: {
+                        routing: user.driverInfo?.routingNum ?? '',
+                        account: user.driverInfo?.accountNum ?? ''
+                    }
                 }
             } else {
                 throw new HttpsError('failed-precondition', `User ${uid} is not a driver.`)
@@ -263,22 +265,8 @@ export class AccountService {
         })
     }
 
-    /**
-     * 
-     * @param uid 
-     * @returns 
-     */
-    deleteRiderProfile(uid: string): Promise<void> {
-        /**
-         * TODO:
-         * If account is only registered as a rider, delete the entire account.
-         * If the account is registered as a driver as well, only delete the rider specific account content.
-         * Delete reviews of the rider.
-         * Delete reviews authored by the rider.
-         * Delete payment info if not stored in user document.
-         */
-        return Promise.reject(new Error('Unimplemented.'))
-    }
+
+
 
     async editUserProfile(uid: string, phoneNum?: string, email?: string, pic?: string): Promise<void> {
         /**
@@ -298,9 +286,18 @@ export class AccountService {
         return this.userDAO.updateUserAccount(uid, data)
     }
 
+    async setBankAccount(uid: string, routingNum: string, accountNum: string): Promise<void> {
+
+        const user = await this.userDAO.getAccountData(uid)
+
+        const last4 = accountNum.substr(accountNum.length - 4, 4)
+
+        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, last4, routingNum)
+    }
+
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
         const user = await this.userDAO.getAccountData(uid)
-        const customerID = await user.riderInfo?.stripeCustomerID
+        const customerID = await user.stripeCustomerID
         if (customerID === undefined) {
             throw new Error(`User needs a customer id to add a credit card.`)
         }
@@ -310,6 +307,28 @@ export class AccountService {
 
     async getCreditCards(uid: string): Promise<CreditCardSchema[]> {
         return this.paymentDAO.getCreditCards(uid)
+    }
+
+
+    async deleteAccount(uid: string): Promise<void> {
+        //delete Auth account
+        //Move User record to archived users
+        //Vehicle  to archive
+        //Delete stripe customer
+        //Delete profile picture
+
+        const user = await this.userDAO.getAccountData(uid)
+
+        await this.cloudStorageDAO.deleteFile(user.profilePicStoragePath)
+
+        await this.paymentDAO.deleteCustomer(user.stripeCustomerID)
+
+        await this.userDAO.deleteAccountData(uid)
+
+        await this.vehicleDAO.deleteVehicle(uid)
+
+        await this.authDAO.deleteAccount(uid)
+
     }
 
 
@@ -334,43 +353,47 @@ export class AccountService {
 
     async getEarnings(driverID: string): Promise<(week[] | month[])[]> {
         const weekTemp: week = {
-            weekNum:0,
+            weekNum: 0,
             amount: 0
         }
         const monthTemp: month = {
-            month:0,
-            amount:0
+            month: 0,
+            amount: 0
         }
         var weekList: week[] = []
-        var monthList: month[]= [] 
-        for(let i=0; i<53;i++){
+        var monthList: month[] = []
+        for (let i = 0; i < 53; i++) {
             weekList.push(weekTemp)
         }
-        for(let i=0; i<12;i++){
+        for (let i = 0; i < 12; i++) {
             monthList.push(monthTemp)
         }
         const allDocs = await this.userDAO.getAllEarnings(driverID)
         allDocs.map(doc => {
-            const weekIndex= getWeek(doc.date.toDate(),0)
+            const weekIndex = getWeek(doc.date.toDate(), 0)
             const monthIndex = doc.date.toDate().getMonth()
 
             let tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
+
                 amount : tempWeekAmount  += doc.amount
+
             }
             let tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
                 month: monthIndex,
-                amount:  tempMonthAmount += doc.amount
+                amount: tempMonthAmount += doc.amount
             }
         })
         const earningList = [weekList, monthList]
+
 
         return earningList 
     }
 
    
+
 
 }
 
@@ -382,29 +405,31 @@ export class AccountService {
  * @param int dowOffset
  * @return int
  */
- function getWeek(date: Date, dowOffset: number) {
+ function getWeek(date: Date, offset: number) {
     /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
-    
-        var newYear = new Date(date.getFullYear(),0,1);
-        var day = newYear.getDay() - dowOffset; //the day of week the year begins on
-        day = (day >= 0 ? day : day + 7);
-        var daynum = Math.floor((date.getTime() - newYear.getTime() - 
-        (date.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
-        var weeknum;
-        //if the year starts before the middle of a week
-        if(day < 4) {
-            weeknum = Math.floor((daynum+day-1)/7) + 1;
-            if(weeknum > 52) {
-                const nYear = new Date(date.getFullYear() + 1,0,1);
-                let nday = nYear.getDay() - dowOffset;
-                nday = nday >= 0 ? nday : nday + 7;
-                /*if the next year starts before the middle of
-                  the week, it is week #1 of that year*/
-                weeknum = nday < 4 ? 1 : 53;
-            }
+
+    // eslint-disable-next-line no-param-reassign
+    const dowOffset = typeof (offset) === 'number' ? offset : 0; //default dowOffset to zero
+    var newYear = new Date(date.getFullYear(), 0, 1);
+    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
+    day = (day >= 0 ? day : day + 7);
+    var daynum = Math.floor((date.getTime() - newYear.getTime() -
+        (date.getTimezoneOffset() - newYear.getTimezoneOffset()) * 60000) / 86400000) + 1;
+    var weeknum;
+    //if the year starts before the middle of a week
+    if (day < 4) {
+        weeknum = Math.floor((daynum + day - 1) / 7) + 1;
+        if (weeknum > 52) {
+            const nYear = new Date(date.getFullYear() + 1, 0, 1);
+            let nday = nYear.getDay() - dowOffset;
+            nday = nday >= 0 ? nday : nday + 7;
+            /*if the next year starts before the middle of
+              the week, it is week #1 of that year*/
+            weeknum = nday < 4 ? 1 : 53;
         }
-        else {
-            weeknum = Math.floor((daynum+day-1)/7);
-        }
-        return weeknum;
+    }
+    else {
+        weeknum = Math.floor((daynum + day - 1) / 7);
+    }
+    return weeknum;
 }

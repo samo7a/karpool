@@ -4,6 +4,9 @@ import Stripe from 'stripe'
 import { FirestoreKey } from '../../constants'
 import { CreditCardSchema } from './schema'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
+import { UserSchema } from '../user/schema'
+import { DeepPartial } from '../../utils/types'
+// import { AccountSubtype, CountryCode, LinkTokenCreateRequest, PlaidApi } from 'plaid'
 
 export interface PaymentDAOInterface {
 
@@ -11,6 +14,8 @@ export interface PaymentDAOInterface {
      * Creates a customer in stripe and returns the customerID.
      */
     createCustomer(): Promise<string>
+
+    deleteCustomer(id: string): Promise<void>
 
 
     /**
@@ -35,13 +40,7 @@ export interface PaymentDAOInterface {
     deleteCreditCard(creditCardID: string): Promise<void>
 
 
-    createBankAccount(uid: string, customerID: string, email: string,): Promise<void>
-
-    deleteBankAccount(): Promise<void>
-
-    updateBankAccount(): Promise<void>
-
-    verifyBankAccount(): Promise<void>
+    setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any>
 
 
 }
@@ -52,6 +51,8 @@ export class PaymentDAO implements PaymentDAOInterface {
 
     private db: firestore.Firestore
 
+    // private plaid: PlaidApi
+
     constructor(stripePublicKey: string, stripePrivateKey: string, db: firestore.Firestore) {
         this.api = new Stripe(stripePrivateKey, { apiVersion: '2020-08-27' })
         this.db = db
@@ -61,6 +62,10 @@ export class PaymentDAO implements PaymentDAOInterface {
         return this.api.customers.create().then(res => {
             return res.id
         })
+    }
+
+    async deleteCustomer(id: string): Promise<void> {
+        await this.api.customers.del(id)
     }
 
     async createCreditCard(uid: string, customerID: string, cardToken: string): Promise<void> {
@@ -97,34 +102,78 @@ export class PaymentDAO implements PaymentDAOInterface {
     }
 
 
-    createBankAccount(uid: string, customerID: string, email: string,): Promise<void> {
-        return Promise.reject()
-        //Create token client side and send to the server for PCI compliance.
-        //Create bank account object attached to the customer, server side.
+    async setBankAccount(uid: string, customerID: string, accountNum: string, routingNum: string): Promise<any> {
 
+        const data: DeepPartial<UserSchema> = {
+            driverInfo: {
+                accountNum: accountNum,
+                routingNum: routingNum
+            }
+        }
 
-        // this.api.customers.createSource(customerID, { source: '' })
-        // return this.api.sources.create({
-        //     type: 'ach_credit_transfer',
-        //     currency: 'USD',
-        //     customer: customerID,
-        //     owner: {
-        //         email: email
+        await this.db.collection(FirestoreKey.users).doc(uid).update(data)
+
+        //TODO: Stripe Integration
+        // return this.api.tokens.create({
+        //     bank_account: {
+        //         country: 'US',
+        //         currency: 'usd',
+        //         account_holder_name: 'Jenny Rosen',
+        //         account_holder_type: 'individual',
+        //         routing_number: routingNum,
+        //         account_number: accountNum
         //     }
+        // }).then(res => {
+        //     return this.api.customers.createSource(customerID, { source: res.id })
+        // })
+        // //Create token client side and send to the server for PCI compliance.
+        // //Create bank account object attached to the customer, server side.
+        // return this.api.customers.createSource(customerID, { source: accountToken }).then(res => {
+        //     console.log(res.object, res) //TODO: Update user document.
         // })
     }
 
-    deleteBankAccount(): Promise<void> {
-        return Promise.reject()
+
+    async createCharge(amount: number, cardID: string, description: string): Promise<void> {
+        await this.api.charges.create({
+            amount: amount,
+            source: cardID,
+            currency: 'usd',
+            description: description
+        })
+        //Payment method id 
+        //TRIP ID
+        //Amount
     }
 
-    updateBankAccount(): Promise<void> {
-        return Promise.reject()
+
+    async createPayout(amount: number): Promise<void> {
+        await this.api.payouts.create({
+            source_type: 'bank_account',
+            amount: amount,
+            currency: 'usd'
+
+        })
     }
 
-    verifyBankAccount(): Promise<void> {
-        return Promise.reject()
-    }
+    // async createBankAccountLink(userID: string): Promise<string> {
+    //     const request: LinkTokenCreateRequest = {
+    //         user: {
+    //             client_user_id: userID,
+    //         },
+    //         client_name: 'Karpool',
+    //         products: [],
+    //         country_codes: [CountryCode.Us],
+    //         language: 'en',
+    //         webhook: 'https://sample-web-hook.com',
+    //         account_filters: {
+    //             depository: {
+    //                 account_subtypes: [AccountSubtype.Checking, AccountSubtype.Savings]
+    //             },
+    //         },
+    //     };
+    //     return this.plaid.linkTokenCreate(request).then(res => res.data.link_token)
+    // }
 
 
 

@@ -2,13 +2,23 @@
 
 import * as functions from 'firebase-functions'
 import { newAccountService, newVehicleDAO } from '../../index'
-import { validateRegistrationData } from './validation'
+import { validateRegistrationData, validateVehicleUpdateData } from './validation'
 import { validateBool, validateDate, validateString } from '../../utils/validation'
 import { validateAuthorization } from '../../data-access/auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
 import { VehicleSchema } from '../../data-access/vehicle/types'
 
 
+
+export const deleteAccount = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    await newAccountService().deleteAccount(callerUID).catch(err => {
+        throw new HttpsError('internal', `Cannot delete user account. Reason: ${err.message}`)
+    })
+
+})
 
 
 /**
@@ -51,6 +61,17 @@ export const addRole = functions.https.onCall(async (data, context) => {
 })
 
 
+export const setBankAccount = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    const accountNum: string = validateString(data.accountNum)
+    const routingNum: string = validateString(data.routingNum)
+
+    return newAccountService().setBankAccount(callerUID, routingNum, accountNum)
+
+})
+
 
 export const addCreditCard = functions.https.onCall(async (data, context) => {
 
@@ -77,6 +98,8 @@ export const deleteCreditCard = functions.https.onCall(async (data, context) => 
     return newAccountService().deleteCreditCard(uid, cardID)
 
 })
+
+
 
 
 /**
@@ -132,15 +155,41 @@ export const getUser = functions.https.onCall(async (data, context) => {
         .then(fields => {
             return JSON.parse(JSON.stringify(fields))
         })
-      
+
 })
 
 export const editUserProfile = functions.https.onCall(async (data, context) => {
-    return newAccountService().editUserProfile(data.uid, data.phoneNum, data.email, data.pic)
+
+    const callerUID = validateAuthorization(context)
+
+    return newAccountService().editUserProfile(callerUID, data.phoneNum, data.email, data.pic)
+
 })
 
-export const getEarnings = functions.https.onCall(async (data,context) => {
-    return newAccountService().getEarnings(data.uid)
+export const getEarnings = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    return newAccountService().getEarnings(callerUID)
+
+})
+
+
+export const updateVehicle = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    //Only the authenticated caller can update their vehicle.
+    return newVehicleDAO().updateVehicle(callerUID, validateVehicleUpdateData(data))
+})
+
+
+export const getVehicle = functions.https.onCall(async (data, context) => {
+
+    const callerUID = validateAuthorization(context)
+
+    //Only the authenticated caller can get their vehicle.
+    return newVehicleDAO().getVehicle(callerUID)
 })
 
 
@@ -165,4 +214,5 @@ function validateDriverInfo(data: any): Partial<VehicleSchema>{
         year: validateString(data.year)
     }
 }
+
 
