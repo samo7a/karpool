@@ -3,10 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class DriverRidesHistoryScreen extends StatefulWidget {
@@ -17,16 +15,13 @@ class DriverRidesHistoryScreen extends StatefulWidget {
 }
 
 class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
-  late User user = Provider.of<User>(context, listen: false);
   late Future<List<DriverTrip>> trips;
 
   Future<List<DriverTrip>> tripFromFireBase() async {
-    String uid = user.uid;
-    final obj = <String, dynamic>{
-      "driverID": uid,
+    final obj = <String, bool>{
+      "isDriver": true,
     };
-    //TODO: change the name of the function
-    HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getDriverTrips');
+    HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getCompletedTrips');
     List<DriverTrip> tripList = [];
     final result;
     final data;
@@ -34,6 +29,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
 
     try {
       result = await getTrips(obj);
+      print(result.data);
       data = result.data;
       length = result.data.length;
       if (length == 0) {
@@ -41,7 +37,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
       }
       print("start for loop");
       for (int i = 0; i < length; i++) {
-        String tripId = data[i]["docID"];
+        String tripId = data[i]["tripID"];
         String driverId = data[i]["driverID"];
         dynamic timestamp = data[i]["startTime"];
         DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
@@ -49,24 +45,15 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
         String time = DateFormat('hh:mm a').format(ts);
         String startAddress = data[i]["startAddress"] ?? " ";
         String endAddress = data[i]["endAddress"] ?? " ";
-        int seatCount = data[i]["seatsAvailable"];
         List<Map<String, dynamic>> ridersInfo = [];
         List<Map<String, String>> riders = [];
-        Map<String, String> rider = Map<String, String>.from(data[i]["riderStatus"]);
-        rider.forEach((k, v) => {
-              riders.add({
-                "uid": k.toString(),
-                "status": v.toString(),
-              })
-            });
 
-        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+        double estimatedPrice = double.parse((data[i]["totalCost"] ?? 0.0).toStringAsFixed(2));
 
         String polyLine = data[i]["polyline"];
-        bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
-            double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2));
-        double estimatedDuration = data[i]["estimatedDistance"] / 60;
+            double.parse((data[i]["distance"] / 1609).toStringAsFixed(2));
+        double estimatedDuration = data[i]["distance"] / 60;
         Map<String, double> startPoint = {
           "latitude": data[i]["startLocation"]["_latitude"],
           "longitude": data[i]["startLocation"]["_longitude"],
@@ -84,9 +71,9 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
             toAddress: endAddress,
             estimatedPrice: estimatedPrice,
             driverId: driverId,
-            isOpen: isOpen,
+            isOpen: false,
             polyLine: polyLine,
-            seatNumbers: seatCount,
+            seatNumbers: 0,
             estimatedDistance: estimatedDistance,
             estimatedDuration: estimatedDuration,
             estimatedFare: estimatedPrice,
