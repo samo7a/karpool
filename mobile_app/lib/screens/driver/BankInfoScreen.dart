@@ -79,7 +79,7 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       initRoutingNum = user.getRoutingNum;
     });
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
