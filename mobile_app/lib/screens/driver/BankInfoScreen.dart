@@ -73,6 +73,13 @@ class _BankInfoScreen extends State<BankInfoScreen> {
     }
   }
 
+  Future _onRefresh() async {
+    setState(() {
+      initAccountNum = user.getAccountNum;
+      initRoutingNum = user.getRoutingNum;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
@@ -95,212 +102,187 @@ class _BankInfoScreen extends State<BankInfoScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 5,
-              ),
-              Text(
-                'Routing Number',
-                style: TextStyle(
-                  fontSize: size.FONT_SIZE * 18,
-                  color: kWhite,
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: size.BLOCK_HEIGHT * 5,
                 ),
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT,
-              ),
-              Form(
-                key: routingKey,
-                autovalidateMode: AutovalidateMode.always,
-                child: Container(
-                  child: TextFormField(
-                    onChanged: (value) => setState(() {
-                      newRoutingNum = value;
-                    }),
-                    initialValue: initRoutingNum,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Routing Number",
-                      hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
-                      contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: BorderSide(
-                          color: kRed,
-                          width: size.BLOCK_WIDTH,
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    validator: MultiValidator(
-                      [
-                        MinLengthValidator(9,
-                            errorText: "Please enter a valid Routing Number!"),
-                        MaxLengthValidator(9,
-                            errorText: "Please enter a valid Routing Number!"),
-                      ],
-                    ),
-                  ),
-                  height: size.BLOCK_HEIGHT * 6,
-                  width: size.BLOCK_WIDTH * 65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: kWhite,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 3,
-              ),
-              Text(
-                'Account Number',
-                style: TextStyle(
-                  fontSize: size.FONT_SIZE * 18,
-                  color: kWhite,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT,
-              ),
-              Form(
-                key: accountKey,
-                autovalidateMode: AutovalidateMode.always,
-                child: Container(
-                  child: TextFormField(
-                    onChanged: (value) => setState(() {
-                      newAccountNum = value;
-                    }),
-                    initialValue: initAccountNum,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Account Number",
-                      hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
-                      contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
-                      errorBorder: UnderlineInputBorder(
-                        borderRadius: BorderRadius.circular(7),
-                        borderSide: BorderSide(
-                          color: kRed,
-                          width: size.BLOCK_WIDTH,
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    validator: MultiValidator(
-                      [
-                        MinLengthValidator(9,
-                            errorText: "Please enter a valid Account Number!"),
-                        MaxLengthValidator(12,
-                            errorText: "Please enter a valid Account Number!")
-                      ],
-                    ),
-                  ),
-                  height: size.BLOCK_HEIGHT * 6,
-                  width: size.BLOCK_WIDTH * 65,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: kWhite,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: size.BLOCK_HEIGHT * 4,
-              ),
-              // ignore: deprecated_member_use
-              FlatButton(
-                minWidth: size.BLOCK_WIDTH * 30,
-                height: size.BLOCK_HEIGHT * 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                color: Colors.green,
-                child: Text(
-                  'Confirm Change',
+                Text(
+                  'Routing Number',
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: size.FONT_SIZE * 18,
+                    color: kWhite,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(
+                  height: size.BLOCK_HEIGHT,
+                ),
+                Form(
+                  key: routingKey,
+                  autovalidateMode: AutovalidateMode.always,
+                  child: Container(
+                    child: TextFormField(
+                      onChanged: (value) => setState(() {
+                        newRoutingNum = value;
+                      }),
+                      initialValue: initRoutingNum,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Routing Number",
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
+                        contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
+                        errorBorder: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide: BorderSide(
+                            color: kRed,
+                            width: size.BLOCK_WIDTH,
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      validator: MultiValidator(
+                        [
+                          MinLengthValidator(9,
+                              errorText:
+                                  "Please enter a valid Routing Number!"),
+                          MaxLengthValidator(9,
+                              errorText:
+                                  "Please enter a valid Routing Number!"),
+                        ],
+                      ),
+                    ),
+                    height: size.BLOCK_HEIGHT * 6,
+                    width: size.BLOCK_WIDTH * 65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: kWhite,
+                    ),
                   ),
                 ),
-                onPressed: () async {
-                  return showDialog<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_WIDTH * 7),
-                        ),
-                        title: Text(
-                          "Update Bank Information",
-                          style: TextStyle(
-                            color: Color(0xffffffff),
+                SizedBox(
+                  height: size.BLOCK_HEIGHT * 3,
+                ),
+                Text(
+                  'Account Number',
+                  style: TextStyle(
+                    fontSize: size.FONT_SIZE * 18,
+                    color: kWhite,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(
+                  height: size.BLOCK_HEIGHT,
+                ),
+                Form(
+                  key: accountKey,
+                  autovalidateMode: AutovalidateMode.always,
+                  child: Container(
+                    child: TextFormField(
+                      onChanged: (value) => setState(() {
+                        newAccountNum = value;
+                      }),
+                      initialValue: initAccountNum,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Account Number",
+                        hintStyle: TextStyle(fontSize: size.FONT_SIZE * 15),
+                        contentPadding: EdgeInsets.all(size.BLOCK_WIDTH * 2),
+                        errorBorder: UnderlineInputBorder(
+                          borderRadius: BorderRadius.circular(7),
+                          borderSide: BorderSide(
+                            color: kRed,
+                            width: size.BLOCK_WIDTH,
                           ),
                         ),
-                        content: Text(
-                          "Are you sure you want to update your bank information?",
-                          style: TextStyle(
-                            color: Color(0xffffffff),
-                            fontFamily: 'Glory',
-                            fontWeight: FontWeight.bold,
-                            fontSize: size.FONT_SIZE * 22,
+                      ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      validator: MultiValidator(
+                        [
+                          MinLengthValidator(9,
+                              errorText:
+                                  "Please enter a valid Account Number!"),
+                          MaxLengthValidator(12,
+                              errorText: "Please enter a valid Account Number!")
+                        ],
+                      ),
+                    ),
+                    height: size.BLOCK_HEIGHT * 6,
+                    width: size.BLOCK_WIDTH * 65,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: kWhite,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: size.BLOCK_HEIGHT * 4,
+                ),
+                // ignore: deprecated_member_use
+                FlatButton(
+                  minWidth: size.BLOCK_WIDTH * 30,
+                  height: size.BLOCK_HEIGHT * 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  color: Colors.green,
+                  child: Text(
+                    'Confirm Change',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: size.FONT_SIZE * 18,
+                    ),
+                  ),
+                  onPressed: () async {
+                    return showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(size.BLOCK_WIDTH * 7),
                           ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Container(
-                              height: size.BLOCK_HEIGHT * 7,
-                              width: size.BLOCK_WIDTH * 30,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
-                                color: Color(0xff001233),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "No",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xffffffff),
-                                    fontFamily: 'Glory',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: size.FONT_SIZE * 22,
-                                  ),
-                                ),
-                              ),
+                          title: Text(
+                            "Update Bank Information",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
                             ),
                           ),
-                          Padding(
-                            padding:
-                                EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
-                            child: TextButton(
-                              onPressed: () {
-                                updateBankInfo();
-                                Navigator.pop(context);
-                              },
+                          content: Text(
+                            "Are you sure you want to update your bank information?",
+                            style: TextStyle(
+                              color: Color(0xffffffff),
+                              fontFamily: 'Glory',
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.FONT_SIZE * 22,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
                               child: Container(
                                 height: size.BLOCK_HEIGHT * 7,
                                 width: size.BLOCK_WIDTH * 30,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
                                       size.BLOCK_WIDTH * 5),
-                                  color: Color(0xffC80404),
+                                  color: Color(0xff001233),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    "Yes",
+                                    "No",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Color(0xffffffff),
@@ -312,16 +294,47 @@ class _BankInfoScreen extends State<BankInfoScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                        backgroundColor: Color(0xff0353A4),
-                      );
-                    },
-                    barrierDismissible: true,
-                  );
-                },
-              ),
-            ],
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: size.BLOCK_WIDTH * 2.5),
+                              child: TextButton(
+                                onPressed: () {
+                                  updateBankInfo();
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: size.BLOCK_HEIGHT * 7,
+                                  width: size.BLOCK_WIDTH * 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
+                                    color: Color(0xffC80404),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Yes",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xffffffff),
+                                        fontFamily: 'Glory',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: size.FONT_SIZE * 22,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          backgroundColor: Color(0xff0353A4),
+                        );
+                      },
+                      barrierDismissible: true,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
