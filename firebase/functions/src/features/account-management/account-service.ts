@@ -274,13 +274,14 @@ export class AccountService {
          * edit fields where necessary
          * assuming pic is given as string
         **/
-        const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', pic, 'base64', true)
 
-        const user = await this.userDAO.getAccountData(uid)
+
+        const meta = pic == undefined ? undefined : (await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', pic, 'base64', true))
+
         const data: Partial<UserSchema> = {
-            phone: phoneNum ? phoneNum : user.phone,
-            email: email ? email : user.email,
-            profileURL: pic ? downloadURL : user.profileURL
+            phone: phoneNum ? phoneNum : undefined,
+            email: email ? email : undefined,
+            profileURL: meta?.downloadURL
         }
 
         return this.userDAO.updateUserAccount(uid, data)
@@ -377,7 +378,7 @@ export class AccountService {
             weekList[weekIndex] = {
                 weekNum: weekIndex,
 
-                amount : tempWeekAmount  += doc.amount
+                amount: tempWeekAmount += doc.amount
 
             }
             let tempMonthAmount = monthList[monthIndex].amount
@@ -389,10 +390,10 @@ export class AccountService {
         const earningList = [weekList, monthList]
 
 
-        return earningList 
+        return earningList
     }
 
-   
+
 
 
 }
@@ -405,7 +406,7 @@ export class AccountService {
  * @param int dowOffset
  * @return int
  */
- function getWeek(date: Date, offset: number) {
+function getWeek(date: Date, offset: number) {
     /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
 
     // eslint-disable-next-line no-param-reassign

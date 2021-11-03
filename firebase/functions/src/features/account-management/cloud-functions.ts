@@ -193,20 +193,20 @@ export const getVehicle = functions.https.onCall(async (data, context) => {
 })
 
 
-export const updateDriverInfo = functions.https.onCall(async (data,context) => {
+export const updateDriverInfo = functions.https.onCall(async (data, context) => {
     const callerUID = validateAuthorization(context)
-    
+
     const formatedData = validateDriverInfo(data)
-    return newVehicleDAO().updateVehicle(callerUID,formatedData)
+    return newVehicleDAO().updateVehicle(callerUID, formatedData)
 })
 
-function validateDriverInfo(data: any): Partial<VehicleSchema>{
+function validateDriverInfo(data: any): Partial<VehicleSchema> {
     return {
-        color: validateString(data.color) ,
+        color: validateString(data.color),
         insurance: {
             provider: validateString(data.insurance.provider),
             coverageType: validateString(data.insurance.coverageType),
-            startDate: validateDate(data.insurance.startDate) ,
+            startDate: validateDate(data.insurance.startDate),
             endDate: validateDate(data.insurance.endDate)
         },
         licensePlateNum: validateString(data.licensePlate),

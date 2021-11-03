@@ -19,6 +19,7 @@ import { RouteDAO, RouteDAOInterface } from "./data-access/route/dao";
  */
 import 'reflect-metadata';
 import { NotificationsDAO } from './features/notifications/notificationsDAO';
+import { PaymentService } from './features/payments/payment-service';
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -85,6 +86,10 @@ export function newTripService(): TripService {
         newNotificationDAO(),
         newVehicleDAO(),
     )
+}
+
+export function newPaymentService(): PaymentService {
+    return new PaymentService(newUserDao(), newPaymentDAO())
 }
 
 

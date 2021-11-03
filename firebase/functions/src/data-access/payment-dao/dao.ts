@@ -134,27 +134,32 @@ export class PaymentDAO implements PaymentDAOInterface {
     }
 
 
-    async createCharge(amount: number, cardID: string, description: string): Promise<void> {
+    /**
+     * 
+     * @param amount In cents.
+     * @param paymentSourceID  Source of payment. (Bank account id, card id, token).
+     * @param customerID Stripe customer id.
+     * @param description An optional description of the charge.
+     */
+    async createCharge(amount: number, paymentSourceID: string, customerID: string, description?: string): Promise<void> {
         await this.api.charges.create({
             amount: amount,
-            source: cardID,
+            source: paymentSourceID,
+            customer: customerID,
             currency: 'usd',
             description: description
         })
-        //Payment method id 
-        //TRIP ID
-        //Amount
     }
 
 
-    async createPayout(amount: number): Promise<void> {
-        await this.api.payouts.create({
-            source_type: 'bank_account',
-            amount: amount,
-            currency: 'usd'
+    // async createPayout(amount: number): Promise<void> {
+    //     await this.api.payouts.create({
+    //         source_type: 'bank_account',
+    //         amount: amount,
+    //         currency: 'usd'
 
-        })
-    }
+    //     })
+    // }
 
     // async createBankAccountLink(userID: string): Promise<string> {
     //     const request: LinkTokenCreateRequest = {
