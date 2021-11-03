@@ -256,6 +256,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                             "tripID": trip.tripId,
                             "rating": -1.0,
                             "riderID": user.uid,
+                            "driverID": trip.driverId,
                           });
 
                           EasyLoading.dismiss();
@@ -303,7 +304,10 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                         ),
                       ),
                       onRatingUpdate: (value) {
-                        driverRating = value;
+                        setState(() {
+                          driverRating = value;
+                        });
+
                         print(driverRating);
                       },
                     ),
@@ -323,6 +327,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                             "tripID": trip.tripId,
                             "rating": driverRating * 1.0,
                             "riderID": user.uid,
+                            "driverID": trip.driverId,
                           });
                           EasyLoading.dismiss();
                           Navigator.pushNamedAndRemoveUntil(

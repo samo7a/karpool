@@ -69,7 +69,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   String _platformVersion = 'Unknown';
   String _instruction = "";
   late MapBoxNavigation _directions;
-  
+
   void listenToLocation() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -410,6 +410,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                                         "tripID": trip.tripId,
                                         "rating": -1,
                                         "riderID": rider.getUid,
+                                        "driverID": trip.driverId,
                                       });
 
                                       setState(() {
@@ -482,6 +483,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                                         "tripID": trip.tripId,
                                         "rating": rating,
                                         "riderID": rider.getUid,
+                                        "driverID": trip.driverId,
                                       });
 
                                       setState(() {
