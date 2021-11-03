@@ -48,8 +48,9 @@ class TopDrawer extends StatelessWidget {
                 image: DecorationImage(
                   image: NetworkImage(
                     user.profileURL,
+                    scale: 1,
                   ),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
             ),
@@ -58,7 +59,7 @@ class TopDrawer extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  user.firstName + " "+user.lastName,
+                  user.firstName + " " + user.lastName,
                   style: TextStyle(
                     fontFamily: 'Glory',
                     fontSize: size.FONT_SIZE * 24,

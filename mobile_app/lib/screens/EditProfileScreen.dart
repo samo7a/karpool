@@ -100,11 +100,11 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
 
   void changePhoneNum() async {
     EasyLoading.show(status: "Updating phone number!");
-    if (!formKey.currentState!.validate()) {
-      EasyLoading.dismiss();
-      EasyLoading.showError("Enter a valid phone number!");
-      return;
-    }
+    // if (!formKey.currentState!.validate()) {
+    //   EasyLoading.dismiss();
+    //   EasyLoading.showError("Enter a valid phone number!");
+    //   return;
+    // }
     String phoneNumber = user.getPhoneNumber;
     String newPhoneNumber = phoneString;
     if (phoneNumber.trim() == newPhoneNumber.trim()) {
