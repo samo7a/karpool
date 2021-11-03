@@ -12,7 +12,10 @@ export interface VehicleDAOInterface {
 
     getVehicle(driverID: string): Promise<{ id: string, vehicle: VehicleSchema }>
 
-    updateVehicle(id: string, data: Partial<VehicleSchema>): Promise<void>
+    updateVehicle(uid: string, data: VehicleSchema): Promise<void>
+
+    //Edit Vehicle
+    //Delete vehicle
 
     deleteVehicle(id: string): Promise<void>
 }

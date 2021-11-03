@@ -185,7 +185,8 @@ export interface ScheduleTripSchema {
      * 
     */
     polyline: string
-
+    riders: Record<string, boolean>
+      
 
 }
 

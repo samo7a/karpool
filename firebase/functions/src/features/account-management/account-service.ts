@@ -376,42 +376,23 @@ export class AccountService {
             let tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
-                amount: tempWeekAmount += doc.amount
+
+                amount : tempWeekAmount  += doc.amount
+
             }
             let tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
                 month: monthIndex,
                 amount: tempMonthAmount += doc.amount
             }
-
         })
-
         const earningList = [weekList, monthList]
 
-        return earningList
 
+        return earningList 
     }
 
-    // async updateDriverInfo(driverID: string, data: DriverAddRoleInfo ): Promise<void>{
-    //     //confirm that user is a driver
-    //     //update driver/car info
-    //    await this.vehicleDAO.createVehicle({
-    //        color: data.color,
-    //        insurance: {
-    //            provider: data.provider,
-    //            coverageType: data.coverage,
-    //            startDate: new Date(data.startDate),
-    //            endDate: new Date(data.endDate)
-    //        },
-    //        licensePlateNum: data.plateNum,
-    //        make: data.make,
-    //        year: data.year,
-    //        uid: driverID
-    //    })
-    // }
-
-
-
+   
 
 
 }
@@ -424,7 +405,7 @@ export class AccountService {
  * @param int dowOffset
  * @return int
  */
-function getWeek(date: Date, offset: number) {
+ function getWeek(date: Date, offset: number) {
     /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
 
     // eslint-disable-next-line no-param-reassign
