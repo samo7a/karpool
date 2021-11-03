@@ -66,6 +66,8 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       print(data);
       EasyLoading.showSuccess("Bank information successfully updated.");
       EasyLoading.dismiss();
+      user.setAccountNum = newAccountNum;
+      user.setRoutingNum = newRoutingNum;
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError("Error updating bank information.");
@@ -79,7 +81,7 @@ class _BankInfoScreen extends State<BankInfoScreen> {
       initRoutingNum = user.getRoutingNum;
     });
   }
- 
+
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);

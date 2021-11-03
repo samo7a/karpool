@@ -36,6 +36,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   String initCarPlate = '';
   String initInsStartDate = '';
   String initInsEndDate = '';
+  String? originalStart;
+  String? originalEnd;
   bool success = false;
 
   // New Driver Car Info Strings
@@ -144,19 +146,15 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
 
     HttpsCallable changeVehicleInfo =
         FirebaseFunctions.instance.httpsCallable("account-updateVehicle");
-
-    var array = newInsStartDate.toString().split(" ");
-    newInsStartDate = array[0] + "T" + '00:00:000' + "Z";
-    array = newInsEndDate.toString().split(" ");
-    newInsEndDate = array[0] + "T" + '00:00:000' + "Z";
+    print(newInsStartDate);
 
     Map<String, dynamic> obj = {
       "color": newCarColor.trim(),
       "insurance": {
         "provider": newInsProvider.trim(),
         "coverageType": newInsType.trim(),
-        "startDate": newInsStartDate,
-        "endDate": newInsEndDate,
+        "startDate": originalStart,
+        "endDate": originalEnd,
       },
       "licensePlateNum": newCarPlate.trim(),
       "make": newCarBrand.trim(),
@@ -242,7 +240,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     dropdownSearchDecoration: InputDecoration(
                         fillColor: kWhite.withOpacity(0.4),
                         filled: true,
-                        prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
+                        prefixIcon:
+                            Icon(FontAwesomeIcons.car, color: kIconColor),
                         enabledBorder: UnderlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(size.BLOCK_HEIGHT * 1),
@@ -325,8 +324,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       decoration: InputDecoration(
                           fillColor: kWhite.withOpacity(0.4),
                           filled: true,
-                          prefixIcon:
-                              Icon(FontAwesomeIcons.calendar, color: kIconColor),
+                          prefixIcon: Icon(FontAwesomeIcons.calendar,
+                              color: kIconColor),
                           enabledBorder: UnderlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(size.BLOCK_HEIGHT * 1),
@@ -414,7 +413,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           PatternValidator(r"^[0-9a-zA-Z]{6}$",
                               errorText: "Please enter a valid license plate!"),
                         ]),
-                        onChanged: (value) => setState(() => newCarPlate = value),
+                        onChanged: (value) =>
+                            setState(() => newCarPlate = value),
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         style: TextStyle(fontWeight: FontWeight.bold)),
@@ -561,12 +561,16 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           mm = value.month.toString();
                         }
                         String yyyy = value.year.toString();
-                        String givenDate = yyyy + '-' + mm;
-                        setState(() => newInsStartDate = givenDate);
+                        String dd;
+                        if (value.day < 10) dd = "0" + value.day.toString();
+                        else dd = value.day.toString();
+                        String givenDate =
+                            yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
+                        setState(() => originalStart = givenDate);
                       },
                       validator: (value) {
                         var isBefore;
-                        if (newInsStartDate == '') return null;
+                        if (originalStart == '') return null;
                         if (value != null) {
                           String dd;
                           if (value.day < 10) {
@@ -591,11 +595,11 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           isBefore = false;
                         }
                         if (isBefore == true ||
-                            newInsStartDate == '' ||
-                            newInsStartDate == initInsStartDate)
+                            originalStart == '' ||
+                            originalStart == initInsStartDate)
                           return null;
                         else {
-                          print("We are here: $newInsStartDate");
+                          print("We are here: $originalStart");
                           return ('Your Insurance policy cannot start in the future!');
                         }
                       },
@@ -654,12 +658,16 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           mm = value.month.toString();
                         }
                         String yyyy = value.year.toString();
-                        String givenDate = yyyy + '-' + mm;
-                        setState(() => newInsEndDate = givenDate);
+                        String dd;
+                        if (value.day < 10) dd = "0" + value.day.toString();
+                        else dd = value.day.toString();
+                        String givenDate =
+                            yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
+                        setState(() => originalEnd = givenDate);
                       },
                       validator: (value) {
                         var isAfter;
-                        if (newInsEndDate == '') return null;
+                        if (originalEnd == '') return null;
                         if (value != null) {
                           String dd;
                           if (value.day < 10) {
@@ -684,8 +692,8 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           isAfter = true;
                         }
                         if (isAfter == false ||
-                            newInsEndDate == '' ||
-                            newInsEndDate == initInsEndDate)
+                            originalEnd == '' ||
+                            originalEnd == initInsEndDate)
                           return null;
                         else
                           return ('Your Insurance policy is expired!');
@@ -786,17 +794,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                 child: TextButton(
                                   onPressed: () {
                                     changeCarInfo();
-                                    if (success)
-                                      Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              DriverDashboardScreen(),
-                                        ),
-                                        (Route<dynamic> route) => false,
-                                      );
-                                    else
-                                      Navigator.pop(context);
+                                    Navigator.pop(context);
                                   },
                                   child: Container(
                                     height: size.BLOCK_HEIGHT * 7,
