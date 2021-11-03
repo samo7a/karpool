@@ -6,7 +6,6 @@ import { fireEncode } from '../utils/encode';
 
 import { VehicleSchema } from "./types";
 
-
 export interface VehicleDAOInterface {
 
     setVehicle(id: string, data: VehicleSchema): Promise<void>
@@ -33,8 +32,21 @@ export class VehicleDAO implements VehicleDAOInterface {
 
 
     async updateVehicle(id: string, data: DeepPartial<VehicleSchema>): Promise<void> {
-        const driver = this.db.collection(FirestoreKey.users).doc(id)
-        await driver.update(fireEncode(data))
+        // const driver = this.db.collection(FirestoreKey.vehicles).doc(id)
+
+        //     color: string
+        // insurance: {
+        //     provider: string
+        //     coverageType: string
+        //     startDate: Date
+        //     endDate: Date
+        // }
+        // licensePlateNum: string
+        // make: string
+        // year: string
+        // uid: string
+        // const data: Record<string, string> = {}
+
     }
 
     getVehicle(driverID: string): Promise<{ id: string, vehicle: VehicleSchema }> {

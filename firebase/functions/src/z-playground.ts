@@ -164,6 +164,7 @@ export const searchTrips = functions.https.onCall((data, context) => {
 
 import * as decoder from 'google-polyline'
 import { newRouteDAO, newTripDAO, newTripService } from '.';
+import { getEnv } from './utils/env-config';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {
 
@@ -226,5 +227,80 @@ export const testRemove = functions.https.onCall(async (data, context) => {
 
     return newTripDAO().removeGeoPoints(data.tripID)
 
+})
+
+import Stripe from 'stripe';
+
+/*
+
+createBank({
+    routingNum: '110000000',
+    accountNum: '000123456789',
+    customerID: 'acct_1JqmaYIQhiMj65Oz'
+})
+*/
+
+export const createBank = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.tokens.create({
+        bank_account: {
+            country: 'US',
+            currency: 'usd',
+            account_holder_name: 'Jenny Rosen',
+            account_holder_type: 'individual',
+            routing_number: data.routingNum,
+            account_number: data.accountNum
+        }
+    }).then(res => {
+        return api.customers.createSource(data.customerID, { source: res.id })
+    })
+
+})
+
+/*
+verifyBank({
+    customerID: 'cus_KVnklPpALQFzvu',
+    bankAccountID: 'ba_1Jqm8bJIU8d9wquzvq9YnRw0',
+    amounts: [32,45]
+})
+*/
+
+export const verifyBank = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    await api.customers.verifySource(
+        data.customerID,
+        data.bankAccountID,
+        { amounts: data.amounts }
+    );
+
+
+})
+
+/*
+playground.transfer({
+
+})
+*/
+
+export const transfer = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.transfers.create({
+        amount: 5,
+        currency: 'usd',
+        destination: 'cus_KVnklPpALQFzvu',
+        transfer_group: 'ORDER_95',
+    });
 })
 

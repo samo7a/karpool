@@ -9,8 +9,8 @@ export const addTripDatadummy = (): TripCreationData => {
         endAddress: "South Carolina",
         startTime: "2021-09-10T03:24:39.292Z",
         seatsAvailable: 3,
-        startPlaceID: '',
-        endPlaceID: ''
+        startPlaceID: 'ChIJd7zN_thz54gRnr-lPAaywwo',
+        endPlaceID: 'ChIJ4dG5s4K3wogRY7SWr4kTX6c'
     }
 }
 

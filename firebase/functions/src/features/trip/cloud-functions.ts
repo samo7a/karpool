@@ -39,7 +39,7 @@ export const getStartEndCoordinates = functions.https.onCall(async (data, contex
 
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
-    const uid = await validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     const user = await newUserDao().getAccountData(uid)
 
@@ -224,7 +224,7 @@ export const riderRequestTrip = functions.https.onCall(async (data, context) => 
 
 export const createScheduledTrip = functions.https.onCall(async (data, context) => {
 
-    const uid =  validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     if (uid) {
         return newTripService().createScheduledTrip(data.tripID)
@@ -232,13 +232,13 @@ export const createScheduledTrip = functions.https.onCall(async (data, context) 
     else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
-  
+
 
 })
 
-export const addRiderTripRating = functions.https.onCall(async (data, context) =>{
+export const addRiderTripRating = functions.https.onCall(async (data, context) => {
 
-    if(data.rating === -1){
+    if (data.rating === -1) {
         return `Rider: ${data.riderID} did not rate the driver`
     }
 
@@ -246,18 +246,18 @@ export const addRiderTripRating = functions.https.onCall(async (data, context) =
 
     const addTripData = validateAddRatingData(data)
 
-    if(uid === addTripData.riderID){
+    if (uid === addTripData.riderID) {
         return newTripService().addRiderTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
-    }else{
+    } else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
 
 })
 
 
-export const addDriverTripRating = functions.https.onCall(async (data, context) =>{
+export const addDriverTripRating = functions.https.onCall(async (data, context) => {
 
-    if(data.rating === -1){
+    if (data.rating === -1) {
         return `Driver did not rate rider ${data.riderID} `
     }
 
@@ -265,9 +265,9 @@ export const addDriverTripRating = functions.https.onCall(async (data, context) 
 
     const addTripData = validateAddRatingData(data)
 
-    if(uid === data.driverID){
+    if (uid === data.driverID) {
         return newTripService().addDriverTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
-    }else{
+    } else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
 

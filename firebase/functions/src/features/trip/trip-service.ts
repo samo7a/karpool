@@ -76,7 +76,7 @@ export class TripService {
             //TODO: 
             startLocation: new firestore.GeoPoint(startPoint.y, startPoint.x),
 
-            endLocation: new firestore.GeoPoint(startPoint.y, startPoint.x),
+            endLocation: new firestore.GeoPoint(endPoint.y, endPoint.x),
 
             riderStatus: {},
 
@@ -252,8 +252,6 @@ export class TripService {
             return sameDirection
         }).map(point => point.tripID)
 
-        console.log('Valid', validTripIDs)
-
         //Return all trips
         const queriedTrips: CreatedTripSchema[] = []
 
@@ -281,9 +279,10 @@ export class TripService {
             return hasEnoughSeats && isWithinTimeInterval && !isRejected
         })
 
+        const meters = GeoDistance(pickup, dropoff)
         return {
             trips: tripResults,
-            estimatedFare: calculateFare(0, 0, GeoDistance(pickup, dropoff), 1.50, 0.0)
+            estimatedFare: calculateFare(0, 0, meters / 1600, 1.50, 0.0)
         }
 
     }

@@ -290,9 +290,9 @@ export class AccountService {
 
         const user = await this.userDAO.getAccountData(uid)
 
-        const last4 = accountNum.substr(accountNum.length - 4, 4)
+        // const last4 = accountNum.substr(accountNum.length - 4, 4)
 
-        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, last4, routingNum)
+        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, accountNum, routingNum)
     }
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
