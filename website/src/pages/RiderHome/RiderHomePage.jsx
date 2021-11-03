@@ -3,77 +3,77 @@ import "./RiderHomePage.css";
 import { Grid, Cell } from 'react-mdl';
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-// import axios from 'axios';
-import { getCurrentUser } from '../../auth/getCurrentUser';
-import Axios from "../../utils/Axios";
-// const firebase = require("firebase");
-// Required for side-effects
-// require("firebase/functions");
+import { RatingView } from 'react-simple-star-rating'
 
-//import "firebase/functions/";
-// const functions = getFunctions();
-// var getUser = firebase.default.functions().httpsCallable('account-getUser');
-// addMessage({ text: messageText })
-//   .then((result) => {
-//     // Read result of the Cloud Function.
-//     var sanitizedMessage = result.data.text;
-//   });
-//const getUser = httpsCallable('account-getUser');
+import { getCurrentUser } from '../../auth/getCurrentUser';
+
+import firebase from "firebase";
 
 const RiderHomePage = () => {
-  const [profilePicUrl, setProfilePicUrl] = useState("");
-  const [rating, setRating] = useState(0.0);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNum, setPhoneNum] = useState("");
+  const [riderInfo, setRiderInfo] = useState({})
+  const [riderPayment, setRiderPayment] = useState({})
+  const [riderTrips, setRiderTrips] = useState({})
+  const [ratingValue, setRatingValue] = useState(0.0);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [profilePic, setProfilePic] = useState("")
+  // const ratingValue = Math.round(riderInfo.riderRating);
 
   useEffect(() => {
-    const getData = async () => {
-
-      const user = await getCurrentUser();
-      console.log(user)
-      const obj = { uid: user.uid, driver: false }
-
-      try {
-        const res = await Axios.post("/account-getUser", obj);
-        console.log(res);
-        setFirstName(res.data.firstName)
-        setLastName()
-      } catch (e) {
-        console.log(e);
+    const getUserInfo = async () => {
+      const getRiderInfo = firebase.functions().httpsCallable('account-getUser');
+      const data = {
+        uid: getCurrentUser().uid,
+        driver: false
       }
+      const result = await getRiderInfo(data);
+      console.log(result.data)
+      const user = result.data;
+      setName(user.firstName + " " + user.lastName);
+      setPhone(user.phone);
+      setProfilePic(user.profileURL);
+      setRatingValue(user.riderRating);
+      setRiderInfo(user.data)
+      console.log(riderInfo)
+
+      // const obj = { uid: user, driver: false }
     }
-
-    getData();
-
+    getUserInfo();
 
   }, []);
+
   return (
     <>
       <div className="content">
         <Navbar />
         <div className="content">
           <div className="wrapper">
-            <h1> Rider Home Page</h1>
+            <h1> Rider Home</h1>
           </div>
           <div style={{ width: '100%', margin: 'auto' }}>
+
             <Grid className="landing-grid">
               <Cell col={12}>
                 <img
-                  src={profilePicUrl}
+                  src={profilePic}
                   alt="avatar"
                   className="avatar-img"
                 />
                 <div className="banner-text">
-                  <h1>{firstName} {lastName}</h1>
+                  <h1>Hi {name}!</h1>
                   <hr />
-                  <p>Phone Number: {phoneNum}</p>
+                  <p>Phone Number: {phone}</p>
                   <hr />
-                  <p>Display Stars Rating: {rating}</p>
+                  <RatingView ratingValue={ratingValue} /* RatingView Props */ />
+                  {/* <p>Rating:
+                    {[...Array(ratingValue)].map(star => {
+                      return <FaStar color="#ffc107" />
+                    })}
+                  </p> */}
                   <hr />
-                  <p>Display Most Recent Ride:</p>
-                  <hr />
-                  <p>Display Payment Method:</p>
+                  {/* <p>Most Recent Ride:riderTrips.destination</p> */}
+                  {/* <hr /> */}
+                  {/* <p>Default Credit Card:riderTrips.destination</p> */}
                 </div>
               </Cell>
             </Grid>

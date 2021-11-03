@@ -11,7 +11,7 @@ import {
   checkFirstName,
   checkLastName,
   checkEmail,
-  checkPhoneNumber, 
+  checkPhoneNumber,
   checkAge,
   checkPassword,
   checkConfirmPassword,
@@ -504,8 +504,8 @@ const SignupPage = () => {
                   if (obj.valid === false)
                     setDateOfBirthError(
                       obj.msg +
-                        ` 
-				  You are ${obj.age} years old!`
+                      ` 
+				            You are ${obj.age} years old!`
                     );
                   else setDateOfBirthError("");
                   setDateOfBirth(event.target.value);

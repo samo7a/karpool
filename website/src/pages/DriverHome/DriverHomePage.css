@@ -18,8 +18,9 @@
   }
   
   .banner-text hr {
-    border-top: 5px dotted white;
-    width: 75%;
+    border-bottom: 3px double rgb(0, 58, 182);
+    border-top: 2px double rgb(0, 94, 255);
+    width: 80%;
     margin: auto;
   }
   

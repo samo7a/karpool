@@ -1,38 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./DriverHomePage.css";
 import { Grid, Cell } from 'react-mdl';
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import { RatingView } from 'react-simple-star-rating'
+
+import { getCurrentUser } from '../../auth/getCurrentUser';
+
+import firebase from "firebase";
 
 const DriverHomePage = () => {
+  const [driverInfo, setDriverInfo] = useState({})
+  const [driverEarnings, setDriverEarnings] = useState({})
+  const [driverTrips, setDriverTrips] = useState({})
+  const [ratingValue, setRatingValue] = useState(0.0);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [profilePic, setProfilePic] = useState("")
+  //const ratingValue = Math.round(driverInfo.driverRating);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const getDriverInfo = firebase.functions().httpsCallable('account-getUser');
+      const data = {
+        uid: getCurrentUser().uid,
+        driver: false
+      }
+      const result = await getDriverInfo(data);
+      console.log(result.data)
+      const user = result.data;
+      setName(user.firstName + " " + user.lastName);
+      setPhone(user.phone);
+      setProfilePic(user.profileURL);
+      setRatingValue(user.riderRating);
+      setDriverInfo(user.data)
+      console.log(driverInfo)
+
+    }
+    getUserInfo();
+
+  }, []);
+
   return (
     <>
       <div className="content">
         <Navbar />
         <div className="content">
           <div className="wrapper">
-            <h1> Driver Home Page</h1>
+            <h1> Driver Home</h1>
           </div>
           <div style={{ width: '100%', margin: 'auto' }}>
             <Grid className="landing-grid">
               <Cell col={12}>
                 <img
-                  src="https://cdn0.iconfinder.com/data/icons/social-media-network-4/48/male_avatar-512.png"
+                  src={profilePic}
                   alt="avatar"
                   className="avatar-img"
                 />
                 <div className="banner-text">
-                  <h1>Bob Smith</h1>
+                  <h1>Hi {name}!</h1>
                   <hr />
-                  <p>(123) 456-7890</p>
+                  <p>Phone Number: {phone}</p>
                   <hr />
-                  <p>Display Stars Rating:</p>
-                  <hr />
-                  <p>This Week's Earnings:</p>
-                  <hr />
-                  <p>Display Most Recent Deposit:</p>
-                  <hr />
-                  <p>Display Most Recent Ride:</p>
+                  <RatingView ratingValue={ratingValue} /* RatingView Props */ />
+                  {/* <p>Rating:
+                    {[...Array(ratingValue)].map(star => {
+                      return <FaStar color="#ffc107" />
+                    })}
+                  </p> */}
+                  {/* <hr /> */}
+                  {/* <p>This Week's Earnings:{driverEarnings.amount}</p> */}
+                  {/* <hr /> */}
+                  {/* <p>Most Recent Deposit:{driverEarnings.amount}</p> */}
+                  {/* <hr /> */}
+                  {/* <p>Most Recent Drive: {driverTrips.destination}</p> */}
                 </div>
               </Cell>
             </Grid>

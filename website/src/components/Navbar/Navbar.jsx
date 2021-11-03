@@ -77,8 +77,43 @@ const Navbar = () => {
                   <SmartLink link="/rider-home" title="Home" />
                 )
               }
-              {/* <SmartLink link="/rider-home" title="Home" /> */}
               <SmartLink link="/account" title="Account" />
+              {
+                role === "driver" ? (
+                  <SmartLink link="/driver-ride-history" title="Ride History" />
+                ) : (
+                  <SmartLink link="/rider-ride-history" title="Ride History" />
+                )
+              }
+              {
+                role === "driver" ? (
+                  <SmartLink link="/bank-info" title="Bank Info" />
+                ) : (
+                  <SmartLink link="/payment-info" title="Payment Info" />
+                )
+              }
+              {
+                role === "driver" ? (
+                  <SmartLink link="/car-info" title="Car Info" />
+                ) : (
+                  null
+                )
+              }
+              {
+                role === "driver" ? (
+                  <SmartLink link="/earnings" title="Earnings" />
+                ) : (
+                  null
+                )
+              }
+              {
+                role === "driver" ? (
+                  <SmartLink link="/deposits" title="Deposits" />
+                ) : (
+                  null
+                )
+              }
+              {/* <SmartLink link="/rider-home" title="Home" /> */}
               <SmartLink link="/about-us" title="About Us" />
             </ul>
           </div>
