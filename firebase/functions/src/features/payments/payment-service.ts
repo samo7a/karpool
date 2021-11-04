@@ -1,4 +1,4 @@
-import { HttpsError } from "firebase-functions/v1/https"
+import { HttpsError } from "firebase-functions/lib/providers/https";
 import { PaymentDAO } from "../../data-access/payment-dao/dao"
 import { CreditCardSchema } from "../../data-access/payment-dao/schema"
 import { UserDAOInterface } from "../../data-access/user/dao"
