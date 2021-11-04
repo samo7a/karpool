@@ -3,9 +3,10 @@
 import * as functions from 'firebase-functions'
 import { newAccountService, newVehicleDAO } from '../../index'
 import { validateRegistrationData, validateVehicleUpdateData } from './validation'
-import { validateBool, validateString } from '../../utils/validation'
+import { validateBool, validateDate, validateString } from '../../utils/validation'
 import { validateAuthorization } from '../../data-access/auth/utils'
 import { HttpsError } from 'firebase-functions/lib/providers/https'
+import { VehicleSchema } from '../../data-access/vehicle/types'
 
 
 
@@ -155,8 +156,6 @@ export const getUser = functions.https.onCall(async (data, context) => {
             return JSON.parse(JSON.stringify(fields))
         })
 
-
-
 })
 
 export const editUserProfile = functions.https.onCall(async (data, context) => {
@@ -194,5 +193,26 @@ export const getVehicle = functions.https.onCall(async (data, context) => {
 })
 
 
+export const updateDriverInfo = functions.https.onCall(async (data, context) => {
+    const callerUID = validateAuthorization(context)
+
+    const formatedData = validateDriverInfo(data)
+    return newVehicleDAO().updateVehicle(callerUID, formatedData)
+})
+
+function validateDriverInfo(data: any): Partial<VehicleSchema> {
+    return {
+        color: validateString(data.color),
+        insurance: {
+            provider: validateString(data.insurance.provider),
+            coverageType: validateString(data.insurance.coverageType),
+            startDate: validateDate(data.insurance.startDate),
+            endDate: validateDate(data.insurance.endDate)
+        },
+        licensePlateNum: validateString(data.licensePlate),
+        make: validateString(data.make),
+        year: validateString(data.year)
+    }
+}
 
 

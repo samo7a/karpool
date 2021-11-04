@@ -19,6 +19,7 @@ import { RouteDAO, RouteDAOInterface } from "./data-access/route/dao";
  */
 import 'reflect-metadata';
 import { NotificationsDAO } from './features/notifications/notificationsDAO';
+import { PaymentService } from './features/payments/payment-service';
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -87,6 +88,10 @@ export function newTripService(): TripService {
     )
 }
 
+export function newPaymentService(): PaymentService {
+    return new PaymentService(newUserDao(), newPaymentDAO())
+}
+
 
 //MARK: Exposed cloud function endpoints
 
@@ -96,13 +101,4 @@ exports.account = require('./features/account-management/cloud-functions')
 
 exports.notification = require('./features/notifications/notifications')
 
-import * as functions from 'firebase-functions'
-
-export const test = functions.https.onCall((data, context) => {
-
-    return newPaymentDAO().setBankAccount('BpYTsfWsznPG0tcmu37TqMMbtFJ2', 'cus_KIz6alum1uyvB5', '', '')
-})
-
-
-import { searchTrips as t } from './z-playground';
-export const searchTrips = t
+exports.playground = require('./z-playground')

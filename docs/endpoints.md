@@ -1,6 +1,24 @@
 # Trip Methods
 
-  
+## trip-getCompletedTrips
+
+### Request Data
+
+```typescript
+{
+    uid: string
+    isDriver: boolean
+}
+```
+
+### Returns
+
+```typescript
+{
+    trips-scheduled: trips-scheduled[]
+
+}
+```   
 
   
 ## trip-getStartEndCoordinates

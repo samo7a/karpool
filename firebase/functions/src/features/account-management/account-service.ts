@@ -274,13 +274,14 @@ export class AccountService {
          * edit fields where necessary
          * assuming pic is given as string
         **/
-        const { downloadURL } = await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', pic, 'base64', true)
 
-        const user = await this.userDAO.getAccountData(uid)
+
+        const meta = pic == undefined ? undefined : (await this.cloudStorageDAO.writeFile('profile-pictures', uid, 'jpg', pic, 'base64', true))
+
         const data: Partial<UserSchema> = {
-            phone: phoneNum ? phoneNum : user.phone,
-            email: email ? email : user.email,
-            profileURL: pic ? downloadURL : user.profileURL
+            phone: phoneNum ? phoneNum : undefined,
+            email: email ? email : undefined,
+            profileURL: meta?.downloadURL
         }
 
         return this.userDAO.updateUserAccount(uid, data)
@@ -290,9 +291,9 @@ export class AccountService {
 
         const user = await this.userDAO.getAccountData(uid)
 
-        const last4 = accountNum.substr(accountNum.length - 4, 4)
+        // const last4 = accountNum.substr(accountNum.length - 4, 4)
 
-        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, last4, routingNum)
+        await this.paymentDAO.setBankAccount(uid, user.stripeCustomerID, accountNum, routingNum)
     }
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
@@ -376,40 +377,21 @@ export class AccountService {
             let tempWeekAmount = weekList[weekIndex].amount
             weekList[weekIndex] = {
                 weekNum: weekIndex,
+
                 amount: tempWeekAmount += doc.amount
+
             }
             let tempMonthAmount = monthList[monthIndex].amount
             monthList[monthIndex] = {
                 month: monthIndex,
                 amount: tempMonthAmount += doc.amount
             }
-
         })
-
         const earningList = [weekList, monthList]
 
+
         return earningList
-
     }
-
-    // async updateDriverInfo(driverID: string, data: DriverAddRoleInfo ): Promise<void>{
-    //     //confirm that user is a driver
-    //     //update driver/car info
-    //    await this.vehicleDAO.createVehicle({
-    //        color: data.color,
-    //        insurance: {
-    //            provider: data.provider,
-    //            coverageType: data.coverage,
-    //            startDate: new Date(data.startDate),
-    //            endDate: new Date(data.endDate)
-    //        },
-    //        licensePlateNum: data.plateNum,
-    //        make: data.make,
-    //        year: data.year,
-    //        uid: driverID
-    //    })
-    // }
-
 
 
 

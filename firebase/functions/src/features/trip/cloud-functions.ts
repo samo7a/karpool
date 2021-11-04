@@ -3,7 +3,7 @@ import * as functions from "firebase-functions"
 import { HttpsError } from "firebase-functions/lib/providers/https"
 import { validateAuthorization } from "../../data-access/auth/utils"
 import { newRouteDAO, newTripService, newUserDao } from '../../index'
-import { validateDate, validateNumber, validateString } from "../../utils/validation"
+import { validateBool, validateDate, validateNumber, validateString } from "../../utils/validation"
 import { validateAddRatingData, validateAddTripData } from "./validation"
 
 /*
@@ -39,7 +39,7 @@ export const getStartEndCoordinates = functions.https.onCall(async (data, contex
 
 export const searchTrips = functions.https.onCall(async (data, context) => {
 
-    const uid = await validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     const user = await newUserDao().getAccountData(uid)
 
@@ -184,29 +184,21 @@ export const acceptRiderRequest = functions.https.onCall(async (data, context) =
 })
 
 
-export const getDriverCompletedTrips = functions.https.onCall(async (data, context) => {
+export const getCompletedTrips = functions.https.onCall(async (data, context) => {
+
     const uid = validateAuthorization(context)
-    if (uid) {
-        return newTripService().getDriverCompletedTrips(data.driverID)
-    }
-    else {
-        throw new HttpsError('failed-precondition', 'Invalid User')
-    }
-})
+    const isDriver = validateBool(data.isDriver)
 
-
-
-export const getRiderCompletedTrips = functions.https.onCall(async (data, context) => {
-    const uid = validateAuthorization(context)
-    if (uid) {
-        return newTripService().getRiderCompletedTrips(data.riderID)
+    if(isDriver){
+    return newTripService().getDriverCompletedTrips(uid)
     }
-    else {
-        throw new HttpsError('failed-precondition', 'Invalid User')
+    else{
+    return newTripService().getRiderCompletedTrips(uid)
     }
 
 
 })
+
 
 export const riderRequestTrip = functions.https.onCall(async (data, context) => {
     const uid = validateAuthorization(context)
@@ -224,7 +216,7 @@ export const riderRequestTrip = functions.https.onCall(async (data, context) => 
 
 export const createScheduledTrip = functions.https.onCall(async (data, context) => {
 
-    const uid =  validateAuthorization(context)
+    const uid = validateAuthorization(context)
 
     if (uid) {
         return newTripService().createScheduledTrip(data.tripID)
@@ -232,13 +224,13 @@ export const createScheduledTrip = functions.https.onCall(async (data, context) 
     else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
-  
+
 
 })
 
-export const addRiderTripRating = functions.https.onCall(async (data, context) =>{
+export const addRiderTripRating = functions.https.onCall(async (data, context) => {
 
-    if(data.rating === -1){
+    if (data.rating === -1) {
         return `Rider: ${data.riderID} did not rate the driver`
     }
 
@@ -246,18 +238,18 @@ export const addRiderTripRating = functions.https.onCall(async (data, context) =
 
     const addTripData = validateAddRatingData(data)
 
-    if(uid === addTripData.riderID){
+    if (uid === addTripData.riderID) {
         return newTripService().addRiderTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
-    }else{
+    } else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
 
 })
 
 
-export const addDriverTripRating = functions.https.onCall(async (data, context) =>{
+export const addDriverTripRating = functions.https.onCall(async (data, context) => {
 
-    if(data.rating === -1){
+    if (data.rating === -1) {
         return `Driver did not rate rider ${data.riderID} `
     }
 
@@ -265,9 +257,9 @@ export const addDriverTripRating = functions.https.onCall(async (data, context) 
 
     const addTripData = validateAddRatingData(data)
 
-    if(uid === data.driverID){
+    if (uid === data.driverID) {
         return newTripService().addDriverTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
-    }else{
+    } else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
 

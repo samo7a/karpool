@@ -163,7 +163,8 @@ export const searchTrips = functions.https.onCall((data, context) => {
 })
 
 import * as decoder from 'google-polyline'
-import { newRouteDAO, newTripDAO, newTripService } from '.';
+import { newPaymentService, newRouteDAO, newTripDAO, newTripService } from '.';
+import { getEnv } from './utils/env-config';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {
 
@@ -226,5 +227,113 @@ export const testRemove = functions.https.onCall(async (data, context) => {
 
     return newTripDAO().removeGeoPoints(data.tripID)
 
+})
+
+import Stripe from 'stripe';
+
+/*
+
+createBank({
+    routingNum: '110000000',
+    accountNum: '000123456789',
+    customerID: 'acct_1JqmaYIQhiMj65Oz'
+})
+*/
+
+export const createBank = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.tokens.create({
+        bank_account: {
+            country: 'US',
+            currency: 'usd',
+            account_holder_name: 'Jenny Rosen',
+            account_holder_type: 'individual',
+            routing_number: data.routingNum,
+            account_number: data.accountNum
+        }
+    }).then(res => {
+        return api.customers.createSource(data.customerID, { source: res.id })
+    })
+
+})
+
+/*
+verifyBank({
+    customerID: 'cus_KVnklPpALQFzvu',
+    bankAccountID: 'ba_1Jqm8bJIU8d9wquzvq9YnRw0',
+    amounts: [32,45]
+})
+*/
+
+export const verifyBank = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    await api.customers.verifySource(
+        data.customerID,
+        data.bankAccountID,
+        { amounts: data.amounts }
+    );
+
+
+})
+
+
+export const transfer = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.transfers.create({
+        amount: 5,
+        currency: 'usd',
+        destination: 'cus_KVnklPpALQFzvu',
+        transfer_group: 'ORDER_95'
+    });
+})
+
+
+
+export const createConnect = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.accounts.create({
+        type: 'express',
+        country: 'US',
+        email: data.email,
+        capabilities: {
+            card_payments: { requested: true },
+            transfers: { requested: true },
+            tax_reporting_us_1099_k: { requested: true }
+        }
+    })
+})
+
+
+export const onboard = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.accountLinks.create({
+        account: data.account,
+        refresh_url: 'https://example.com/reauth',
+        return_url: 'https://www.karpool.xyz/',
+        type: 'account_onboarding'
+    });
+})
+
+export const charge = functions.https.onCall(async (data, context) => {
+
+    return newPaymentService().chargeRider('6uvuIMaTt8Q3EL7Es2rOWR09rpF2', 100)
 })
 
