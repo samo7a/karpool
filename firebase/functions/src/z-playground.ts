@@ -163,7 +163,7 @@ export const searchTrips = functions.https.onCall((data, context) => {
 })
 
 import * as decoder from 'google-polyline'
-import { newRouteDAO, newTripDAO, newTripService } from '.';
+import { newPaymentService, newRouteDAO, newTripDAO, newTripService } from '.';
 import { getEnv } from './utils/env-config';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {
@@ -284,11 +284,6 @@ export const verifyBank = functions.https.onCall(async (data, context) => {
 
 })
 
-/*
-playground.transfer({
-
-})
-*/
 
 export const transfer = functions.https.onCall(async (data, context) => {
 
@@ -300,7 +295,45 @@ export const transfer = functions.https.onCall(async (data, context) => {
         amount: 5,
         currency: 'usd',
         destination: 'cus_KVnklPpALQFzvu',
-        transfer_group: 'ORDER_95',
+        transfer_group: 'ORDER_95'
     });
+})
+
+
+
+export const createConnect = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.accounts.create({
+        type: 'express',
+        country: 'US',
+        email: data.email,
+        capabilities: {
+            card_payments: { requested: true },
+            transfers: { requested: true },
+            tax_reporting_us_1099_k: { requested: true }
+        }
+    })
+})
+
+
+export const onboard = functions.https.onCall(async (data, context) => {
+
+    const stripe = getEnv().stripe
+    const api = new Stripe(stripe.private_key, { apiVersion: '2020-08-27' })
+
+    return api.accountLinks.create({
+        account: data.account,
+        refresh_url: 'https://example.com/reauth',
+        return_url: 'https://www.karpool.xyz/',
+        type: 'account_onboarding'
+    });
+})
+
+export const charge = functions.https.onCall(async (data, context) => {
+
+    return newPaymentService().chargeRider('6uvuIMaTt8Q3EL7Es2rOWR09rpF2', 100)
 })
 

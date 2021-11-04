@@ -234,7 +234,7 @@ export const addRiderTripRating = functions.https.onCall(async (data, context) =
         return `Rider: ${data.riderID} did not rate the driver`
     }
 
-    const uid = validateAuthorization(context)
+    const uid = 'Yh8L6zLsnUbhfCBbtkO43VlVhan1' //validateAuthorization(context)
 
     const addTripData = validateAddRatingData(data)
 

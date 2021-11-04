@@ -35,22 +35,22 @@ export class VehicleDAO implements VehicleDAOInterface {
 
 
     async updateVehicle(id: string, data: DeepPartial<VehicleSchema>): Promise<void> {
-        // const driver = this.db.collection(FirestoreKey.vehicles).doc(id)
+        const nestedData: Partial<VehicleSchema> = {
+            color: data.color,
+            licensePlateNum: data.licensePlateNum,
+            make: data.make,
+            year: data.year
+        }
+        const castedData: Record<string, any> = nestedData
+        //Need to use dot notation for these or some fields may get overwritten.
+        castedData['insurance.provider'] = data.insurance?.provider
+        castedData['insurance.coverageType'] = data.insurance?.coverageType
+        castedData['insurance.startDate'] = data.insurance?.startDate
+        castedData['insurance.endDate'] = data.insurance?.endDate
 
-        //     color: string
-        // insurance: {
-        //     provider: string
-        //     coverageType: string
-        //     startDate: Date
-        //     endDate: Date
-        // }
-        // licensePlateNum: string
-        // make: string
-        // year: string
-        // uid: string
-        // const data: Record<string, string> = {}
-
+        await this.db.collection(FirestoreKey.vehicles).doc(id).update(castedData)
     }
+
 
     getVehicle(driverID: string): Promise<{ id: string, vehicle: VehicleSchema }> {
 
