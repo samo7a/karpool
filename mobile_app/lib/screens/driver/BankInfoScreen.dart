@@ -88,9 +88,9 @@ class _BankInfoScreen extends State<BankInfoScreen> {
     initAccountNum = user.getAccountNum;
     initRoutingNum = user.getRoutingNum;
     return Scaffold(
-      backgroundColor: Color(0xff33415C),
+      backgroundColor: kDashboardColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         title: Text("Bank Information"),
         centerTitle: true,
         elevation: 0,

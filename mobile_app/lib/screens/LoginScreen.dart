@@ -137,9 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: kBackgroundColor,
+        backgroundColor: kDashboardColor,
         appBar: AppBar(
-          backgroundColor: kBackgroundColor,
+          backgroundColor: kDashboardColor,
           title: Text("Sign In"),
           centerTitle: true,
           elevation: 0,

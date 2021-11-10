@@ -137,9 +137,9 @@ class _AddCreditCardScreen extends State<AddCreditCardScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         appBar: AppBar(
-          backgroundColor: Color(0xff33415C),
+          backgroundColor: kDashboardColor,
           title: Text("Add Credit Card"),
           centerTitle: true,
           elevation: 0,

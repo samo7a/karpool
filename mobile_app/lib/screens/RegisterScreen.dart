@@ -150,9 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-          backgroundColor: kBackgroundColor,
+          backgroundColor: kDashboardColor,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: kDashboardColor,
             elevation: 0,
             leading: IconButton(
               onPressed: () {

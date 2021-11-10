@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: kDashboardColor,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -41,6 +41,7 @@ class _MainScreenState extends State<MainScreen> {
               Text(
                 'Kärpōōl',
                 style: TextStyle(
+                  color: Colors.grey,
                   fontFamily: 'Poppins',
                   fontSize: size.FONT_SIZE * 50,
                 ),
@@ -54,6 +55,7 @@ class _MainScreenState extends State<MainScreen> {
                   'Ensuring mobility in a mobile world.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                    color: Colors.white,
                     fontFamily: 'Glory',
                     fontWeight: FontWeight.bold,
                     fontSize: size.FONT_SIZE * 25,

@@ -61,9 +61,9 @@ class _PaymentScreen extends State<PaymentScreen> {
         backgroundColor: kButtonColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      backgroundColor: Color(0xff33415C),
+      backgroundColor: kDashboardColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         title: Text("Payment"),
         centerTitle: true,
         elevation: 0,

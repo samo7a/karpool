@@ -66,7 +66,7 @@ class _DriverApplicationState extends State<DriverApplication> {
       child: Scaffold(
           backgroundColor: kDashboardColor,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: kDashboardColor,
             elevation: 0,
             leading: IconButton(
               onPressed: () {

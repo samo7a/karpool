@@ -410,7 +410,7 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                     onPressed: () async {
                       var distance = getDistanceBetweenPoints(currentLat, currentLong,
                           trip.endPoint["latitude"] ?? 0.0, trip.endPoint["longitude"] ?? 0.0);
-                      if (distance < 50) {
+                      if (distance > 50) {
                         // > 50 meters
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -422,12 +422,6 @@ class _RiderNavScreenState extends State<RiderNavScreen> {
                       setState(() {
                         isRideEnded = true;
                       });
-                      // Navigator.pushNamedAndRemoveUntil(
-                      //   context,
-                      //   RiderDashboardScreen.id,
-                      //   (route) => false,
-                      //   arguments: trip,
-                      // );
                     },
                     child: Text(
                       "End Ride",

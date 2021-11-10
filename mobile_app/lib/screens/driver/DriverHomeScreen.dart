@@ -332,7 +332,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               Timestamp(trip.timestamp["_seconds"], trip.timestamp["_nanoseconds"])
                                   .toDate();
                           print("tripDate : " + tripDate.toString());
-                          if (!tripDate.isAfter(today)) // remove the !
+                          if (tripDate.isAfter(today)) // remove the !
                             return await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {

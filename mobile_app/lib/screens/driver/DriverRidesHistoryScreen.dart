@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
 import 'package:mobile_app/util/Size.dart';
+import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DriverRideContainer.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +22,8 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
     final obj = <String, bool>{
       "isDriver": true,
     };
-    HttpsCallable getTrips = FirebaseFunctions.instance.httpsCallable.call('trip-getCompletedTrips');
+    HttpsCallable getTrips =
+        FirebaseFunctions.instance.httpsCallable.call('trip-getCompletedTrips');
     List<DriverTrip> tripList = [];
     final result;
     final data;
@@ -51,8 +53,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
         double estimatedPrice = double.parse((data[i]["totalCost"] ?? 0.0).toStringAsFixed(2));
 
         String polyLine = data[i]["polyline"];
-        double estimatedDistance =
-            double.parse((data[i]["distance"] / 1609).toStringAsFixed(2));
+        double estimatedDistance = double.parse((data[i]["distance"] / 1609).toStringAsFixed(2));
         double estimatedDuration = data[i]["distance"] / 60;
         Map<String, double> startPoint = {
           "latitude": data[i]["startLocation"]["_latitude"],
@@ -116,7 +117,7 @@ class _DriverRidesHistoryScreenState extends State<DriverRidesHistoryScreen> {
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: Container(
-        color: Color(0xff33415C),
+        color: kDashboardColor,
         child: Center(
           child: FutureBuilder<List<DriverTrip>>(
             future: trips,

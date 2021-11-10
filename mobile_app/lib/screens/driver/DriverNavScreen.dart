@@ -133,9 +133,9 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff33415C),
+      backgroundColor: kDashboardColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         title: Text(title),
         centerTitle: true,
         elevation: 0,

@@ -88,8 +88,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   }
 
   void getVehicleInfo() async {
-    HttpsCallable vehicleInfo =
-        FirebaseFunctions.instance.httpsCallable("account-getVehicle");
+    HttpsCallable vehicleInfo = FirebaseFunctions.instance.httpsCallable("account-getVehicle");
     try {
       print("inside the try 1");
       final result = await vehicleInfo();
@@ -103,22 +102,11 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
         initInsProvider = data['vehicle']['insurance']['provider'] ?? '';
         initInsType = data['vehicle']['insurance']['coverageType'] ?? '';
         dynamic timestamp = data['vehicle']['insurance']['startDate'];
-        DateTime ts =
-            Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"])
-                .toDate();
-        initInsStartDate = ts.month.toString() +
-            "-" +
-            ts.day.toString() +
-            "-" +
-            ts.year.toString();
+        DateTime ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        initInsStartDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
         timestamp = data['vehicle']['insurance']['endDate'];
-        ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"])
-            .toDate();
-        initInsEndDate = ts.month.toString() +
-            "-" +
-            ts.day.toString() +
-            "-" +
-            ts.year.toString();
+        ts = Timestamp(timestamp["_seconds"], timestamp["_nanoseconds"]).toDate();
+        initInsEndDate = ts.month.toString() + "-" + ts.day.toString() + "-" + ts.year.toString();
       });
     } catch (e) {
       EasyLoading.showError("Error loading original vehicle information.");
@@ -188,9 +176,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
-      backgroundColor: Color(0xff33415C),
+      backgroundColor: kDashboardColor,
       appBar: AppBar(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         title: Text("Vehicle Information"),
         centerTitle: true,
         elevation: 0,
@@ -208,8 +196,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
         onRefresh: _onRefresh,
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-              vertical: size.BLOCK_HEIGHT * 2,
-              horizontal: size.BLOCK_WIDTH * 3.5),
+              vertical: size.BLOCK_HEIGHT * 2, horizontal: size.BLOCK_WIDTH * 3.5),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -240,11 +227,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     dropdownSearchDecoration: InputDecoration(
                         fillColor: kWhite.withOpacity(0.4),
                         filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.car, color: kIconColor),
+                        prefixIcon: Icon(FontAwesomeIcons.car, color: kIconColor),
                         enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                          borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                           borderSide: BorderSide(
                             color: kGreen,
                           ),
@@ -279,11 +264,9 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                   dropdownSearchDecoration: InputDecoration(
                       fillColor: kWhite.withOpacity(0.4),
                       filled: true,
-                      prefixIcon:
-                          Icon(FontAwesomeIcons.palette, color: kIconColor),
+                      prefixIcon: Icon(FontAwesomeIcons.palette, color: kIconColor),
                       enabledBorder: UnderlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                        borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                         borderSide: BorderSide(
                           color: kGreen,
                         ),
@@ -324,19 +307,16 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       decoration: InputDecoration(
                           fillColor: kWhite.withOpacity(0.4),
                           filled: true,
-                          prefixIcon: Icon(FontAwesomeIcons.calendar,
-                              color: kIconColor),
+                          prefixIcon: Icon(FontAwesomeIcons.calendar, color: kIconColor),
                           enabledBorder: UnderlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                            borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                             borderSide: BorderSide(
                               color: kGreen,
                             ),
                           ),
                           errorBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                                color: kRed, width: size.BLOCK_WIDTH * 1),
+                            borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                           ),
                           hintStyle: TextStyle(
                             color: kIconColor,
@@ -393,19 +373,16 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         decoration: InputDecoration(
                             fillColor: kWhite.withOpacity(0.4),
                             filled: true,
-                            prefixIcon:
-                                Icon(Icons.crop_7_5_rounded, color: kIconColor),
+                            prefixIcon: Icon(Icons.crop_7_5_rounded, color: kIconColor),
                             enabledBorder: UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                              borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                               borderSide: BorderSide(
                                 color: kGreen,
                               ),
                             ),
                             errorBorder: UnderlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: kRed, width: size.BLOCK_WIDTH * 1),
+                              borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                             ),
                             hintStyle: TextStyle(color: kIconColor),
                             hintText: "License Plate Number"),
@@ -413,8 +390,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                           PatternValidator(r"^[0-9a-zA-Z]{6}$",
                               errorText: "Please enter a valid license plate!"),
                         ]),
-                        onChanged: (value) =>
-                            setState(() => newCarPlate = value),
+                        onChanged: (value) => setState(() => newCarPlate = value),
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         style: TextStyle(fontWeight: FontWeight.bold)),
@@ -443,27 +419,22 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     decoration: InputDecoration(
                         fillColor: kWhite.withOpacity(0.4),
                         filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.carCrash, color: kIconColor),
+                        prefixIcon: Icon(FontAwesomeIcons.carCrash, color: kIconColor),
                         enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                          borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                           borderSide: BorderSide(
                             color: kGreen,
                           ),
                         ),
-                        labelStyle: TextStyle(
-                            color: kIconColor, fontWeight: FontWeight.bold),
+                        labelStyle: TextStyle(color: kIconColor, fontWeight: FontWeight.bold),
                         labelText: "New Insurance Provider"),
                     value: newInsProvider,
-                    items: insuranceProviders
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: insuranceProviders.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
                           value,
-                          style: TextStyle(
-                              color: kBlack, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                         ),
                       );
                     }).toList(),
@@ -496,17 +467,14 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                     decoration: InputDecoration(
                         fillColor: kWhite.withOpacity(0.4),
                         filled: true,
-                        prefixIcon:
-                            Icon(FontAwesomeIcons.stream, color: kIconColor),
+                        prefixIcon: Icon(FontAwesomeIcons.stream, color: kIconColor),
                         enabledBorder: UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                          borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                           borderSide: BorderSide(
                             color: kGreen,
                           ),
                         ),
-                        labelStyle: TextStyle(
-                            color: kIconColor, fontWeight: FontWeight.bold),
+                        labelStyle: TextStyle(color: kIconColor, fontWeight: FontWeight.bold),
                         labelText: "New Coverage Type"),
                     value: newInsType,
                     items: <String>[
@@ -518,8 +486,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         value: value,
                         child: Text(
                           value,
-                          style: TextStyle(
-                              color: kBlack, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: kBlack, fontWeight: FontWeight.bold),
                         ),
                       );
                     }).toList(),
@@ -562,10 +529,11 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         }
                         String yyyy = value.year.toString();
                         String dd;
-                        if (value.day < 10) dd = "0" + value.day.toString();
-                        else dd = value.day.toString();
-                        String givenDate =
-                            yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
+                        if (value.day < 10)
+                          dd = "0" + value.day.toString();
+                        else
+                          dd = value.day.toString();
+                        String givenDate = yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
                         setState(() => originalStart = givenDate);
                       },
                       validator: (value) {
@@ -607,22 +575,18 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       decoration: InputDecoration(
                           fillColor: kWhite.withOpacity(0.4),
                           filled: true,
-                          prefixIcon: Icon(FontAwesomeIcons.calendarPlus,
-                              color: kIconColor),
+                          prefixIcon: Icon(FontAwesomeIcons.calendarPlus, color: kIconColor),
                           enabledBorder: UnderlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                            borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                             borderSide: BorderSide(
                               color: kGreen,
                             ),
                           ),
                           errorBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                                color: kRed, width: size.BLOCK_WIDTH * 1),
+                            borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                           ),
-                          labelStyle: TextStyle(
-                              color: kIconColor, fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(color: kIconColor, fontWeight: FontWeight.bold),
                           labelText: 'New Insurance Start Date'),
                     ),
                   ),
@@ -659,10 +623,11 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         }
                         String yyyy = value.year.toString();
                         String dd;
-                        if (value.day < 10) dd = "0" + value.day.toString();
-                        else dd = value.day.toString();
-                        String givenDate =
-                            yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
+                        if (value.day < 10)
+                          dd = "0" + value.day.toString();
+                        else
+                          dd = value.day.toString();
+                        String givenDate = yyyy + '-' + mm + '-' + dd + "T00:00:00:000Z";
                         setState(() => originalEnd = givenDate);
                       },
                       validator: (value) {
@@ -691,9 +656,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         else {
                           isAfter = true;
                         }
-                        if (isAfter == false ||
-                            originalEnd == '' ||
-                            originalEnd == initInsEndDate)
+                        if (isAfter == false || originalEnd == '' || originalEnd == initInsEndDate)
                           return null;
                         else
                           return ('Your Insurance policy is expired!');
@@ -702,22 +665,18 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                       decoration: InputDecoration(
                           fillColor: kWhite.withOpacity(0.4),
                           filled: true,
-                          prefixIcon: Icon(FontAwesomeIcons.calendarTimes,
-                              color: kIconColor),
+                          prefixIcon: Icon(FontAwesomeIcons.calendarTimes, color: kIconColor),
                           enabledBorder: UnderlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(size.BLOCK_HEIGHT * 1),
+                            borderRadius: BorderRadius.circular(size.BLOCK_HEIGHT * 1),
                             borderSide: BorderSide(
                               color: kGreen,
                             ),
                           ),
                           errorBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                                color: kRed, width: size.BLOCK_WIDTH * 1),
+                            borderSide: BorderSide(color: kRed, width: size.BLOCK_WIDTH * 1),
                           ),
-                          labelStyle: TextStyle(
-                              color: kIconColor, fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(color: kIconColor, fontWeight: FontWeight.bold),
                           labelText: 'Insurance End Date'),
                     ),
                   ),
@@ -745,8 +704,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
                             ),
                             title: Text(
                               "Update Vehicle Information",
@@ -770,8 +728,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        size.BLOCK_WIDTH * 5),
+                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                     color: Color(0xff001233),
                                   ),
                                   child: Center(
@@ -789,8 +746,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(
-                                    right: size.BLOCK_WIDTH * 2.5),
+                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                                 child: TextButton(
                                   onPressed: () {
                                     changeCarInfo();
@@ -800,8 +756,7 @@ class _VehicleInfoScreen extends State<VehicleInfoScreen> {
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          size.BLOCK_WIDTH * 5),
+                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                       color: Color(0xffC80404),
                                     ),
                                     child: Center(

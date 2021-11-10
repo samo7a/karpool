@@ -192,9 +192,9 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Color(0xff33415C),
+        backgroundColor: kDashboardColor,
         appBar: AppBar(
-          backgroundColor: Color(0xff33415C),
+          backgroundColor: kDashboardColor,
           title: Text("Edit Profile"),
           centerTitle: true,
           elevation: 0,
