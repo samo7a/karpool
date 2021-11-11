@@ -230,16 +230,11 @@ export const createScheduledTrip = functions.https.onCall(async (data, context) 
 
 export const addRiderTripRating = functions.https.onCall(async (data, context) => {
 
-    if (data.rating === -1) {
-        return `Rider: ${data.riderID} did not rate the driver`
-    }
-
-    const uid = 'Yh8L6zLsnUbhfCBbtkO43VlVhan1' //validateAuthorization(context)
-
+    const uid = validateAuthorization(context)
     const addTripData = validateAddRatingData(data)
-
+   
     if (uid === addTripData.riderID) {
-        return newTripService().addRiderTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
+        return newTripService().addRiderTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating, addTripData.amount)
     } else {
         throw new HttpsError('failed-precondition', 'Invalid Trip')
     }
@@ -249,13 +244,14 @@ export const addRiderTripRating = functions.https.onCall(async (data, context) =
 
 export const addDriverTripRating = functions.https.onCall(async (data, context) => {
 
-    if (data.rating === -1) {
-        return `Driver did not rate rider ${data.riderID} `
-    }
-
     const uid = validateAuthorization(context)
 
     const addTripData = validateAddRatingData(data)
+
+    if (addTripData.rating === -1) {
+        return `Driver did not rate rider ${addTripData.riderID} `
+    }
+
 
     if (uid === data.driverID) {
         return newTripService().addDriverTripRating(addTripData.tripID, addTripData.riderID, addTripData.rating)
@@ -264,3 +260,5 @@ export const addDriverTripRating = functions.https.onCall(async (data, context) 
     }
 
 })
+
+

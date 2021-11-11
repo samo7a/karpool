@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { HttpsError } from "firebase-functions/v1/https"
 import { PaymentDAO } from "../../data-access/payment-dao/dao"
 import { CreditCardSchema } from "../../data-access/payment-dao/schema"
@@ -44,6 +45,7 @@ export class PaymentService {
         return this.paymentDAO.createCharge(amount, defaultCard.id, user.stripeCustomerID, description)
     }
 
+    
     makeDeposits(): Promise<void> {
         return Promise.reject(new Error('Unimplmented'))
     }

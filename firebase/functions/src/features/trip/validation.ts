@@ -31,7 +31,9 @@ export function validateAddRatingData(data: any) {
 
         driverID: validateString(data.driverID, "3"),
 
-        rating: validateNumber(data.rating)
+        rating: validateNumber(data.rating),
+
+        amount: validateNumber(data.amount)
 
     }
 }

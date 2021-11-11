@@ -15,6 +15,8 @@ import { UserSchema } from "../../data-access/user/schema";
 import { sendCustomNotification } from "../../features/notifications/notifications";
 import { NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
 import {  VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { PaymentDAO } from "../../data-access/payment-dao/dao";
+import { PaymentService } from "../payments/payment-service";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
@@ -29,19 +31,23 @@ export class TripService {
     private notificationsDAO: NotificationsDAOInterface
     private vehicleDAO: VehicleDAOInterface
     private userDAO: UserDAOInterface
+    private paymentDAO: PaymentDAO
 
     constructor(
         userDAO: UserDAOInterface,
         tripDAO: TripDAOInterface,
         directionsDAO: RouteDAOInterface,
         notificationsDAO: NotificationsDAOInterface,
-        vehicleDAO: VehicleDAOInterface
+        vehicleDAO: VehicleDAOInterface,
+        paymentDAO: PaymentDAO
     ) {
         this.userDAO = userDAO
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
         this.notificationsDAO = notificationsDAO
         this.vehicleDAO = vehicleDAO
+        this.paymentDAO = paymentDAO
+        
     }
 
     /**
@@ -385,9 +391,11 @@ export class TripService {
 
         if ((calculatedTime < 10800) && (calculatedTime > 0)) {
 
-            console.log("Rider will be fined")
+           // Charge the rider $5 penality or add a field in user as debt and add the value
 
-            //TODO: Charge the rider $5 penality or add a field in user as debt and add the value 
+           const payment = new PaymentService(this.userDAO, this.paymentDAO)
+           await payment.chargeRider(riderID, 500)
+
         }
 
         const token = await this.notificationsDAO.getTokenList([trip.driverID])
@@ -682,11 +690,25 @@ export class TripService {
 
 
 
-    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+    async addRiderTripRating(tripID: string, riderID: string, rating: number, amount: number): Promise<string>{
+
+        const payment = new PaymentService(this.userDAO, this.paymentDAO)
+     
+        if (rating === -1) {
+
+            //charge the rider in case of no rating
+            await payment.chargeRider(riderID, amount*100)
+            return `Rider: ${riderID} did not rate the driver`
+          
+        }
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
         const driver = await this.userDAO.getAccountData(trip.driverID)
+
+        
+        //charge the rider
+        await payment.chargeRider(riderID, amount*100)
 
         let ratingVal = driver.driverInfo?.rating
 
@@ -719,7 +741,10 @@ export class TripService {
         await this.userDAO.updateAccountData(trip.driverID, data)
 
          return "Rating added Successfully!!"
+
     }
+
+
 
     async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
 
