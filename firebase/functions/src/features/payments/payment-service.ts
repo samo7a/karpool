@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 // eslint-disable-next-line import/no-unresolved
 import { HttpsError } from "firebase-functions/v1/https"
-=======
-import { HttpsError } from "firebase-functions/lib/providers/https";
->>>>>>> bb37e0e1c12aa378e7e37a1246c56d50332491d7
 import { PaymentDAO } from "../../data-access/payment-dao/dao"
 import { CreditCardSchema } from "../../data-access/payment-dao/schema"
 import { UserDAOInterface } from "../../data-access/user/dao"
