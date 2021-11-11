@@ -647,18 +647,18 @@ export class TripService {
 
         const wayPoints = this.getWaypoints(trip, 'Accepted')
 
+        const meters = GeoDistance(pickup, dropoff)
+        
         const newRiderInfo: TripRiderInfo = {
-
             dropoffAddress: destinationAddress,
             pickupAddress: startAddress,
             dropoffLocation: new firestore.GeoPoint(dropoff.y, dropoff.x),
             pickupLocation: new firestore.GeoPoint(pickup.y, pickup.x),
-            estimatedFare: 0,
+            estimatedFare: calculateFare(0, 0, meters / 1600, 1.50, 0.0),
             passengerCount: passengers,
             pickupIndex: 0,
             dropoffIndex: 0,
             riderID: riderID
-
         }
 
         wayPoints.push(pickup)
@@ -673,8 +673,6 @@ export class TripService {
         data[`riderStatus.${riderID}`] = 'Requested'
 
         await this.tripDAO.updateCreatedTrip(tripID, data)
-
-        console.log(data, "AND ", tripID)
 
         const token = await this.notificationsDAO.getTokenList([trip.driverID])
 
