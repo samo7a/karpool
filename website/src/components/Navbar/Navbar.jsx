@@ -77,7 +77,13 @@ const Navbar = () => {
                   <SmartLink link="/rider-home" title="Home" />
                 )
               }
-              <SmartLink link="/account" title="Account" />
+              {
+                role === "driver" ? (
+                  <SmartLink link="/driver-account" title="Account" />
+                ) : (
+                  <SmartLink link="/rider-account" title="Account" />
+                )
+              }
               {
                 role === "driver" ? (
                   <SmartLink link="/driver-ride-history" title="Ride History" />

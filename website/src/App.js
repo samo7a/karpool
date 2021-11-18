@@ -17,7 +17,8 @@ import PaymentInfoPage from "./pages/PaymentInfo/PaymentInfoPage";
 import BankInfoPage from "./pages/BankInfo/BankInfoPage";
 import EarningsPage from "./pages/Earnings/EarningsPage";
 import DepositsPage from "./pages/Deposits/DepositsPage";
-import AccountPage from "./pages/Account/AccountPage";
+import RiderAccountPage from "./pages/RiderAccount/RiderAccountPage";
+import DriverAccountPage from "./pages/DriverAccount/DriverAccountPage";
 import VehicleInfoPage from "./pages/CarInfo/CarInfoPage";
 
 
@@ -78,9 +79,17 @@ function App() {
               isAuthed={!!user}
               isLoading={isLoading}
               exact
-              path="/account"
+              path="/rider-account"
             >
-              {<AccountPage />}
+              {<RiderAccountPage />}
+            </ProtectedRoute>
+            <ProtectedRoute
+              isAuthed={!!user}
+              isLoading={isLoading}
+              exact
+              path="/driver-account"
+            >
+              {<DriverAccountPage />}
             </ProtectedRoute>
             <ProtectedRoute
               isAuthed={!!user}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./AccountPage.css";
+import "./RiderAccountPage.css";
 import { getCurrentUser } from '../../auth/getCurrentUser';
 import { updateEmail } from "../../auth/updateEmail";
 import Navbar from "../../components/Navbar/Navbar";
@@ -14,7 +14,7 @@ import {
 
 import pic from "../../assets/ahmed.jpg";
 
-const AccountPage = () => {
+const RiderAccountPage = () => {
   //text input variables
   const [editable, setEditable] = useState(false);
   const [email, setEmail] = useState("");
@@ -298,4 +298,4 @@ const AccountPage = () => {
     </>
   );
 };
-export default AccountPage;
+export default RiderAccountPage;

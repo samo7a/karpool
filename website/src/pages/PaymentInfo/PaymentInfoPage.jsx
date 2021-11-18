@@ -12,7 +12,7 @@ const PaymentInfoPage = () => {
                 <Navbar />
                 <div className="content">
                     <div className="wrapper">
-                        <h1>Payment Info Page</h1>
+                        <h1>Payment Info</h1>
                     </div>
                     {/* <CreditCardForm
                     /> */}

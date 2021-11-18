@@ -1,0 +1,43 @@
+#updateButton {
+    background-color: #0466c8;
+    color: #ffffff;
+    height: 40px;
+    align-items: center;
+  }
+#updateButton:hover {
+    background-color: #001233;
+    color: #ffffff;
+    cursor: pointer;
+  }
+#updateButton:disabled {
+    opacity: 0.5;
+  }
+  
+#cancelButton {
+    background-color: #ffffff;
+    color: #001233;
+    height: 40px;
+    align-items: center;
+  }
+#cancelButton:hover {
+    background-color: #001233;
+    color: #ffffff;
+    cursor: pointer;
+  }
+#cancelButton:disabled {
+    opacity: 0.5;
+  }
+
+#resetButton {
+    background-color: #ffffff;
+    color: #001233;
+    height: 40px;
+  }
+#resetButton:hover {
+    background-color: #001233;
+    color: #ffffff;
+    cursor: pointer;
+  }
+#resetButton:disabled {
+    opacity: 0.5;
+  }

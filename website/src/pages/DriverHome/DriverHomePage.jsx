@@ -24,7 +24,7 @@ const DriverHomePage = () => {
       const getDriverInfo = firebase.functions().httpsCallable('account-getUser');
       const data = {
         uid: getCurrentUser().uid,
-        driver: false
+        driver: true
       }
       const result = await getDriverInfo(data);
       console.log(result.data)
