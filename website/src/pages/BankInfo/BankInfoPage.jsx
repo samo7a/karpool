@@ -13,23 +13,23 @@ const BankInfoPage = () => {
         <>
             <div className="content">
                 <Navbar />
+                <h1>Update Bank Info</h1>
                 <div className="content">
-                    <div className="wrapper">
-                        <h1>Update Bank Info</h1>
+                    <div id="bank-info">
+                        <BankInformationForm
+                            setAccountNumber={setAccountNumber}
+                            // setAccountNumberError={setAccountNumberError}
+                            setRoutingNumber={setRoutingNumber}
+                            // setRoutingNumberError={setRoutingNumberError}
+                            ref={bankInfoRef}
+                        />
+                        <button id="cancelButton" /*onClick={}*/>
+                            Cancel
+                        </button>
+                        <button id="updateButton" /*onClick={}*/>
+                            Update
+                        </button>
                     </div>
-                    <BankInformationForm
-                        setAccountNumber={setAccountNumber}
-                        // setAccountNumberError={setAccountNumberError}
-                        setRoutingNumber={setRoutingNumber}
-                        // setRoutingNumberError={setRoutingNumberError}
-                        ref={bankInfoRef}
-                    />
-                    <button id="cancelButton" /*onClick={}*/>
-                        Cancel
-                    </button>
-                    <button id="updateButton" /*onClick={}*/>
-                        Update
-                    </button>
                 </div>
                 <Footer />
             </div>

@@ -16,10 +16,8 @@ const EarningsPage = () => {
         <>
             <div className="content">
                 <Navbar />
+                <h1>Driver Earnings</h1>
                 <div className="content">
-                    <div className="wrapper">
-                        <h1>Driver Earnings</h1>
-                    </div>
                     <List sx={{
                         width: '100%',
                         bgcolor: 'background.paper',

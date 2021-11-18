@@ -20,27 +20,29 @@ const CarInfoPage = () => {
         <>
             <div className="content">
                 <Navbar />
+                <h1>Update Car Info</h1>
                 <div className="content">
-                    <div className="wrapper">
-                        <h1>Update Car Info</h1>
+                    <div>
+                        <div id="car-info">
+                            <CarInformationForm
+                                setCarBrand={setCarBrand}
+                                setCarModel={setCarModel}
+                                setYearOfMan={setYearOfMan}
+                                setCarColor={setCarColor}
+                                setColorHex={setColorHex}
+                                setLicensePlate={setLicensePlate}
+                                setDriverLicense={setDriverLicense}
+                                setLicenseExpDate={setLicenseExpDate}
+                                ref={carInfoRef}
+                            />
+                            <button id="cancelButton" /*onClick={}*/>
+                                Cancel
+                            </button>
+                            <button id="updateButton" /*onClick={}*/>
+                                Update
+                            </button>
+                        </div>
                     </div>
-                    <CarInformationForm
-                        setCarBrand={setCarBrand}
-                        setCarModel={setCarModel}
-                        setYearOfMan={setYearOfMan}
-                        setCarColor={setCarColor}
-                        setColorHex={setColorHex}
-                        setLicensePlate={setLicensePlate}
-                        setDriverLicense={setDriverLicense}
-                        setLicenseExpDate={setLicenseExpDate}
-                        ref={carInfoRef}
-                    />
-                    <button id="cancelButton" /*onClick={}*/>
-                        Cancel
-                    </button>
-                    <button id="updateButton" /*onClick={}*/>
-                        Update
-                    </button>
                 </div>
                 <Footer />
             </div>

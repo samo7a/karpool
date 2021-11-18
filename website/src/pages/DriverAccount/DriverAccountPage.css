@@ -40,3 +40,8 @@
 #resetButton:disabled {
     opacity: 0.5;
   }
+#account-info {
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }

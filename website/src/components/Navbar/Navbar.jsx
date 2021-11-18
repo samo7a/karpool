@@ -95,7 +95,8 @@ const Navbar = () => {
                 role === "driver" ? (
                   <SmartLink link="/bank-info" title="Bank Info" />
                 ) : (
-                  <SmartLink link="/payment-info" title="Payment Info" />
+                  null
+                  // <SmartLink link="/payment-info" title="Payment Info" />
                 )
               }
               {

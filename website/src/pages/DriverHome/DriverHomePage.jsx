@@ -45,11 +45,9 @@ const DriverHomePage = () => {
     <>
       <div className="content">
         <Navbar />
+        <h1> Driver Home</h1>
         <div className="content">
-          <div className="wrapper">
-            <h1> Driver Home</h1>
-          </div>
-          <div style={{ width: '100%', margin: 'auto' }}>
+          <div>
             <Grid className="landing-grid">
               <Cell col={12}>
                 <img

@@ -168,130 +168,130 @@ const RiderAccountPage = () => {
     <>
       <div className="content">
         <Navbar />
+        <h1>Account Management</h1>
         <div className="content">
-          <div className="wrapper">
-            <h1>Account Management</h1>
-          </div>
-          <form>
-            <div className="img-wrap">
-              {preview ? (
-                <img
-                  id="preview"
-                  alt="profile-pic"
-                  src={preview}
-                  style={{ objectFit: "cover" }}
+          <div id="account-info">
+            <form>
+              <div className="img-wrap">
+                {preview ? (
+                  <img
+                    id="preview"
+                    alt="profile-pic"
+                    src={preview}
+                    style={{ objectFit: "cover" }}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      photoRef.current.click();
+                    }}
+                  />
+                ) : (
+                  <input
+                    id="img-uploader"
+                    type="button"
+                    name="button"
+                    //value="Upload Profile Picture"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      photoRef.current.click();
+                    }}
+                  />
+                )}
+                <p
                   onClick={(event) => {
                     event.preventDefault();
                     photoRef.current.click();
                   }}
-                />
-              ) : (
-                <input
-                  id="img-uploader"
-                  type="button"
-                  name="button"
-                  //value="Upload Profile Picture"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    photoRef.current.click();
-                  }}
-                />
-              )}
-              <p
-                onClick={(event) => {
-                  event.preventDefault();
-                  photoRef.current.click();
-                }}
-                className="img-text"
-              >
-                Pick Profile Picture
-              </p>
-            </div>
-            <input
-              style={{ display: "none" }}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={photoRef}
-            />
-            <p className="error">{photoError}</p>
-            <div className="i">
-              <label>Email Address</label>
+                  className="img-text"
+                >
+                  Pick Profile Picture
+                </p>
+              </div>
               <input
-                disabled={!editable}
-                value={email}
-                type="text"
-                placeholder="Email Address"
-                onChange={(event) => {
-                  const obj = checkEmail(event.target.value);
-                  if (obj.valid === false) setEmailError(obj.msg);
-                  else setEmailError("");
-                  setEmail(event.target.value);
-                }}
-                maxLength="50"
+                style={{ display: "none" }}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                ref={photoRef}
               />
-            </div>
-            {editable ?
+              <p className="error">{photoError}</p>
               <div className="i">
-                <label>Password</label>
+                <label>Email Address</label>
                 <input
-                  type="password"
-                  placeholder="Password"
-                  autoComplete="on"
+                  disabled={!editable}
+                  value={email}
+                  type="text"
+                  placeholder="Email Address"
                   onChange={(event) => {
-                    setPassword(event.target.value);
+                    const obj = checkEmail(event.target.value);
+                    if (obj.valid === false) setEmailError(obj.msg);
+                    else setEmailError("");
+                    setEmail(event.target.value);
                   }}
                   maxLength="50"
                 />
-              </div> : <></>
+              </div>
+              {editable ?
+                <div className="i">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    autoComplete="on"
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                    maxLength="50"
+                  />
+                </div> : <></>
+              }
+
+              <p className="error">{emailError}</p>
+              <div className="i">
+                <label>Phone Number</label>
+                <input
+                  disabled={!editable}
+                  value={phone}
+                  type="text"
+                  placeholder="Phone Number"
+                  onChange={(event) => {
+                    const obj = checkPhoneNumber(event.target.value);
+                    if (obj.valid === false) setPhoneError(obj.msg);
+                    else setPhoneError("");
+                    setPhone(event.target.value);
+                  }}
+                  maxLength="10"
+                />
+              </div>
+              <p className="error">{phoneError}</p>
+            </form>
+            {editable ?
+              (<>
+                <button id="cancelButton" onClick={cancel}>
+                  Cancel
+                </button>
+                <button id="updateButton"
+                  onClick={update}>
+                  Update Phone
+                </button>
+                <button id="updateButton"
+                  onClick={updateE}>
+                  Update Email
+                </button>
+              </>)
+              :
+              (<button id="cancelButton" onClick={edit}>
+                Edit
+              </button>)
             }
 
-            <p className="error">{emailError}</p>
-            <div className="i">
-              <label>Phone Number</label>
-              <input
-                disabled={!editable}
-                value={phone}
-                type="text"
-                placeholder="Phone Number"
-                onChange={(event) => {
-                  const obj = checkPhoneNumber(event.target.value);
-                  if (obj.valid === false) setPhoneError(obj.msg);
-                  else setPhoneError("");
-                  setPhone(event.target.value);
-                }}
-                maxLength="10"
-              />
-            </div>
-            <p className="error">{phoneError}</p>
-          </form>
-          {editable ?
-            (<>
-              <button id="cancelButton" onClick={cancel}>
-                Cancel
+            <h1>Reset Password?</h1>
+            <form>
+              <button id="resetButton" onClick={resetPassword}>
+                Send Password Reset Email
               </button>
-              <button id="updateButton"
-                onClick={update}>
-                Update Phone
-              </button>
-              <button id="updateButton"
-                onClick={updateE}>
-                Update Email
-              </button>
-            </>)
-            :
-            (<button id="cancelButton" onClick={edit}>
-              Edit
-            </button>)
-          }
-
-          <h1>Reset Password?</h1>
-          <form>
-            <button id="resetButton" onClick={resetPassword}>
-              Send Password Reset Email
-            </button>
-            <p className="error">{resetError}</p>
-          </form>
+              <p className="error">{resetError}</p>
+            </form>
+          </div>
         </div>
         <Footer />
       </div>
