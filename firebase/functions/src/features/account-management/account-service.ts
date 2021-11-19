@@ -298,11 +298,10 @@ export class AccountService {
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
         const user = await this.userDAO.getAccountData(uid)
-        const customerID = await user.stripeCustomerID
-        if (customerID === undefined) {
-            throw new Error(`User needs a customer id to add a credit card.`)
+        if (user.stripeCustomerID === undefined) {
+            throw new HttpsError('failed-precondition', `User ${uid} needs a customer id to add a credit card.`)
         }
-        return this.paymentDAO.createCreditCard(uid, customerID, cardToken)
+        return this.paymentDAO.createCreditCard(uid, user.stripeCustomerID, cardToken)
     }
 
 

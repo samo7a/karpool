@@ -143,15 +143,15 @@ export const testCache = functions.https.onCall(async (data, context) => {
 
 {x: -81.3083762, y: 28.581269}, dropoffLocation: {x: -81.494272, y: 28.33599}
 
-searchTrips({
-    p1: {x: -81.3083762, y: 28.581269},
-    p2: {x: -81.494272, y: 28.33599}
+playground.searchTrips({
+    p2: {y: 32.511050, x: -83.740764},
+    p1: {y: 29.655895, x: -82.423947}
 })
 */
 
 export const searchTrips = functions.https.onCall((data, context) => {
 
-    const startAfter = new Date('2021-10-25T00:00:00.000Z')
+    const startAfter = new Date('2021-11-03T12:00:00.000Z')
 
     const startBefore = new Date(startAfter.getTime())
     startBefore.setUTCHours(23, 59, 59)
@@ -163,7 +163,7 @@ export const searchTrips = functions.https.onCall((data, context) => {
 })
 
 import * as decoder from 'google-polyline'
-import { newPaymentService, newRouteDAO, newTripDAO, newTripService } from '.';
+import { newAccountService, newPaymentService, newRouteDAO, newTripDAO, newTripService } from '.';
 import { getEnv } from './utils/env-config';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {
@@ -230,6 +230,7 @@ export const testRemove = functions.https.onCall(async (data, context) => {
 })
 
 import Stripe from 'stripe';
+import { validateString } from './utils/validation';
 
 /*
 
@@ -337,3 +338,12 @@ export const charge = functions.https.onCall(async (data, context) => {
     return newPaymentService().chargeRider('6uvuIMaTt8Q3EL7Es2rOWR09rpF2', 100)
 })
 
+
+
+export const debug = functions.https.onCall(async (data, context) => {
+
+    const cardToken = validateString('asdf')
+
+    return newAccountService().addCreditCard('0HcDDpWc5yanKKXGmFopy955uFj1', cardToken)
+
+})

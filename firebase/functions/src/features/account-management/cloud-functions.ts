@@ -79,7 +79,9 @@ export const addCreditCard = functions.https.onCall(async (data, context) => {
 
     const cardToken = validateString(data.cardToken)
 
-    return newAccountService().addCreditCard(uid, cardToken)
+    return newAccountService().addCreditCard(uid, cardToken).catch(err => {
+        throw new HttpsError('internal', err.message)
+    })
 })
 
 export const getCreditCards = functions.https.onCall(async (data, context) => {

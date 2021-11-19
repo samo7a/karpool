@@ -112,8 +112,8 @@ export class TripService {
 
         const car = await this.vehicleDAO.getVehicle(trip.driverID)
 
-        const riders: Record<string, boolean> = {} 
-        trip.riderInfo.forEach(r => riders[r.riderID]= true)
+        const riders: Record<string, boolean> = {}
+        trip.riderInfo.forEach(r => riders[r.riderID] = true)
 
         await this.tripDAO.createScheduledTrip(tripID, {
 
@@ -237,11 +237,11 @@ export class TripService {
             map[point.tripID] = point
         })
 
-        // const pickupTrips = pickupPoints.map(p => p.tripID)
-        // const dropoffTrips = pickupPoints.map(p => p.tripID)
+        const pickupTrips = pickupPoints.map(p => p.tripID)
+        const dropoffTrips = pickupPoints.map(p => p.tripID)
 
-        // console.log(pickupTrips)
-        // console.log(dropoffTrips)
+        console.log(pickupTrips)
+        console.log(dropoffTrips)
 
         /**
          * Filter for trips that:
@@ -254,8 +254,11 @@ export class TripService {
                 return false
             }
             const sameDirection = pickupPoint.index < dropoffPoint.index
+            console.log('II', dropoffPoint, pickupPoint.index, dropoffPoint.index)
             return sameDirection
         }).map(point => point.tripID)
+
+        console.log('VALID1', validTripIDs)
 
         //Return all trips
         const queriedTrips: CreatedTripSchema[] = []
