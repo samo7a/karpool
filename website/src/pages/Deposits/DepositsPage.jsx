@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./DepositsPage.css";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -11,7 +11,23 @@ import Typography from '@mui/material/Typography';
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
+import firebase from "firebase";
+
 const DepositsPage = () => {
+    // const [deposits, setDeposits] = useState([])
+
+    // // useEffect(() => {
+    // //     const getDeposits = async () => {
+    // //         var array = [];
+    // //         const result = await firebase.functions().httpsCallable('account-getDeposits')({});
+    // //         const [weekly_earnings, monthly_earnings] = result.data
+
+    // //         console.log(weekly_earnings, monthly_earnings)
+    // //         //{date:'2021-11-19T02:32:04.103Z'}
+    // //     }
+    // //     getDeposits();
+    // // });
+
     return (
         <>
             <div className="content">

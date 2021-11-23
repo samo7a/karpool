@@ -30,3 +30,18 @@
     width: 100%;
     height: 100%;
   }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    align-content: center;
+    align-items: center;
+    align-self: center;
+  }
+  
+  td, th {
+    border: 3px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+  }
+  

@@ -60,7 +60,7 @@ const DriverRideHistoryPage = () => {
                 key={index}
             >
                 <ListItemAvatar>
-                    <Avatar alt="Bob" src={"/static/images/avatar/1.jpg"} />
+                    <Avatar src={"/static/images/avatar/1.jpg"} />
                 </ListItemAvatar>
                 <ListItemText
                     secondary={
@@ -78,9 +78,9 @@ const DriverRideHistoryPage = () => {
                                 {/* {"Rider Name"} */}
                                 {/* <br></br> */}
                             </Typography>
-                            {trip.startAddress}
+                            From: {trip.startAddress}
                             <br></br>
-                            {trip.endAddress}
+                            To: {trip.endAddress}
                             <br></br>
                         </React.Fragment>
                     }

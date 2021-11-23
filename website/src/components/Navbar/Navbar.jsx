@@ -113,13 +113,13 @@ const Navbar = () => {
                   null
                 )
               }
-              {
+              {/* {
                 role === "driver" ? (
                   <SmartLink link="/deposits" title="Deposits" />
                 ) : (
                   null
                 )
-              }
+              } */}
               {/* <SmartLink link="/rider-home" title="Home" /> */}
               <SmartLink link="/about-us" title="About Us" />
             </ul>

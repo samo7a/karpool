@@ -622,6 +622,7 @@ const SignupPage = () => {
                   setDriverLicense={setDriverLicense}
                   setLicenseExpDate={setLicenseExpDate}
                   ref={carInfoRef}
+                  showDriverLicense={true}
                 />
                 <CarInsuranceForm
                   setInsuranceProvider={setInsuranceProvider}

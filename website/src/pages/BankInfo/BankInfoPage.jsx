@@ -4,11 +4,27 @@ import "./BankInfoPage.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import BankInformationForm from "../../components/BankInformationForm/BankInformationForm";
+import firebase from "firebase";
 
 const BankInfoPage = () => {
     const [accountNumber, setAccountNumber] = useState("");
     const [routingNumber, setRoutingNumber] = useState("");
+    const [Message, setMessage] = useState("");
     const bankInfoRef = useRef();
+    async function setBankAccount() {
+        setMessage("");
+        await firebase.functions().httpsCallable('account-setBankAccount')({
+            accountNum: accountNumber,
+            routingNum: routingNumber
+        }).then(() => {
+            setAccountNumber("");
+            setRoutingNumber("");
+            setMessage("Bank Info Successfully Updated!");
+        }).catch(() => {
+            setMessage("Bank Info Not Updated!");
+        });
+    };
+
     return (
         <>
             <div className="content">
@@ -23,10 +39,8 @@ const BankInfoPage = () => {
                             // setRoutingNumberError={setRoutingNumberError}
                             ref={bankInfoRef}
                         />
-                        <button id="cancelButton" /*onClick={}*/>
-                            Cancel
-                        </button>
-                        <button id="updateButton" /*onClick={}*/>
+                        <p>{Message}</p>
+                        <button id="updateButton" onClick={setBankAccount}>
                             Update
                         </button>
                     </div>
