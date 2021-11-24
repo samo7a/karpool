@@ -6,12 +6,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:mobile_app/screens/driver/DriverDashboardScreen.dart';
 import 'package:mobile_app/util/InsuranceProviders.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/CarModels.dart';
 import 'package:mobile_app/util/Size.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_app/widgets/InitialVehicleInfo.dart';
 
 class VehicleInfoScreen extends StatefulWidget {

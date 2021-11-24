@@ -81,7 +81,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   String getTime(DateTime dt) {
-    int hr = dt.hour + 4;
+    int hr = dt.hour + 5;
     int min = dt.minute;
     String hour;
     String minute;

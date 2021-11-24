@@ -56,7 +56,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
     allowsUTurnAtWayPoints: true,
     mode: MapBoxNavigationMode.driving,
     units: VoiceUnits.imperial,
-    simulateRoute: true,
+    simulateRoute: true, // turn false
     animateBuildRoute: true,
     longPressDestinationEnabled: true,
     language: "en",
@@ -339,7 +339,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                         wayPoints: wayPoints,
                         options: MapBoxOptions(
                           mode: MapBoxNavigationMode.driving,
-                          simulateRoute: true,
+                          simulateRoute: true, // turn false
                           language: "en",
                           allowsUTurnAtWayPoints: true,
                           units: VoiceUnits.imperial,
@@ -405,12 +405,13 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                                     HttpsCallable rate = FirebaseFunctions.instance
                                         .httpsCallable("trip-addDriverTripRating");
                                     try {
-                                      EasyLoading.show(status: "");
+                                      EasyLoading.show(status: "Skipping!");
                                       await rate({
                                         "tripID": trip.tripId,
                                         "rating": -1,
                                         "riderID": rider.getUid,
                                         "driverID": trip.driverId,
+                                        "amount": 0.0,
                                       });
 
                                       setState(() {
@@ -484,6 +485,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
                                         "rating": rating,
                                         "riderID": rider.getUid,
                                         "driverID": trip.driverId,
+                                        "amount": 0.0,
                                       });
 
                                       setState(() {
@@ -539,7 +541,7 @@ class _DriverNavScreenState extends State<DriverNavScreen> {
       allowsUTurnAtWayPoints: true,
       mode: MapBoxNavigationMode.driving,
       units: VoiceUnits.imperial,
-      simulateRoute: true,
+      simulateRoute: true, // turn false
       animateBuildRoute: true,
       longPressDestinationEnabled: true,
       language: "en",
