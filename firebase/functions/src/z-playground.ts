@@ -335,7 +335,8 @@ export const onboard = functions.https.onCall(async (data, context) => {
 
 export const charge = functions.https.onCall(async (data, context) => {
 
-    return newPaymentService().chargeRider('6uvuIMaTt8Q3EL7Es2rOWR09rpF2', 100)
+    return newPaymentService().chargeRider(data.id, 100)
+
 })
 
 

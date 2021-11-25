@@ -155,7 +155,7 @@ export interface week {
 }
 
 export interface month {
-    month: number
+    month: string
 
     amount: number
 }

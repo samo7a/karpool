@@ -15,6 +15,8 @@ import { UserSchema } from "../../data-access/user/schema";
 import { sendCustomNotification } from "../../features/notifications/notifications";
 import { NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
 import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { PaymentDAO } from "../../data-access/payment-dao/dao";
+import { PaymentService } from "../payments/payment-service";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
@@ -28,20 +30,24 @@ export class TripService {
     private directionsDAO: RouteDAOInterface
     private notificationsDAO: NotificationsDAOInterface
     private vehicleDAO: VehicleDAOInterface
-    userDAO: any;
+    private userDAO: UserDAOInterface
+    private paymentDAO: PaymentDAO
 
     constructor(
         userDAO: UserDAOInterface,
         tripDAO: TripDAOInterface,
         directionsDAO: RouteDAOInterface,
         notificationsDAO: NotificationsDAOInterface,
-        vehicleDAO: VehicleDAOInterface
+        vehicleDAO: VehicleDAOInterface,
+        paymentDAO: PaymentDAO
     ) {
         this.userDAO = userDAO
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
         this.notificationsDAO = notificationsDAO
         this.vehicleDAO = vehicleDAO
+        this.paymentDAO = paymentDAO
+
     }
 
     /**
@@ -388,9 +394,11 @@ export class TripService {
 
         if ((calculatedTime < 10800) && (calculatedTime > 0)) {
 
-            console.log("Rider will be fined")
+            // Charge the rider $5 penality or add a field in user as debt and add the value
 
-            //TODO: Charge the rider $5 penality or add a field in user as debt and add the value 
+            const payment = new PaymentService(this.userDAO, this.paymentDAO)
+            await payment.chargeRider(riderID, 500)
+
         }
 
         const token = await this.notificationsDAO.getTokenList([trip.driverID])
@@ -642,18 +650,18 @@ export class TripService {
 
         const wayPoints = this.getWaypoints(trip, 'Accepted')
 
-        const newRiderInfo: TripRiderInfo = {
+        const meters = GeoDistance(pickup, dropoff)
 
+        const newRiderInfo: TripRiderInfo = {
             dropoffAddress: destinationAddress,
             pickupAddress: startAddress,
             dropoffLocation: new firestore.GeoPoint(dropoff.y, dropoff.x),
             pickupLocation: new firestore.GeoPoint(pickup.y, pickup.x),
-            estimatedFare: 0,
+            estimatedFare: calculateFare(0, 0, meters / 1600, 1.50, 0.0),
             passengerCount: passengers,
             pickupIndex: 0,
             dropoffIndex: 0,
             riderID: riderID
-
         }
 
         wayPoints.push(pickup)
@@ -669,8 +677,6 @@ export class TripService {
 
         await this.tripDAO.updateCreatedTrip(tripID, data)
 
-        console.log(data, "AND ", tripID)
-
         const token = await this.notificationsDAO.getTokenList([trip.driverID])
 
         const message = {
@@ -685,28 +691,96 @@ export class TripService {
 
 
 
-    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string> {
+    async addRiderTripRating(tripID: string, riderID: string, rating: number, amount: number): Promise<string> {
+
+        const payment = new PaymentService(this.userDAO, this.paymentDAO)
+
+        if (rating === -1) {
+
+            //charge the rider in case of no rating
+            await payment.chargeRider(riderID, amount * 100)
+            return `Rider: ${riderID} did not rate the driver`
+
+        }
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
+
+        const driver = await this.userDAO.getAccountData(trip.driverID)
+
+
+        //charge the rider
+        await payment.chargeRider(riderID, amount * 100)
+
+        let ratingVal = driver.driverInfo?.rating
+
+        const ratingCount = driver.driverInfo?.ratingCount
+
+        if (ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined) {
+
+            ratingVal = ((ratingVal * ratingCount) + rating) / (ratingCount + 1)
+
+            if (ratingVal > 0 && driver.driverInfo?.rating !== undefined) {
+                driver.driverInfo.rating = ratingVal
+                driver.driverInfo.ratingCount += 1
+            }
+        }
+        else {
+            if (driver.driverInfo?.rating !== undefined) {
+                driver.driverInfo.rating = rating
+                driver.driverInfo.ratingCount += 1
+            }
+        }
 
         trip.ridersRateDriver[riderID] = rating
 
         await this.tripDAO.updateScheduledTrip(tripID, trip)
 
+        const data: Partial<UserSchema> = {
+            driverInfo: driver.driverInfo
+        }
+        await this.userDAO.updateAccountData(trip.driverID, data)
+
         return "Rating added Successfully!!"
+
     }
+
+
 
     async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string> {
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
+        const rider = await this.userDAO.getAccountData(riderID)
+
+        let ratingVal = rider.riderInfo?.rating
+
+        const ratingCount = rider.riderInfo?.ratingCount
+
+        if (ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined) {
+
+            ratingVal = ((ratingVal * ratingCount) + rating) / (ratingCount + 1)
+
+            if (ratingVal > 0 && rider.riderInfo?.rating !== undefined) {
+                rider.riderInfo.rating = ratingVal
+                rider.riderInfo.ratingCount += 1
+            }
+        }
+        else {
+            if (rider.riderInfo?.rating !== undefined) {
+                rider.riderInfo.rating = rating
+                rider.riderInfo.ratingCount += 1
+            }
+        }
+
         trip.driverRatesRiders[riderID] = rating
 
         await this.tripDAO.updateScheduledTrip(tripID, trip)
 
+        const data: Partial<UserSchema> = {
+            riderInfo: rider.riderInfo
+        }
+        await this.userDAO.updateAccountData(riderID, data)
+
         return "Rating added Successfully!!"
     }
-
-
-
 }

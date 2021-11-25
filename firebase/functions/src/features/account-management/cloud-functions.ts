@@ -168,6 +168,8 @@ export const editUserProfile = functions.https.onCall(async (data, context) => {
 
 })
 
+//
+
 export const getEarnings = functions.https.onCall(async (data, context) => {
 
     const callerUID = validateAuthorization(context)

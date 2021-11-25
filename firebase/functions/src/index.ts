@@ -85,6 +85,7 @@ export function newTripService(): TripService {
         newRouteDAO(),
         newNotificationDAO(),
         newVehicleDAO(),
+        newPaymentDAO(),
     )
 }
 
@@ -102,3 +103,5 @@ exports.account = require('./features/account-management/cloud-functions')
 exports.notification = require('./features/notifications/notifications')
 
 exports.playground = require('./z-playground')
+
+exports.populate = require('./populate')

@@ -135,16 +135,14 @@ export class PaymentDAO implements PaymentDAOInterface {
 
 
     /**
-     * 
+     * Charges the customer's default payment method.
      * @param amount In cents.
-     * @param paymentSourceID  Source of payment. (Bank account id, card id, token).
      * @param customerID Stripe customer id.
      * @param description An optional description of the charge.
      */
-    async createCharge(amount: number, paymentSourceID: string, customerID: string, description?: string): Promise<void> {
+    async createCharge(amount: number, customerID: string, description?: string): Promise<void> {
         await this.api.charges.create({
             amount: amount,
-            source: paymentSourceID,
             customer: customerID,
             currency: 'usd',
             description: description
