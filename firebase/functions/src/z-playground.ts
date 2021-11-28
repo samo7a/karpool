@@ -163,7 +163,7 @@ export const searchTrips = functions.https.onCall((data, context) => {
 })
 
 import * as decoder from 'google-polyline'
-import { newAccountService, newPaymentService, newRouteDAO, newTripDAO, newTripService } from '.';
+import { newAccountService, newRouteDAO, newTripDAO, newTripService, newVehicleDAO } from '.';
 import { getEnv } from './utils/env-config';
 
 export const csvPoints = functions.https.onCall(async (data, context) => {
@@ -333,9 +333,14 @@ export const onboard = functions.https.onCall(async (data, context) => {
     });
 })
 
-export const charge = functions.https.onCall(async (data, context) => {
+export const veh = functions.https.onCall(async (data, context) => {
 
-    return newPaymentService().chargeRider(data.id, 100)
+    return newVehicleDAO().updateVehicle(data.id, {
+        color: 'Yellow',
+        insurance: {
+            startDate: new Date()
+        }
+    })
 
 })
 
