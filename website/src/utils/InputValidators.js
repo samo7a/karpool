@@ -329,7 +329,7 @@ export function checkColor(color) {
   if (color.length === 0)
     return {
       valid: false,
-      msg: "Please choose a car brand!",
+      msg: "Please choose a car Color!",
     };
   else
     return {

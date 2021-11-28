@@ -48,7 +48,8 @@ const CarInformationForm = forwardRef((props, ref) => {
         checkBrand(brand).valid &&
         checkCarAge(modelYear).valid &&
         checkColor(color).valid &&
-        checkLicense(plate).valid
+        checkLicense(plate).valid &&
+        checkDriverLicense(driverLicense).valid
       );
     },
     checkBrand1() {
@@ -60,20 +61,20 @@ const CarInformationForm = forwardRef((props, ref) => {
         return false;
       }
     },
-    checkCarModel1() {
-      if (color.length !== 0) {
-        setCarModelError("");
-        return true;
-      } else {
-        if (carModels.length === 0) {
-          setCarModelError("");
-          return true;
-        } else {
-          setCarModelError("Please select a car model!");
-          return false;
-        }
-      }
-    },
+    // checkCarModel1() {
+    //   if (color.length !== 0) {
+    //     setCarModelError("");
+    //     return true;
+    //   } else {
+    //     if (carModels.length === 0) {
+    //       setCarModelError("");
+    //       return true;
+    //     } else {
+    //       setCarModelError("Please select a car model!");
+    //       return false;
+    //     }
+    //   }
+    // },
     checkColor1() {
       if (color.length !== 0) {
         setColorError("");
@@ -126,35 +127,35 @@ const CarInformationForm = forwardRef((props, ref) => {
     },
   }));
 
-  useEffect(() => {
-    const getCarModels = async () => {
-      if (brand.length !== 0) {
-        const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${brand}/vehicleType/car?format=json`;
-        const res = await axios.get(url);
-        if (res.status === 200) {
-          if (res.data.Count !== 0) {
-            const count = res.data.Count;
-            const array = [];
-            for (var i = 0; i < count; i++) {
-              var item = res.data.Results[i].Model_Name;
-              array.push({ label: item });
-            }
-            setCarModels(array);
-          }
-        } else {
-          setCarModels([]);
-          props.setCarModel("");
-          setCarModel("");
-        }
-      } else {
-        setCarModels([]);
-        props.setCarModel("");
-        setCarModel("");
-      }
-    };
-    getCarModels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brand]);
+  // useEffect(() => {
+  //   const getCarModels = async () => {
+  //     if (brand.length !== 0) {
+  //       const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${brand}/vehicleType/car?format=json`;
+  //       const res = await axios.get(url);
+  //       if (res.status === 200) {
+  //         if (res.data.Count !== 0) {
+  //           const count = res.data.Count;
+  //           const array = [];
+  //           for (var i = 0; i < count; i++) {
+  //             var item = res.data.Results[i].Model_Name;
+  //             array.push({ label: item });
+  //           }
+  //           setCarModels(array);
+  //         }
+  //       } else {
+  //         setCarModels([]);
+  //         props.setCarModel("");
+  //         setCarModel("");
+  //       }
+  //     } else {
+  //       setCarModels([]);
+  //       props.setCarModel("");
+  //       setCarModel("");
+  //     }
+  //   };
+  //   getCarModels();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [brand]);
   useEffect(() => {
     var day = new Date();
     var yyyy = day.getFullYear();
@@ -191,7 +192,6 @@ const CarInformationForm = forwardRef((props, ref) => {
           <label>Brand</label>
           <div id="select">
             <CreatableSelect
-              value={props.brand}
               placeholder="Select your car make"
               isClearable
               isSearchable
@@ -201,7 +201,7 @@ const CarInformationForm = forwardRef((props, ref) => {
               onChange={(value) => {
                 if (value) {
                   props.setCarBrand(value.label);
-                  //setBrand(value.label);
+                  setBrand(value.label);
                   setBrandError("");
                 } else {
                   setBrandError(checkBrand("").msg);
@@ -319,49 +319,49 @@ const CarInformationForm = forwardRef((props, ref) => {
           />
         </div>
         <p className="error">{plateError}</p>
-        {
-          props.showDriverLicense ? (
-            <div>
-              <div className="i">
-                <label>Driver License</label>
-                <input
-                  type="text"
-                  placeholder="Driver License"
-                  onChange={(event) => {
-                    const obj = checkDriverLicense("FL", event.target.value);
-                    if (obj.valid === false) setDriverLicenseError(obj.msg);
-                    else setDriverLicenseError("");
+        {props.showDriverLicense ? (
+          <div>
+            <div className="i">
+              <label>Driver License</label>
+              <input
+                type="text"
+                placeholder="Driver License"
+                onChange={(event) => {
+                  const obj = checkDriverLicense("FL", event.target.value);
+                  if (obj.valid === false) setDriverLicenseError(obj.msg);
+                  else setDriverLicenseError("");
 
-                    setDriverLicense(event.target.value);
-                    props.setDriverLicense(event.target.value);
-                  }}
-                  maxLength="20"
-                />
-              </div>
-              <p className="error">{driverLicenseError}</p>
-              <div className="i">
-                <label>End Date</label>
-                <input
-                  required
-                  id="date3"
-                  type="month"
-                  min={today}
-                  value={expirationDate}
-                  onChange={(event) => {
-                    setExprirationDate(event.target.value);
-                    props.setLicenseExpDate(event.target.value);
-                    const end = new Date(event.target.value);
-                    const day = new Date();
-                    if (end.getTime() < day.getTime())
-                      setExprirationDateError("Your Driver License is expired!");
-                    else setExprirationDateError("");
-                  }}
-                />
-              </div>
-              <p className="error">{expirationDateError}</p>
+                  setDriverLicense(event.target.value);
+                  props.setDriverLicense(event.target.value);
+                }}
+                maxLength="20"
+              />
             </div>
-          ) : <></>
-        }
+            <p className="error">{driverLicenseError}</p>
+            <div className="i">
+              <label>End Date</label>
+              <input
+                required
+                id="date3"
+                type="month"
+                min={today}
+                value={expirationDate}
+                onChange={(event) => {
+                  setExprirationDate(event.target.value);
+                  props.setLicenseExpDate(event.target.value);
+                  const end = new Date(event.target.value);
+                  const day = new Date();
+                  if (end.getTime() < day.getTime())
+                    setExprirationDateError("Your Driver License is expired!");
+                  else setExprirationDateError("");
+                }}
+              />
+            </div>
+            <p className="error">{expirationDateError}</p>
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

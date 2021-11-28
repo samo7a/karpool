@@ -101,6 +101,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     String kPLACES_API_KEY = dotenv.get("GOOGLE_API_KEY");
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    if (input.length <= 4) return;
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       if (mounted)
@@ -117,6 +118,7 @@ class _SearchRidesScreenState extends State<SearchRidesScreen> {
     String kPLACESAPIKEY = dotenv.get("GOOGLE_API_KEY");
     String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     String request = '$baseURL?input=$input&key=$kPLACESAPIKEY&sessiontoken=$_sessionToken';
+    if (input.length <= 4) return;
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       if (mounted)

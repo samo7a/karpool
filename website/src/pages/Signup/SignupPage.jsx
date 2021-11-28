@@ -294,7 +294,7 @@ const SignupPage = () => {
         "Please fill all the required data or fix the format of the input!"
       );
       carInfoRef.current.checkBrand1();
-      carInfoRef.current.checkCarModel1();
+      // carInfoRef.current.checkCarModel1();
       carInfoRef.current.checkColor1();
       carInfoRef.current.checkCarAge1();
       carInfoRef.current.checkLicense1();
