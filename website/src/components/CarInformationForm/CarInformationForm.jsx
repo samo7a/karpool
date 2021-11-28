@@ -8,7 +8,7 @@ import "./CarInformationForm.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { carColors, cars } from "../../utils/CarModels";
-import axios from "axios";
+// import axios from "axios";
 import {
   checkBrand,
   checkColor,
@@ -20,12 +20,12 @@ import {
 const CarInformationForm = forwardRef((props, ref) => {
   const [brand, setBrand] = useState("");
   const [brandError, setBrandError] = useState("");
-  const [, setCarModel] = useState("");
-  const [carModelError, setCarModelError] = useState("");
+  // const [, setCarModel] = useState("");
+  // const [carModelError, setCarModelError] = useState("");
   const [color, setColor] = useState("");
   const [colorError, setColorError] = useState("");
   const [colorHex, setColorHex] = useState("");
-  const [carModels, setCarModels] = useState([]);
+  // const [carModels, setCarModels] = useState([]);
   const [today, setToday] = useState("");
   const [modelYear, setModelYear] = useState(today - 15);
   const [modelYearError, setModelYearError] = useState("");
@@ -49,7 +49,7 @@ const CarInformationForm = forwardRef((props, ref) => {
         checkCarAge(modelYear).valid &&
         checkColor(color).valid &&
         checkLicense(plate).valid &&
-        checkDriverLicense(driverLicense).valid
+        checkDriverLicense("FL", driverLicense).valid
       );
     },
     checkBrand1() {
@@ -104,7 +104,7 @@ const CarInformationForm = forwardRef((props, ref) => {
         return true;
       }
     },
-    checkDriverLicense() {
+    checkDriverLicense1() {
       const obj = checkDriverLicense("FL", driverLicense);
       if (obj.valid === false) {
         setDriverLicenseError(obj.msg);
@@ -213,10 +213,10 @@ const CarInformationForm = forwardRef((props, ref) => {
           </div>
         </div>
         <p className="error">{brandError}</p>
-        {carModels.length === 0 ? (
+        {/* {carModels.length === 0 ? (
           <></>
-        ) : (
-          <>
+        ) : ( */}
+        {/* <>
             <div className="i">
               <label>Model</label>
               <div id="select">
@@ -244,7 +244,7 @@ const CarInformationForm = forwardRef((props, ref) => {
             </div>
             <p className="error">{carModelError}</p>
           </>
-        )}
+        )} */}
         <div className="i">
           <label>Color</label>
           <div id="select">
@@ -334,7 +334,7 @@ const CarInformationForm = forwardRef((props, ref) => {
                   setDriverLicense(event.target.value);
                   props.setDriverLicense(event.target.value);
                 }}
-                maxLength="20"
+                maxLength="13"
               />
             </div>
             <p className="error">{driverLicenseError}</p>
