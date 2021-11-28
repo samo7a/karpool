@@ -11,7 +11,6 @@ class DriverDepositsScreen extends StatefulWidget {
 }
 
 class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
-  String depositDate = '08/09/2021';
   String depositAccount = '3635';
 
   @override
@@ -24,7 +23,35 @@ class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             DepositContainer(
-              depositDate: depositDate,
+              depositDate: '11/08/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '10/14/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '09/22/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '09/13/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '09/02/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '08/24/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '06/14/2021',
+              depositAccount: depositAccount,
+            ),
+            DepositContainer(
+              depositDate: '04/27/2021',
               depositAccount: depositAccount,
             ),
           ],
