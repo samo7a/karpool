@@ -48,21 +48,6 @@ describe('Data Access Utilities', () => {
 
         })
 
-
-        test(`Transforms fields explicitly defined as undefined to FieldValue.delete().`, () => {
-            const obj = {
-                field: undefined
-            }
-            const encoded = fireEncode(obj)
-
-            const deleteValue = admin.firestore.FieldValue.delete() //Using instance of doesn't work.
-
-            expect(deleteValue.isEqual(encoded.field)).toBe(true)
-
-            expect(deleteValue.isEqual(encoded.notSetField)).toBe(false) //Only fields that exist with undefined value should be set to delete()
-
-        })
-
         test(`Ignores null values.`, () => {
             const obj = {
                 field: null

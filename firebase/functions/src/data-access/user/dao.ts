@@ -2,12 +2,12 @@
 
 import * as admin from 'firebase-admin'
 import { FirestoreKey } from '../../constants'
-import { UserSchema } from './schema'
+import { UserSchema, tokenSchema, earnings } from './schema'
 import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
 import { fireEncode } from '../utils/encode'
-import { CreditCardSchema } from './schema'
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
  * for unit testing.
@@ -44,6 +44,16 @@ export interface UserDAOInterface {
      */
     deleteAccountData(uid: string): Promise<void>
 
+
+    updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void>
+
+    storeUserDeviceToken(uid: string, data: tokenSchema): Promise<void>
+
+    updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void>
+
+    getAllEarnings(uid: string): Promise<earnings[]>
+
+    getEarningsByMonth(uid: string, start: string, end: string): Promise<number>
 }
 
 
@@ -84,7 +94,13 @@ export class UserDAO implements UserDAOInterface {
 
     getAccountData(uid: string): Promise<User> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
-        return userRef.get().then(doc => fireDecode(User, doc))
+        return userRef.get().then(doc => {
+            if (doc.exists) {
+                return fireDecode(User, doc)
+            } else {
+                throw new HttpsError('not-found', `User id: ${uid} not found.`)
+            }
+        })
     }
 
     async deleteAccountData(uid: string): Promise<void> {
@@ -93,13 +109,7 @@ export class UserDAO implements UserDAOInterface {
     }
 
 
-    //MARK: Credit Card Methods
-    async createCreditCard(data: CreditCardSchema): Promise<void> {
-        const ref = this.db.collection(FirestoreKey.creditCards).doc()
-        await ref.create(fireEncode(data))
-    }
-
-    async updateUserAccount(uid: string, info: UserSchema): Promise<void> {
+    async updateUserAccount(uid: string, info: UserSchema | Partial<UserSchema>): Promise<void> {
         const roles: Partial<Record<Role, boolean>> = {}
 
         if (info.driverInfo) {
@@ -114,6 +124,51 @@ export class UserDAO implements UserDAOInterface {
         await userRef.update(info)
     }
 
+    async storeUserDeviceToken(uid: string, tokenIDs: tokenSchema): Promise<void> {
+
+        await this.db.collection(FirestoreKey.FCMTokens).doc(uid).create(fireEncode(tokenIDs))
+    }
+
+    async updateDeviceTokenList(uid: string, data: tokenSchema): Promise<void> {
+
+        const doc = this.db.collection(FirestoreKey.FCMTokens).doc(uid)
+        await doc.update(data)
+    }
+
+    async createEarning(driverID: string, data: earnings) {
+        const userEarnings = this.db.collection(FirestoreKey.users).doc(driverID).collection(FirestoreKey.earnings).doc()
+
+        await userEarnings.create(data)
+    }
+
+    async getAllEarnings(uid: string): Promise<earnings[]> {
+
+        // return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
+        //     return snap.docs.map(doc => doc.data()) as CreditCardSchema[]
+        // })
+        return this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get().then(snap => {
+            return snap.docs.map(doc => doc.data()) as earnings[]
+        })
+        // const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).get()
+        // .then((snapshot) => {
+        //     snapshot.docs.map(doc => console.log(doc.data()))
+        // })
+
+
+    }
+
+    async getEarningsByMonth(uid: string, start: string, end: string): Promise<number> {
+        const startMonth = new Date(start)
+        const endMonth = new Date(end)
+        var monthlyEarnings: number = 0
+        const documents = await this.db.collection(FirestoreKey.users).doc(uid).collection(FirestoreKey.earnings).where('date', '>=', startMonth).where('date', '<=', endMonth).get()
+            .then((snapshot) => {
+                snapshot.docs.map(doc => monthlyEarnings += doc.data().amount)
+            })
+        console.log(documents)
+        console.log(monthlyEarnings)
+        return monthlyEarnings
+    }
 
 
     //TODO: Move this to a tripsDAO class and change this to get trips and use the service class for earnings.
