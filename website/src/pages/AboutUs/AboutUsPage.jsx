@@ -30,7 +30,7 @@ const AboutUsPage = () => {
             imgName="ahmed"
             name="Ahmed Elshetany"
             role="Frontend Artist"
-            quote="I hate dogs!"
+            quote="I love cats!"
           />
           <TeamMember
             className="team-member"
@@ -44,7 +44,7 @@ const AboutUsPage = () => {
             imgName="chris"
             name="Christopher Foreman"
             role="Database Specialist"
-            quote="live fast and eat ass"
+            quote="I love databases!"
           />
           <TeamMember
             className="team-member"

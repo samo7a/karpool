@@ -2,19 +2,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/LoginScreen.dart';
 import 'package:mobile_app/screens/RegisterScreen.dart';
-import 'package:mobile_app/widgets/widgets.dart';
+import 'package:mobile_app/util/Auth.dart';
+import 'package:mobile_app/widgets/rounded-button.dart';
+import 'package:provider/src/provider.dart';
 import '../util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   static const String id = 'mainScreen';
   const MainScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    signout();
+  }
+
+  void signout() async {
+    await context.read<Auth>().signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = Size(Context: context);
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: kDashboardColor,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -24,6 +41,7 @@ class MainScreen extends StatelessWidget {
               Text(
                 'Kärpōōl',
                 style: TextStyle(
+                  color: Colors.grey,
                   fontFamily: 'Poppins',
                   fontSize: size.FONT_SIZE * 50,
                 ),
@@ -37,6 +55,7 @@ class MainScreen extends StatelessWidget {
                   'Ensuring mobility in a mobile world.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                    color: Colors.white,
                     fontFamily: 'Glory',
                     fontWeight: FontWeight.bold,
                     fontSize: size.FONT_SIZE * 25,

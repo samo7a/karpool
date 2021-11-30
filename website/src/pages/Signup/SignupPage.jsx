@@ -11,7 +11,7 @@ import {
   checkFirstName,
   checkLastName,
   checkEmail,
-  checkPhoneNumber, 
+  checkPhoneNumber,
   checkAge,
   checkPassword,
   checkConfirmPassword,
@@ -50,7 +50,7 @@ const SignupPage = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState("");
   const [carBrand, setCarBrand] = useState("");
-  const [carModel, setCarModel] = useState("");
+  // const [carModel, setCarModel] = useState("");
   const [yearOfMan, setYearOfMan] = useState(0);
   const [carColor, setCarColor] = useState("");
   const [colorHex, setColorHex] = useState("");
@@ -291,14 +291,14 @@ const SignupPage = () => {
     const thirdCheck = carInfoRef.current.checkCarInfo();
     if (!thirdCheck) {
       setRegisterError(
-        "Please fill all the required data or fix the format of the input!"
+        "Please fill all the required **car***data or fix the format of the input!"
       );
       carInfoRef.current.checkBrand1();
-      carInfoRef.current.checkCarModel1();
+      // carInfoRef.current.checkCarModel1();
       carInfoRef.current.checkColor1();
       carInfoRef.current.checkCarAge1();
       carInfoRef.current.checkLicense1();
-      carInfoRef.current.checkDriverLicense();
+      carInfoRef.current.checkDriverLicense1();
       carInfoRef.current.checkDriverLicenseExpDate();
     }
     const forthCheck = carInsuranceRef.current.checkInsInfo();
@@ -350,7 +350,7 @@ const SignupPage = () => {
       routingNum: routingNumber,
       accountNum: accountNumber,
       make: carBrand,
-      carModel: carModel,
+      // carModel: carModel,
       year: yearOfMan,
       color: carColor,
       colorHex: colorHex,
@@ -505,7 +505,7 @@ const SignupPage = () => {
                     setDateOfBirthError(
                       obj.msg +
                         ` 
-				  You are ${obj.age} years old!`
+				            You are ${obj.age} years old!`
                     );
                   else setDateOfBirthError("");
                   setDateOfBirth(event.target.value);
@@ -614,7 +614,7 @@ const SignupPage = () => {
                 />
                 <CarInformationForm
                   setCarBrand={setCarBrand}
-                  setCarModel={setCarModel}
+                  // setCarModel={setCarModel}
                   setYearOfMan={setYearOfMan}
                   setCarColor={setCarColor}
                   setColorHex={setColorHex}
@@ -622,6 +622,7 @@ const SignupPage = () => {
                   setDriverLicense={setDriverLicense}
                   setLicenseExpDate={setLicenseExpDate}
                   ref={carInfoRef}
+                  showDriverLicense={true}
                 />
                 <CarInsuranceForm
                   setInsuranceProvider={setInsuranceProvider}

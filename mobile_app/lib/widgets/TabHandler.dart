@@ -19,7 +19,7 @@ class TabHandler extends StatelessWidget {
         tabs: [
           Tab(
             text: 'Home',
-            icon: Icon(Icons.home)
+            icon: Icon(Icons.home),
           ),
           Tab(
             text: 'History',

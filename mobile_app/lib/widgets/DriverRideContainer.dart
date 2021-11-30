@@ -1,33 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/DriverTrip.dart';
+import 'package:mobile_app/models/User.dart';
+import 'package:mobile_app/util/HeroDialog.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:mobile_app/util/constants.dart';
+import 'package:mobile_app/widgets/RiderModal.dart';
 
-class DriverRideContainer extends StatelessWidget {
+class DriverRideContainer extends StatefulWidget {
   const DriverRideContainer({
     Key? key,
-    // required this.date,
-    // required this.time,
-    // required this.fromAddress,
-    // required this.toAddress,
-    // required this.profilePic,
-    // required this.estimatedPrice,
-    // required this.status,
     required this.trip,
-    // required this.onPress,
   }) : super(key: key);
-
-  // final String date;
-  // final String time;
-  // final String fromAddress;
-  // final String toAddress;
-  // final String profilePic;
-  // final String estimatedPrice;
-  // final String status;
   final DriverTrip trip;
-  // final Function onPress;
 
-  // TODO: add button for scheduling rides
+  @override
+  State<DriverRideContainer> createState() => _DriverRideContainerState();
+}
+
+class _DriverRideContainerState extends State<DriverRideContainer> {
+  List<User> riders = [];
+  late final DriverTrip trip;
+
+  @override
+  void initState() {
+    super.initState();
+    trip = widget.trip;
+    getRiders();
+  }
+
+  void getRiders() async {
+    // final String? uid = trip.riders[0]["uid"];
+    // final user = await User.getRiderFromFireBase(uid!);
+    // riders.add(user);
+    List<User> u = [];
+    for (var rider in trip.riders) {
+      String uid = rider["uid"] ?? "";
+      String status = rider["status"] ?? "";
+      if (status == "Rejected") continue;
+      final user = await User.getRiderFromFireBase(uid);
+      u.add(user);
+    }
+    setState(() {
+      riders = u;
+    });
+  }
+
+  void showRiderModal(int index) {
+    Navigator.of(context).push(
+      HeroDialogRoute(
+        builder: (context) {
+          return RiderModal(
+            // trip: trip,
+            riderid: riders[index].uid,
+            status: trip.riders[index]["status"],
+            tripid: trip.tripId,
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +77,7 @@ class DriverRideContainer extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 3),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SizedBox(
@@ -163,21 +194,57 @@ class DriverRideContainer extends StatelessWidget {
                   SizedBox(
                     height: size.BLOCK_HEIGHT * 1,
                   ),
-                  Center(
-                    child: Text(
-                      '\$ ' + trip.estimatedPrice.toString(),
-                      style: TextStyle(
-                        color: Colors.green[900],
-                        fontFamily: 'Glory',
-                        fontWeight: FontWeight.bold,
-                        fontSize: size.FONT_SIZE * 20,
+                ],
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 1,
+              ),
+              riders.length == 0
+                  ? Container()
+                  : SizedBox(
+                      width: size.BLOCK_WIDTH * 78,
+                      height: size.BLOCK_HEIGHT * 10,
+                      child: ListView.separated(
+                        padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 4.6),
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            width: size.BLOCK_WIDTH * 4.6,
+                          );
+                        },
+                        scrollDirection: Axis.horizontal,
+                        itemCount: riders.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final rider = riders[index];
+                          return GestureDetector(
+                            onTap: () => showRiderModal(index),
+                            child: Container(
+                              width: size.BLOCK_WIDTH * 10,
+                              height: size.BLOCK_HEIGHT * 10,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(rider.profileURL),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
+              Center(
+                child: Text(
+                  '\$ ' + trip.estimatedPrice.toString(),
+                  style: TextStyle(
+                    color: Colors.green[900],
+                    fontFamily: 'Glory',
+                    fontWeight: FontWeight.bold,
+                    fontSize: size.FONT_SIZE * 20,
                   ),
-                  SizedBox(
-                    height: size.BLOCK_HEIGHT * 1,
-                  ),
-                ],
+                ),
+              ),
+              SizedBox(
+                height: size.BLOCK_HEIGHT * 1,
               ),
             ],
           ),

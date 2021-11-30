@@ -7,10 +7,10 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
+import 'package:mobile_app/screens/SplashScreen.dart';
 import 'package:mobile_app/screens/driver/BankInfoScreen.dart';
 import 'package:mobile_app/screens/driver/VehicleInfoScreen.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
-import 'package:mobile_app/screens/screens.dart';
 import 'package:mobile_app/util/Auth.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/util/Size.dart';
@@ -21,24 +21,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DriverDrawer extends StatefulWidget {
   DriverDrawer({
-    required this.user,
     Key? key,
   }) : super(key: key);
-  final User user;
 
   @override
   _DriverDrawerState createState() => _DriverDrawerState();
 }
 
 class _DriverDrawerState extends State<DriverDrawer> {
-  late User user;
-  late bool isRider;
+  bool isRider = false;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    isRider = user.isRider;
     getCurrentRole();
   }
 
@@ -56,34 +51,49 @@ class _DriverDrawerState extends State<DriverDrawer> {
       isRider = !isRider;
     });
     return new Timer(new Duration(seconds: 1), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => RiderDashboardScreen(),
-          settings: RouteSettings(
-            arguments: user,
-          ),
-        ),
+        RiderDashboardScreen.id,
         (Route<dynamic> route) => false,
       );
     });
   }
 
+  void deleteAccount() async {
+    EasyLoading.show(status: "Deleting account");
+    HttpsCallable delete =
+        FirebaseFunctions.instance.httpsCallable("account-deleteAccount");
+
+    try {
+      print("inside the try");
+      await delete();
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Account deleted.");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Error deleting account, try again later.");
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
-        physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           Container(
             height: size.BLOCK_HEIGHT * 45,
-            child: TopDrawer(
-              starRating: user.rating,
-              fullName: user.firstName + " " + user.lastName,
-              profilePic: user.profileURL,
-            ),
+            child: TopDrawer(),
           ),
           Container(
             height: size.BLOCK_HEIGHT * 3,
@@ -156,7 +166,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
                             ),
                             title: Text(
                               "Become A Rider",
@@ -180,7 +191,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
                                     color: Color(0xff001233),
                                   ),
                                   child: Center(
@@ -198,12 +210,15 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                padding: EdgeInsets.only(
+                                    right: size.BLOCK_WIDTH * 2.5),
                                 child: TextButton(
                                   onPressed: () async {
-                                    EasyLoading.show(status: "Working on it...");
-                                    HttpsCallable addRole =
-                                        FirebaseFunctions.instance.httpsCallable("account-addRole");
+                                    EasyLoading.show(
+                                        status: "Working on it...");
+                                    HttpsCallable addRole = FirebaseFunctions
+                                        .instance
+                                        .httpsCallable("account-addRole");
                                     final Map<String, dynamic> obj = {
                                       "uid": user.uid,
                                       "role": "Rider",
@@ -212,20 +227,24 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                       final result = await addRole(obj);
                                       if (result.data == null) {
                                         EasyLoading.dismiss();
-                                        EasyLoading.showSuccess("Congratulations!");
+                                        EasyLoading.showSuccess(
+                                            "Congratulations!");
                                         Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => SplashScreen(),
+                                            builder: (context) =>
+                                                SplashScreen(),
                                           ),
                                           (Route<dynamic> route) => false,
                                         );
                                         return;
                                       }
                                     } catch (e) {
-                                      print("error adding role: " + e.toString());
+                                      print(
+                                          "error adding role: " + e.toString());
                                       EasyLoading.dismiss();
-                                      EasyLoading.showError("Something went wrong!");
+                                      EasyLoading.showError(
+                                          "Something went wrong!");
                                       Navigator.pop(context);
                                       return;
                                     }
@@ -234,7 +253,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      borderRadius: BorderRadius.circular(
+                                          size.BLOCK_WIDTH * 5),
                                       color: Color(0xff3CB032),
                                     ),
                                     child: Center(
@@ -288,7 +308,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(context, EditProfilScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  EditProfilScreen.id,
+                );
               },
             ),
           ),
@@ -320,7 +343,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add car object. Car model under construction
-                Navigator.pushNamed(context, VehicleInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  VehicleInfoScreen.id,
+                );
               },
             ),
           ),
@@ -353,7 +379,10 @@ class _DriverDrawerState extends State<DriverDrawer> {
               ),
               onTap: () {
                 //remove user, and add Bank object. Bank model under construction
-                Navigator.pushNamed(context, BankInfoScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  BankInfoScreen.id,
+                );
               },
             ),
           ),
@@ -427,7 +456,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_WIDTH * 7),
                       ),
                       title: Text(
                         "Delete Confirmation",
@@ -451,7 +481,8 @@ class _DriverDrawerState extends State<DriverDrawer> {
                             height: size.BLOCK_HEIGHT * 7,
                             width: size.BLOCK_WIDTH * 30,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 5),
                               color: Color(0xff001233),
                             ),
                             child: Center(
@@ -469,16 +500,18 @@ class _DriverDrawerState extends State<DriverDrawer> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                          padding:
+                              EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
                             onPressed: () {
-                              //Api Call to delete the account
+                              deleteAccount();
                             },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                 color: Color(0xffC80404),
                               ),
                               child: Center(

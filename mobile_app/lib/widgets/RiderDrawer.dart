@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/EditProfileScreen.dart';
@@ -18,24 +20,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RiderDrawer extends StatefulWidget {
   const RiderDrawer({
-    required this.user,
     Key? key,
   }) : super(key: key);
-  final User user;
 
   @override
   _RiderDrawerState createState() => _RiderDrawerState();
 }
 
 class _RiderDrawerState extends State<RiderDrawer> {
-  late User user;
-  late bool isDriver;
+  bool isDriver = false;
+  String userUID = '';
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    isDriver = user.isDriver;
     getCurrentRole();
   }
 
@@ -53,34 +51,49 @@ class _RiderDrawerState extends State<RiderDrawer> {
       isDriver = !isDriver;
     });
     return new Timer(new Duration(seconds: 1), () {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => DriverDashboardScreen(),
-          settings: RouteSettings(
-            arguments: user,
-          ),
-        ),
+        DriverDashboardScreen.id,
         (Route<dynamic> route) => false,
       );
     });
   }
 
+  void deleteAccount() async {
+    EasyLoading.show(status: "Deleting account");
+    HttpsCallable delete =
+        FirebaseFunctions.instance.httpsCallable("account-deleteAccount");
+    try {
+      print("inside the try");
+      await delete();
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Account deleted.");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Error deleting account, try again later.");
+      print(e);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
+    userUID = user.uid;
     Size size = Size(Context: context);
     return Drawer(
       child: ListView(
-        physics: NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
           Container(
             height: size.BLOCK_HEIGHT * 45,
-            child: TopDrawer(
-              starRating: user.rating,
-              fullName: user.firstName + " " + user.lastName,
-              profilePic: user.profileURL,
-            ),
+            child: TopDrawer(),
           ),
           Container(
             height: size.BLOCK_HEIGHT * 3,
@@ -153,7 +166,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 7),
                             ),
                             title: Text(
                               "Start Driver Application",
@@ -177,7 +191,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                   height: size.BLOCK_HEIGHT * 7,
                                   width: size.BLOCK_WIDTH * 30,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                    borderRadius: BorderRadius.circular(
+                                        size.BLOCK_WIDTH * 5),
                                     color: Color(0xff001233),
                                   ),
                                   child: Center(
@@ -195,7 +210,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                                padding: EdgeInsets.only(
+                                    right: size.BLOCK_WIDTH * 2.5),
                                 child: TextButton(
                                   onPressed: () {
                                     //api call to add role as a rider to become a driver
@@ -203,7 +219,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DriverApplication(),
+                                        builder: (context) =>
+                                            DriverApplication(),
                                         settings: RouteSettings(
                                           arguments: user,
                                         ),
@@ -214,7 +231,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                                     height: size.BLOCK_HEIGHT * 7,
                                     width: size.BLOCK_WIDTH * 30,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                      borderRadius: BorderRadius.circular(
+                                          size.BLOCK_WIDTH * 5),
                                       color: Color(0xff3CB032),
                                     ),
                                     child: Center(
@@ -269,7 +287,10 @@ class _RiderDrawerState extends State<RiderDrawer> {
                 ],
               ),
               onTap: () {
-                Navigator.pushNamed(context, EditProfilScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  EditProfilScreen.id,
+                );
               },
             ),
           ),
@@ -301,7 +322,10 @@ class _RiderDrawerState extends State<RiderDrawer> {
               ),
               onTap: () {
                 // remove user, add card, Card model under construction
-                Navigator.pushNamed(context, PaymentScreen.id, arguments: widget.user);
+                Navigator.pushNamed(
+                  context,
+                  PaymentScreen.id,
+                );
               },
             ),
           ),
@@ -375,7 +399,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 7),
+                        borderRadius:
+                            BorderRadius.circular(size.BLOCK_WIDTH * 7),
                       ),
                       title: Text(
                         "Delete Confirmation",
@@ -399,7 +424,8 @@ class _RiderDrawerState extends State<RiderDrawer> {
                             height: size.BLOCK_HEIGHT * 7,
                             width: size.BLOCK_WIDTH * 30,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                              borderRadius:
+                                  BorderRadius.circular(size.BLOCK_WIDTH * 5),
                               color: Color(0xff001233),
                             ),
                             child: Center(
@@ -417,16 +443,18 @@ class _RiderDrawerState extends State<RiderDrawer> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
+                          padding:
+                              EdgeInsets.only(right: size.BLOCK_WIDTH * 2.5),
                           child: TextButton(
                             onPressed: () {
-                              //api call to delete account
+                              deleteAccount();
                             },
                             child: Container(
                               height: size.BLOCK_HEIGHT * 7,
                               width: size.BLOCK_WIDTH * 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(size.BLOCK_WIDTH * 5),
+                                borderRadius:
+                                    BorderRadius.circular(size.BLOCK_WIDTH * 5),
                                 color: Color(0xffC80404),
                               ),
                               child: Center(

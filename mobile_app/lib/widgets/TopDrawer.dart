@@ -1,23 +1,23 @@
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/Size.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
 
 class TopDrawer extends StatelessWidget {
   const TopDrawer({
     Key? key,
-    required this.profilePic,
-    required this.fullName,
-    required this.starRating,
   }) : super(key: key);
 
-  final String profilePic;
-  final String fullName;
-  final double starRating; //change to double later
+  // final String profilePic;
+  // final String fullName;
+  // final double starRating; //change to double later
 
   @override
   Widget build(BuildContext context) {
     Size size = new Size(Context: context);
+    final user = Provider.of<User>(context, listen: false);
     return DrawerHeader(
       decoration: BoxDecoration(
         color: kDrawerColor,
@@ -47,9 +47,10 @@ class TopDrawer extends StatelessWidget {
                 shape: BoxShape.circle,
                 image: DecorationImage(
                   image: NetworkImage(
-                    profilePic,
+                    user.profileURL,
+                    scale: 1,
                   ),
-                  fit: BoxFit.fill,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
             ),
@@ -58,7 +59,7 @@ class TopDrawer extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  fullName,
+                  user.firstName + " " + user.lastName,
                   style: TextStyle(
                     fontFamily: 'Glory',
                     fontSize: size.FONT_SIZE * 24,
@@ -72,7 +73,7 @@ class TopDrawer extends StatelessWidget {
           ),
           Center(
             child: RatingBarIndicator(
-              rating: starRating, // remove the ceil function later
+              rating: user.rating,
               itemCount: 5,
               itemSize: size.BLOCK_WIDTH * 12,
               direction: Axis.horizontal,

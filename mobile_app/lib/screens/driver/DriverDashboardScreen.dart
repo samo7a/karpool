@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/driver/DriverHistoryScreen.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'DriverHomeScreen.dart';
@@ -18,16 +17,14 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
   String title = "Dashboard";
   @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text("$title"),
         backgroundColor: kDashboardColor,
         centerTitle: true,
       ),
-      drawer: DriverDrawer(
-        user: user,
-      ),
+      drawer: DriverDrawer(),
       body: DefaultTabController(
         length: 2,
         child: Builder(
@@ -50,7 +47,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  DriverHomeScreen(user: user),
+                  DriverHomeScreen(),
                   DriverHistoryScreen(),
                 ],
               ),

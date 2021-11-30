@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Auth {
   final auth.FirebaseAuth _auth;
   Auth(this._auth);
-  //final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
   Future<User?> userFromFirebase(auth.User? user) async {
     if (user == null)
@@ -15,6 +14,7 @@ class Auth {
       final prefs = await SharedPreferences.getInstance();
       final String role = prefs.getString('role') ?? "norole";
       if (role == 'norole') return null;
+      ;
       bool isDriver = role == 'driver';
       final obj = <String, dynamic>{
         "uid": user.uid,
@@ -23,15 +23,22 @@ class Auth {
       String email = user.email ?? "";
       HttpsCallable getUser = FirebaseFunctions.instance.httpsCallable.call('account-getUser');
       final result = await getUser(obj);
+      print("user from auth: " + result.data.toString());
       String firstName = result.data['firstName'] ?? "";
       String lastName = result.data['lastName'] ?? "";
       String phone = result.data['phone'] ?? "";
       String url = result.data['profileURL'] ?? "";
-      num rating;
+      var accountNum = isDriver ? result.data["bankAccount"]["account"] : "";
+      var routingNum = isDriver ? result.data["bankAccount"]["routing"] : "";
+      print("routing: $routingNum, account: $accountNum");
+      // double weight = (json['weight'] as num).toDouble();
+      double rating;
       if (isDriver)
-        rating = result.data['driverRating'] ?? 0.0; //change to 0.0
+        // ignore: unnecessary_cast
+        rating = (result.data['driverRating'] ?? 0.0 as num).toDouble();
       else
-        rating = result.data['riderRating'] ?? 0.0; //change to 0.0
+        // ignore: unnecessary_cast
+        rating = (result.data['riderRating'] ?? 0.0 as num).toDouble();
       print("rating from auth");
       print(rating);
       print(rating.runtimeType);
@@ -43,14 +50,17 @@ class Auth {
         lastName: lastName,
         phoneNumber: phone,
         profileURL: url,
-        rating: rating as double,
+        rating: rating,
         isVerified: user.emailVerified,
         isDriver: driverRole,
         isRider: riderRole,
         email: email,
+        accountNum: accountNum,
+        routingNum: routingNum,
       );
     }
   }
+
   //How to call these functions?
   //answer: context.read<Auth>().functionName(param);
 
@@ -84,9 +94,14 @@ class Auth {
     return await userFromFirebase(_auth.currentUser);
   }
 
+  sendEmailVerificagtion() async {
+    await _auth.currentUser!.sendEmailVerification();
+  }
+
   //update email
   Future<void> updateEmail(String email) async {
     await _auth.currentUser!.updateEmail(email);
+    // print(_auth.currentUser!.email);
     await _auth.currentUser!.sendEmailVerification();
   }
 

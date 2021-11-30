@@ -9,28 +9,9 @@ import 'DriverModal.dart';
 class RiderRideContainer extends StatelessWidget {
   const RiderRideContainer({
     Key? key,
-    // required this.date,
-    // required this.time,
-    // required this.fromAddress,
-    // required this.toAddress,
-    // required this.profilePic,
-    // required this.estimatedPrice,
-    // required this.status,
     required this.trip,
-    // required this.onPress,
   }) : super(key: key);
-
-  // final String date;
-  // final String time;
-  // final String fromAddress;
-  // final String toAddress;
-  // final String profilePic;
-  // final String estimatedPrice;
-  // final String status;
   final RiderTrip trip;
-  // final Function onPress;
-
-  // TODO: add button for scheduling rides
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +24,7 @@ class RiderRideContainer extends StatelessWidget {
               return DriverModal(
                 trip: trip,
                 driverId: trip.driverId,
+                placeIds: {},
                 showButtons: false,
               );
             },
@@ -182,7 +164,7 @@ class RiderRideContainer extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        '\$ ' + trip.estimatedPrice.toString(),
+                        '\$ ' + trip.estimatedFare.toString(),
                         style: TextStyle(
                           color: Colors.green[900],
                           fontFamily: 'Glory',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/screens/MainScreen.dart';
 import 'package:mobile_app/screens/rider/RiderDashboardScreen.dart';
 import 'package:mobile_app/util/Auth.dart';
@@ -36,21 +37,35 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   route() async {
+    User currentUser = Provider.of<User>(context, listen: false);
     try {
       final user = await Provider.of<Auth>(context, listen: false).currentUser();
       if (user == null) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MainScreen.id,
           (Route<dynamic> route) => false,
         );
         return;
       }
+      currentUser.setFirstName = user.firstName;
+      currentUser.setLastName = user.lastName;
+      currentUser.setEmail = user.email;
+      currentUser.setUid = user.uid;
+      currentUser.setIsDriver = user.isDriver;
+      currentUser.setIsRider = user.isRider;
+      currentUser.setIsVerified = user.isVerified;
+      currentUser.setPhoneNumber = user.phoneNumber;
+      currentUser.setRating = user.rating;
+      currentUser.setProfileURL = user.profileURL;
+      currentUser.setAccountNum = user.accountNum!;
+      currentUser.setRoutingNum = user.routingNum!;
+
       bool verified = user.isVerified;
       if (!verified) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MainScreen.id,
           (Route<dynamic> route) => false,
         );
         return;
@@ -58,43 +73,33 @@ class _SplashScreenState extends State<SplashScreen> {
       final prefs = await SharedPreferences.getInstance();
       String role = prefs.getString("role") ?? 'norole';
       if (role == 'norole') {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MainScreen.id,
           (Route<dynamic> route) => false,
         );
         return;
       }
       bool isDriver = role == 'driver';
       if (isDriver) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (context) => DriverDashboardScreen(),
-            settings: RouteSettings(
-              arguments: user,
-            ),
-          ),
+          DriverDashboardScreen.id,
           (Route<dynamic> route) => false,
         );
         return;
       } else {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (context) => RiderDashboardScreen(),
-            settings: RouteSettings(
-              arguments: user,
-            ),
-          ),
+          RiderDashboardScreen.id,
           (Route<dynamic> route) => false,
         );
         return;
       }
     } catch (e) {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MainScreen.id,
         (Route<dynamic> route) => false,
       );
     }

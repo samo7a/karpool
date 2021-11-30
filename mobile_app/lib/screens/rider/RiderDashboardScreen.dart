@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/RiderDrawer.dart';
 import 'RiderHomeScreen.dart';
@@ -17,16 +16,13 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
   String title = "Dashboard";
   @override
   Widget build(BuildContext context) {
-    final user = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
       appBar: AppBar(
         title: Text('$title'),
         backgroundColor: kDashboardColor,
         centerTitle: true,
       ),
-      drawer: RiderDrawer(
-        user: user,
-      ),
+      drawer: RiderDrawer(),
       body: DefaultTabController(
         length: 2,
         child: Builder(
@@ -49,7 +45,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
               body: TabBarView(
                 controller: tabController,
                 children: [
-                  RiderHomeScreen(user: user),
+                  RiderHomeScreen(),
                   RiderHistoryScreen(),
                 ],
               ),
