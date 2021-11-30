@@ -1,11 +1,25 @@
 import { firestore } from "firebase-admin";
 
 
-type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
+export type RiderStatus = 'Requested' | 'Accepted' | 'Rejected'
+
+export type tripStatus = 'COMPLETED' | 'STARTED'
+
+
+export interface FCMTokens {
+    tokenIDs: string[]
+}
 
 // type TripStatus = 'Open' | 'Closed' | 'In Progress' | 'Completed'
 
+/**
+ * 
+ * Database implementation 
+ */
+
 export interface CreatedTripSchema {
+
+    docID: string
 
     /**
      * The id of the driver for the trip.
@@ -20,12 +34,27 @@ export interface CreatedTripSchema {
     /**
      * 
      */
-    startLocation: string
+    startLocation: firestore.GeoPoint
+
+    endLocation: firestore.GeoPoint
+
+    startAddress: string
+
+
+    endAddress: string
+
+    /**
+ * 
+ */
+
 
     /**
      * Status list of riders who have interacted with the trip.
      */
     riderStatus: Record<string, RiderStatus>
+
+
+    riderInfo: TripRiderInfo[]
 
     /**
      * 
@@ -33,20 +62,62 @@ export interface CreatedTripSchema {
     isOpen: boolean
 
     /**
-     * Distance between startLocation and endLocation
+     * Distance between startLocation and endLocation (Meters)
      */
     estimatedDistance: number
 
 
     /**
-     * The estimated amount each rider will pay.
+     * The total fare of all rider's fares in the trip.
      */
-    estimatedFare: number
+    estimatedTotalFare: number
+
+    /**
+     * The estimate duration of the entire trip. (Seconds)
+     */
+    estimatedDuration: number
 
     /**
      * Number of seats available in the trip.
      */
-    seatCount: number
+    seatsAvailable: number
+
+    /**
+     * 
+     */
+    polyline: string
+
+    /**
+     * 
+     */
+    notifThree?: boolean
+
+    /**
+     * 
+     */
+    notifThirty?: boolean
+
+}
+
+export interface TripRiderInfo {
+
+    pickupLocation: firestore.GeoPoint
+
+    dropoffLocation: firestore.GeoPoint
+
+    passengerCount: number
+
+    pickupIndex: number
+
+    dropoffIndex: number
+
+    riderID: string
+
+    pickupAddress: string
+
+    dropoffAddress: string
+
+    estimatedFare: number
 
 }
 
@@ -57,19 +128,18 @@ export interface ScheduleTripSchema {
  */
     // status: TripStatus
 
+    tripID: string
+
     /**
      * The id of the driver for the trip.
      */
     driverID: string
 
-    /**
-     * 
-     */
-    riders: Record<string, boolean>
-
+    duration: number
 
     vehicleID: string
 
+    tripStatus: tripStatus
 
     /**
      * 
@@ -77,25 +147,49 @@ export interface ScheduleTripSchema {
     distance: number
 
     /**
-     * Per person 
-     */
-    fare: number
-
-    /**
      * 
      */
     totalCost: number
 
+    /**
+    * Time the trip is scheduled.
+    */
     startTime: firestore.Timestamp
 
-    endTime: firestore.Timestamp
+    /**
+     * 
+     */
+    startLocation: firestore.GeoPoint
 
-    currentLocation: firestore.GeoPoint
+    endLocation: firestore.GeoPoint
+
+    startAddress: string
+
+    endAddress: string
 
 
+    riderInfo: TripRiderInfo[]
 
+    /**
+     * Store all ratings related to
+     * driver and riders in a trip
+     */
+
+    ridersRateDriver: Record<string, number>
+
+    driverRatesRiders: Record<string, number>
+
+    overallRating: number
+
+    /**
+     * 
+    */
+    polyline: string
+    riders: Record<string, boolean>
+      
 
 }
+
 
 export interface RiderInfoSchema {
 
@@ -149,4 +243,31 @@ export interface PaymentSchema {
 
     date: firestore.Timestamp
 
+}
+
+
+
+export interface GeoPointSchema {
+
+    hash: string
+
+    index: number
+
+    tripID: string
+
+    x: number
+
+    y: number
+}
+
+
+export interface NotificationData {
+
+    subject: string,
+
+    tripID: string,
+
+    driverID: string,
+
+    notificationID: number
 }

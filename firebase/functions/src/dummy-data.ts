@@ -2,13 +2,15 @@ import { autoID } from "./data-access/utils/misc";
 import { UserRegistrationData } from "./features/account-management/types";
 import { TripCreationData } from "./features/trip/types";
 
-export const addTripDatadummy = (): TripCreationData =>{
+export const addTripDatadummy = (): TripCreationData => {
 
-    return{
-        startAddress : "Kissimee Florida",
-        endAddress : "South Carolina",
+    return {
+        startAddress: "Kissimee Florida",
+        endAddress: "South Carolina",
         startTime: "2021-09-10T03:24:39.292Z",
-        seatCount: 3   
+        seatsAvailable: 3,
+        startPlaceID: 'ChIJd7zN_thz54gRnr-lPAaywwo',
+        endPlaceID: 'ChIJ4dG5s4K3wogRY7SWr4kTX6c'
     }
 }
 

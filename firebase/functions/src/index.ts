@@ -1,8 +1,15 @@
-import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin'
-import { AuthenticationDAO } from "./auth/dao";
-import { UserDAO } from "./data-access/user/dao";
 
+import { AuthenticationDAO } from "./data-access/auth/dao";
+import { UserDAO } from "./data-access/user/dao";
+import { PaymentDAO } from "./data-access/payment-dao/dao";
+import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
+import { VehicleDAO } from "./data-access/vehicle/dao";
+import { TripDAO } from "./data-access/trip/dao";
+import { AccountService } from "./features/account-management/account-service";
+import { TripService } from "./features/trip/trip-service";
+import { getEnv } from "./utils/env-config";
+import { RouteDAO, RouteDAOInterface } from "./data-access/route/dao";
 
 //MARK: Setup
 
@@ -11,14 +18,8 @@ import { UserDAO } from "./data-access/user/dao";
  * https://github.com/typestack/class-transformer
  */
 import 'reflect-metadata';
-import { PaymentDAO } from "./data-access/payment-dao/dao";
-import { getEnv } from "./env-config";
-import 'reflect-metadata';
-import { AccountService } from "./features/account-management/account-service";
-import { CloudStorageDAO } from "./data-access/cloud-storage/dao";
-import { VehicleDAO } from "./data-access/vehicle/dao";
-import { TripDAO } from "./data-access/trip/dao";
-import { TripService } from "./features/trip/trip-service";
+import { NotificationsDAO } from './features/notifications/notificationsDAO';
+import { PaymentService } from './features/payments/payment-service';
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -46,12 +47,24 @@ export function newVehicleDAO(): VehicleDAO {
 
 export function newPaymentDAO(): PaymentDAO {
     const stripe = getEnv().stripe
-    return new PaymentDAO(stripe.public_key, stripe.private_key)
+    return new PaymentDAO(stripe.public_key, stripe.private_key, admin.firestore())
 }
 
 
 export function newTripDAO(): TripDAO {
-    return new TripDAO(admin.firestore())
+    return new TripDAO(admin.firestore(), admin.database())
+}
+
+export function newNotificationDAO(): NotificationsDAO {
+    return new NotificationsDAO(admin.firestore())
+}
+
+export function newRouteDAO(): RouteDAOInterface {
+    // return new DirectionsDAOMock()
+    return new RouteDAO(
+        admin.firestore(),
+        getEnv().directions_api.private_key
+    )
 }
 
 export function newAccountService(): AccountService {
@@ -60,77 +73,35 @@ export function newAccountService(): AccountService {
         newAuthDAO(),
         newCloudStorageDAO(),
         newVehicleDAO(),
-        newPaymentDAO()
+        newPaymentDAO(),
+        newNotificationDAO()
     )
 }
 
 export function newTripService(): TripService {
     return new TripService(
-        newTripDAO()
-
+        newUserDao(),
+        newTripDAO(),
+        newRouteDAO(),
+        newNotificationDAO(),
+        newVehicleDAO(),
+        newPaymentDAO(),
     )
+}
+
+export function newPaymentService(): PaymentService {
+    return new PaymentService(newUserDao(), newPaymentDAO())
 }
 
 
 //MARK: Exposed cloud function endpoints
 
-
-// { 'firstName': 'Chris', 'lastName': 'Foreman', 'gender': 'Male', 'email': 'Chris1134@gmail.com', 'password': 'Somepassword', 'dob': new Date(), 'phone': '12341234123412', 'cardNum': '0101', 'cardExpDate': '9/22', 'cardCVC': '123', 'stripeToken': 'asldkfja;lfkja;sldfkjads;lfjkasd', 'profilePicData': 'asdfadsf', 'isDriver': false }
-
-
-
-exports.account = require('./features/account-management/cloud-functions')
 exports.trip = require('./features/trip/cloud-functions')
 
+exports.account = require('./features/account-management/cloud-functions')
 
+exports.notification = require('./features/notifications/notifications')
 
-//MARK: Experimental: Delete later.
+exports.playground = require('./z-playground')
 
-export const test2 = functions.https.onCall(async (data, context) => {
-
-    console.log('Client Data', data)
-
-    const res = await admin.firestore().collection('what ever the fuck you want').doc().set({
-        firstName: 'Chris',
-        age: 23
-    })
-
-    return res
-})
-
-export const test = functions.https.onCall((data, context) => {
-
-    // return admin.firestore().collection('test').doc('test').get().then(doc => fireDecode(TestClass, doc)).then(c => {
-    // console.log(c.name)
-    // console.log(c.date.toISOString())
-    // console.log(c.bool)
-    // console.log(c.num)
-    // })
-    return Promise.resolve({
-        firstname: "Taoufik"
-    })
-})
-
-
-// class TestClass {
-
-//     @IsString()
-//     name: string
-
-//     @IsDate()
-//     date: Date
-
-//     @IsBoolean()
-//     bool: boolean
-
-//     @IsNumber()
-//     num: number
-
-//     constructor(name: string, date: Date, bool: boolean, num: number) {
-//         this.name = name
-//         this.date = date
-//         this.bool = bool
-//         this.num = num
-//     }
-
-// }
+exports.populate = require('./populate')

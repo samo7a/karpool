@@ -202,6 +202,11 @@ export interface UserFieldsExternal {
      */
     roles?: Record<string, boolean>
 
+    bankAccount?: {
+        account: string
+        routing: string
+    }
+
 
     //TODO: Bank info
 

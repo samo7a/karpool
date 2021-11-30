@@ -3,7 +3,33 @@
 export const FirestoreKey = {
 
     users: 'users',
+
     vehicles: 'vehicles',
-    trips: 'trips',
-    creditCards: 'credit-cards'
+
+    tripsCreated: 'trips-created',
+
+    tripsScheduled: 'trips-scheduled',
+
+    creditCards: 'credit-cards',
+
+    cachedRoutes: 'routes-cached',
+
+    FCMTokens: 'FCMTokens',
+
+    earnings: 'earnings'
+
+}
+
+
+
+export const RealtimeKey = {
+
+    tripPoints: 'trip-points',
+
+    tracking: 'tracking'
+
+}
+
+export const Constants = {
+    hashPrecision: 5
 }

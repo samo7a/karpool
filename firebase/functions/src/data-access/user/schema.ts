@@ -1,5 +1,5 @@
+import { firestore } from "firebase-admin";
 import { Role } from "./types";
-
 
 /**
  * Exact schema of the user record in the database.
@@ -62,7 +62,14 @@ export interface UserSchema {
     /**
      * The url pointing to the location of the image associated with the user's profile.
      */
-    profileURL?: string
+    profileURL: string
+
+    /**
+     * Path of the profile url so the file can be deleted later if needed.
+     */
+    profilePicStoragePath: string
+
+    stripeCustomerID: string
 
 }
 
@@ -100,6 +107,11 @@ export interface DriverInfoSchema {
     */
     routingNum: string
 
+    /**
+     * drvier account balance for weekly payment
+     */
+    accountBalance: number
+
 }
 
 
@@ -115,28 +127,36 @@ export interface RiderInfoSchema {
      * Used to calculate the new average rating.
      */
     ratingCount: number
-
-    /**
-     * 
-     */
-    stripeCustomerID: string
 }
 
 
+export interface tokenSchema {
 
-
-export interface CreditCardSchema {
-
-    cardNum: number
-
-    cvc: number
-
-    /**
-     * Expiration date in form of MM/YY
-     */
-    expDate: string
-
-    uid: string
-
+    tokenIDs: string[]
 
 }
+
+export interface earnings {
+    amount: number
+
+    tripID: string
+
+    date: firestore.Timestamp
+
+    dayOfWeek: string
+
+}
+
+
+export interface week {
+    weekNum: number
+
+    amount: number
+}
+
+export interface month {
+    month: string
+
+    amount: number
+}
+

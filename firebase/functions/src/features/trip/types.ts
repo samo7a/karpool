@@ -9,8 +9,12 @@ export interface TripCreationData {
 
     startAddress: string
 
+    startPlaceID: string
+
     endAddress: string
 
-    seatCount: number
+    endPlaceID: string
+
+    seatsAvailable: number
 
 }
