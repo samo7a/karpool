@@ -18,7 +18,7 @@ import {  VehicleDAOInterface } from "../../data-access/vehicle/dao";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
-//       finish the notification for delete, add, join, decline and, cancel a ride
+//  finish the notification for delete, add, join, decline and, cancel a ride
 
 //Later: ad notificatrions for 3  and at the trip's start time
 
@@ -287,7 +287,7 @@ export class TripService {
         const meters = GeoDistance(pickup, dropoff)
         return {
             trips: tripResults,
-            estimatedFare: calculateFare(0, 0, meters / 1600, 1.50, 0.0)
+            estimatedFare: calculateFare(meters / 1600)
         }
 
     }
@@ -646,7 +646,7 @@ export class TripService {
             pickupAddress: startAddress,
             dropoffLocation: new firestore.GeoPoint(dropoff.y, dropoff.x),
             pickupLocation: new firestore.GeoPoint(pickup.y, pickup.x),
-            estimatedFare: calculateFare(0, 0, meters / 1600, 1.50, 0.0),
+            estimatedFare: calculateFare(meters / 1600),
             passengerCount: passengers,
             pickupIndex: 0,
             dropoffIndex: 0,
