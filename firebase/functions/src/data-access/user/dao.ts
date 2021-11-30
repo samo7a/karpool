@@ -7,6 +7,7 @@ import { Role } from './types'
 import { User } from '../../models-shared/user'
 import { fireDecode } from '../utils/decode'
 import { fireEncode } from '../utils/encode'
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 /**
  * Since other functionality may depend on this, we'll use an interface so we can make a mock later
  * for unit testing.
@@ -93,7 +94,13 @@ export class UserDAO implements UserDAOInterface {
 
     getAccountData(uid: string): Promise<User> {
         const userRef = this.db.collection(FirestoreKey.users).doc(uid)
-        return userRef.get().then(doc => fireDecode(User, doc))
+        return userRef.get().then(doc => {
+            if (doc.exists) {
+                return fireDecode(User, doc)
+            } else {
+                throw new HttpsError('not-found', `User id: ${uid} not found.`)
+            }
+        })
     }
 
     async deleteAccountData(uid: string): Promise<void> {

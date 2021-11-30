@@ -14,7 +14,9 @@ import { GeoDistance } from "../../utils/misc";
 import { UserSchema } from "../../data-access/user/schema";
 import { sendCustomNotification } from "../../features/notifications/notifications";
 import { NotificationsDAOInterface } from "../../features/notifications/notificationsDAO";
-import {  VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { VehicleDAOInterface } from "../../data-access/vehicle/dao";
+import { PaymentDAO } from "../../data-access/payment-dao/dao";
+import { PaymentService } from "../payments/payment-service";
 
 //TODO:  
 //  create a cloud function to add deviceToken to FCMTokens collection
@@ -29,19 +31,23 @@ export class TripService {
     private notificationsDAO: NotificationsDAOInterface
     private vehicleDAO: VehicleDAOInterface
     private userDAO: UserDAOInterface
+    private paymentDAO: PaymentDAO
 
     constructor(
         userDAO: UserDAOInterface,
         tripDAO: TripDAOInterface,
         directionsDAO: RouteDAOInterface,
         notificationsDAO: NotificationsDAOInterface,
-        vehicleDAO: VehicleDAOInterface
+        vehicleDAO: VehicleDAOInterface,
+        paymentDAO: PaymentDAO
     ) {
         this.userDAO = userDAO
         this.tripDAO = tripDAO
         this.directionsDAO = directionsDAO
         this.notificationsDAO = notificationsDAO
         this.vehicleDAO = vehicleDAO
+        this.paymentDAO = paymentDAO
+
     }
 
     /**
@@ -106,14 +112,14 @@ export class TripService {
     }
 
 
-    async createScheduledTrip(tripID : string): Promise<String>{
+    async createScheduledTrip(tripID: string): Promise<String> {
 
         const trip = await this.tripDAO.getCreatedTrip(tripID)
 
         const car = await this.vehicleDAO.getVehicle(trip.driverID)
 
-        const riders: Record<string, boolean> = {} 
-        trip.riderInfo.forEach(r => riders[r.riderID]= true)
+        const riders: Record<string, boolean> = {}
+        trip.riderInfo.forEach(r => riders[r.riderID] = true)
 
         await this.tripDAO.createScheduledTrip(tripID, {
 
@@ -128,7 +134,7 @@ export class TripService {
             startAddress: trip.startAddress,
 
             endAddress: trip.endAddress,
-            
+
             startLocation: trip.startLocation,
 
             endLocation: trip.endLocation,
@@ -161,7 +167,7 @@ export class TripService {
         snapshot.forEach((element) => {
             tripIDs.push(element.riderID)
         })
-      
+
         const tokens = await this.notificationsDAO.getTokenList(tripIDs)
 
         //console.log(tokens)
@@ -237,11 +243,11 @@ export class TripService {
             map[point.tripID] = point
         })
 
-        // const pickupTrips = pickupPoints.map(p => p.tripID)
-        // const dropoffTrips = pickupPoints.map(p => p.tripID)
+        const pickupTrips = pickupPoints.map(p => p.tripID)
+        const dropoffTrips = pickupPoints.map(p => p.tripID)
 
-        // console.log(pickupTrips)
-        // console.log(dropoffTrips)
+        console.log(pickupTrips)
+        console.log(dropoffTrips)
 
         /**
          * Filter for trips that:
@@ -254,8 +260,11 @@ export class TripService {
                 return false
             }
             const sameDirection = pickupPoint.index < dropoffPoint.index
+            console.log('II', dropoffPoint, pickupPoint.index, dropoffPoint.index)
             return sameDirection
         }).map(point => point.tripID)
+
+        console.log('VALID1', validTripIDs)
 
         //Return all trips
         const queriedTrips: CreatedTripSchema[] = []
@@ -385,9 +394,11 @@ export class TripService {
 
         if ((calculatedTime < 10800) && (calculatedTime > 0)) {
 
-            console.log("Rider will be fined")
+            // Charge the rider $5 penality or add a field in user as debt and add the value
 
-            //TODO: Charge the rider $5 penality or add a field in user as debt and add the value 
+            const payment = new PaymentService(this.userDAO, this.paymentDAO)
+            await payment.chargeRider(riderID, 500)
+
         }
 
         const token = await this.notificationsDAO.getTokenList([trip.driverID])
@@ -640,7 +651,7 @@ export class TripService {
         const wayPoints = this.getWaypoints(trip, 'Accepted')
 
         const meters = GeoDistance(pickup, dropoff)
-        
+
         const newRiderInfo: TripRiderInfo = {
             dropoffAddress: destinationAddress,
             pickupAddress: startAddress,
@@ -680,46 +691,62 @@ export class TripService {
 
 
 
-    async addRiderTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+    async addRiderTripRating(tripID: string, riderID: string, rating: number, amount: number): Promise<string> {
+
+        const payment = new PaymentService(this.userDAO, this.paymentDAO)
+
+        if (rating === -1) {
+
+            //charge the rider in case of no rating
+            await payment.chargeRider(riderID, amount * 100)
+            return `Rider: ${riderID} did not rate the driver`
+
+        }
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
         const driver = await this.userDAO.getAccountData(trip.driverID)
 
+
+        //charge the rider
+        await payment.chargeRider(riderID, amount * 100)
+
         let ratingVal = driver.driverInfo?.rating
 
         const ratingCount = driver.driverInfo?.ratingCount
 
-        if(ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined){
+        if (ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined) {
 
             ratingVal = ((ratingVal * ratingCount) + rating) / (ratingCount + 1)
 
-            if(ratingVal > 0 && driver.driverInfo?.rating !== undefined){
-                 driver.driverInfo.rating = ratingVal
-                 driver.driverInfo.ratingCount += 1 
-            }    
+            if (ratingVal > 0 && driver.driverInfo?.rating !== undefined) {
+                driver.driverInfo.rating = ratingVal
+                driver.driverInfo.ratingCount += 1
+            }
         }
-        else
-        {   
-            if(driver.driverInfo?.rating !== undefined){
+        else {
+            if (driver.driverInfo?.rating !== undefined) {
                 driver.driverInfo.rating = rating
                 driver.driverInfo.ratingCount += 1
-           } 
+            }
         }
 
         trip.ridersRateDriver[riderID] = rating
 
-         await this.tripDAO.updateScheduledTrip(tripID, trip)
+        await this.tripDAO.updateScheduledTrip(tripID, trip)
 
-         const data: Partial<UserSchema> = {
+        const data: Partial<UserSchema> = {
             driverInfo: driver.driverInfo
         }
         await this.userDAO.updateAccountData(trip.driverID, data)
 
-         return "Rating added Successfully!!"
+        return "Rating added Successfully!!"
+
     }
 
-    async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string>{
+
+
+    async addDriverTripRating(tripID: string, riderID: string, rating: number): Promise<string> {
 
         const trip = await this.tripDAO.getSchedulededTrip(tripID)
 
@@ -729,32 +756,31 @@ export class TripService {
 
         const ratingCount = rider.riderInfo?.ratingCount
 
-        if(ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined){
+        if (ratingCount !== undefined && ratingCount > 0 && ratingVal !== undefined) {
 
             ratingVal = ((ratingVal * ratingCount) + rating) / (ratingCount + 1)
 
-            if(ratingVal > 0 && rider.riderInfo?.rating !== undefined){
-                 rider.riderInfo.rating = ratingVal
-                 rider.riderInfo.ratingCount += 1 
-            }    
+            if (ratingVal > 0 && rider.riderInfo?.rating !== undefined) {
+                rider.riderInfo.rating = ratingVal
+                rider.riderInfo.ratingCount += 1
+            }
         }
-        else
-        {   
-            if(rider.riderInfo?.rating !== undefined){
+        else {
+            if (rider.riderInfo?.rating !== undefined) {
                 rider.riderInfo.rating = rating
                 rider.riderInfo.ratingCount += 1
-           } 
+            }
         }
 
-         trip.driverRatesRiders[riderID] = rating
+        trip.driverRatesRiders[riderID] = rating
 
-         await this.tripDAO.updateScheduledTrip(tripID, trip)
+        await this.tripDAO.updateScheduledTrip(tripID, trip)
 
-         const data: Partial<UserSchema> = {
+        const data: Partial<UserSchema> = {
             riderInfo: rider.riderInfo
         }
         await this.userDAO.updateAccountData(riderID, data)
 
-         return "Rating added Successfully!!"
+        return "Rating added Successfully!!"
     }
 }

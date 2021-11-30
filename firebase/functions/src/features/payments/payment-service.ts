@@ -1,4 +1,4 @@
-import { HttpsError } from "firebase-functions/lib/providers/https";
+import { HttpsError } from 'firebase-functions/lib/providers/https'
 import { PaymentDAO } from "../../data-access/payment-dao/dao"
 import { CreditCardSchema } from "../../data-access/payment-dao/schema"
 import { UserDAOInterface } from "../../data-access/user/dao"
@@ -41,8 +41,9 @@ export class PaymentService {
             throw new HttpsError('failed-precondition', `User ${id} does not have a default card set.`)
         }
 
-        return this.paymentDAO.createCharge(amount, defaultCard.id, user.stripeCustomerID, description)
+        return this.paymentDAO.createCharge(amount, user.stripeCustomerID, description)
     }
+
 
     makeDeposits(): Promise<void> {
         return Promise.reject(new Error('Unimplmented'))

@@ -298,11 +298,10 @@ export class AccountService {
 
     async addCreditCard(uid: string, cardToken: string): Promise<void> {
         const user = await this.userDAO.getAccountData(uid)
-        const customerID = await user.stripeCustomerID
-        if (customerID === undefined) {
-            throw new Error(`User needs a customer id to add a credit card.`)
+        if (user.stripeCustomerID === undefined) {
+            throw new HttpsError('failed-precondition', `User ${uid} needs a customer id to add a credit card.`)
         }
-        return this.paymentDAO.createCreditCard(uid, customerID, cardToken)
+        return this.paymentDAO.createCreditCard(uid, user.stripeCustomerID, cardToken)
     }
 
 
@@ -353,42 +352,44 @@ export class AccountService {
     // }
 
     async getEarnings(driverID: string): Promise<(week[] | month[])[]> {
-        const weekTemp: week = {
-            weekNum: 0,
-            amount: 0
-        }
-        const monthTemp: month = {
-            month: 0,
-            amount: 0
-        }
         var weekList: week[] = []
         var monthList: month[] = []
-        for (let i = 0; i < 53; i++) {
-            weekList.push(weekTemp)
+        for (let i = 0; i < 52; i++) {
+
+            weekList.push({
+                weekNum: i + 1,
+                amount: 0
+            })
         }
+        const names: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         for (let i = 0; i < 12; i++) {
-            monthList.push(monthTemp)
+            monthList.push({
+                month: names[i],
+                amount: 0
+            })
         }
         const allDocs = await this.userDAO.getAllEarnings(driverID)
+
         allDocs.map(doc => {
             const weekIndex = getWeek(doc.date.toDate(), 0)
             const monthIndex = doc.date.toDate().getMonth()
 
             let tempWeekAmount = weekList[weekIndex].amount
+
             weekList[weekIndex] = {
                 weekNum: weekIndex,
-
                 amount: tempWeekAmount += doc.amount
-
             }
+
             let tempMonthAmount = monthList[monthIndex].amount
+
             monthList[monthIndex] = {
-                month: monthIndex,
+                month: names[monthIndex],
                 amount: tempMonthAmount += doc.amount
             }
         })
-        const earningList = [weekList, monthList]
 
+        const earningList = [weekList, monthList]
 
         return earningList
     }
