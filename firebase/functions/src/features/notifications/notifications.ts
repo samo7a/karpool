@@ -30,7 +30,7 @@ export function sendCustomNotification(tokenIDs: string[], data: NotificationDat
 
         }
            
-            admin.messaging().send(message).
+            return admin.messaging().send(message).
             then(response => {
                 console.log("Message sent successfully")
             }).
