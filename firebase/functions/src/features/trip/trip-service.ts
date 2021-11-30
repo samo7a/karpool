@@ -387,7 +387,7 @@ export class TripService {
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
-            return prev + calculateFare(GeoDistance(pickup, dropoff))
+            return prev + calculateFare(GeoDistance(pickup, dropoff)/1600)
         },0)
 
         //Write to database
@@ -448,7 +448,7 @@ export class TripService {
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
-            return prev + calculateFare(GeoDistance(pickup, dropoff))
+            return prev + calculateFare(GeoDistance(pickup, dropoff)/1600)
         },0)
 
 
@@ -571,7 +571,7 @@ export class TripService {
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
-            return prev + calculateFare(GeoDistance(pickup, dropoff))
+            return prev + calculateFare(GeoDistance(pickup, dropoff)/1600)
         },0)
 
         trip.riderInfo = arr
@@ -611,7 +611,7 @@ export class TripService {
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
-            return prev + calculateFare(GeoDistance(pickup, dropoff))
+            return prev + calculateFare(GeoDistance(pickup, dropoff)1600)
         },0)
 
         trip.seatsAvailable = trip.seatsAvailable - 1
