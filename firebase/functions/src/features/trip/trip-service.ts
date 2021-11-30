@@ -383,6 +383,12 @@ export class TripService {
             }
         });
         trip.riderInfo = arr
+        
+        trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
+            const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
+            const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
+            return prev + calculateFare(GeoDistance(pickup, dropoff))
+        },0)
 
         //Write to database
         await this.tripDAO.updateCreatedTrip(tripID, trip)
@@ -412,7 +418,6 @@ export class TripService {
 
         sendCustomNotification(token, message)
 
-
     }
 
     async cancelRiderbyDriver(driverID: string, riderID: string, tripID: string): Promise<void> {
@@ -439,6 +444,13 @@ export class TripService {
         const rider = trip.riderInfo.filter(e => e.riderID === riderID)[0]
         // UPdate available seats
         trip.seatsAvailable += rider.passengerCount
+
+        trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
+            const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
+            const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
+            return prev + calculateFare(GeoDistance(pickup, dropoff))
+        },0)
+
 
         // Call change route function to update route
         const wayPoints = this.getWaypoints(trip, 'Accepted')
@@ -556,6 +568,12 @@ export class TripService {
             }
         });
 
+        trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
+            const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
+            const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
+            return prev + calculateFare(GeoDistance(pickup, dropoff))
+        },0)
+
         trip.riderInfo = arr
 
         //Write to database
@@ -589,6 +607,12 @@ export class TripService {
         }
         //change status to rejected and update seatAvailble
         trip.riderStatus[riderID] = 'Accepted'
+
+        trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
+            const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
+            const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
+            return prev + calculateFare(GeoDistance(pickup, dropoff))
+        },0)
 
         trip.seatsAvailable = trip.seatsAvailable - 1
 
@@ -686,7 +710,7 @@ export class TripService {
             notificationID: 1
         }
 
-        sendCustomNotification(token, message)
+        await sendCustomNotification(token, message)
     }
 
 
