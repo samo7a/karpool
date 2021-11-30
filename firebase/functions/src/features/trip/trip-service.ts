@@ -445,6 +445,13 @@ export class TripService {
         // UPdate available seats
         trip.seatsAvailable += rider.passengerCount
 
+        const arr = trip.riderInfo
+        arr.slice().reverse().forEach((element, i) => {
+            if (element.riderID === riderID) {
+                arr.splice(i)
+            }
+        });
+       
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
@@ -611,8 +618,8 @@ export class TripService {
         trip.estimatedTotalFare = trip.riderInfo.reduce((prev, v) =>{
             const pickup = {x:v.pickupLocation.longitude, y:v.pickupLocation.latitude}
             const dropoff = {x:v.dropoffLocation.longitude, y:v.dropoffLocation.latitude}
-            return prev + calculateFare(GeoDistance(pickup, dropoff)1600)
-        },0)
+            return prev + calculateFare(GeoDistance(pickup, dropoff)/1600)
+        }, 0)
 
         trip.seatsAvailable = trip.seatsAvailable - 1
 
