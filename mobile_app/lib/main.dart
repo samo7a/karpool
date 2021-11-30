@@ -91,8 +91,6 @@ class _MyAppState extends State<MyApp> {
           builder: EasyLoading.init(),
           debugShowCheckedModeBanner: false,
           initialRoute: SplashScreen.id,
-          // initialRoute: RiderNavScreen.id,
-          // initialRoute: DriverRatingScreen.id,
           routes: {
             SplashScreen.id: (context) => SplashScreen(),
             MainScreen.id: (context) => MainScreen(),

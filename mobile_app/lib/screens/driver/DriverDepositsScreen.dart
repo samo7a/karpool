@@ -1,7 +1,9 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/User.dart';
 import 'package:mobile_app/util/constants.dart';
 import 'package:mobile_app/widgets/DepositContainer.dart';
-
+import 'package:provider/provider.dart';
 
 class DriverDepositsScreen extends StatefulWidget {
   const DriverDepositsScreen({Key? key}) : super(key: key);
@@ -11,10 +13,42 @@ class DriverDepositsScreen extends StatefulWidget {
 }
 
 class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
-  String depositAccount = '3635';
+  String depositAccount = '';
+  List<Map<String, dynamic>> weeklyData = [];
+  void setChartData() async {
+    HttpsCallable getEarnings = FirebaseFunctions.instance.httpsCallable("account-getEarnings");
+    try {
+      final result = await getEarnings();
+      int weeklyDataLength = result.data[0].length;
+      // print(result.data[0].length); //weeks
+      for (int i = 0; i < weeklyDataLength; i++) {
+        setState(() {
+          double amount = result.data[0][i]["amount"] * 1.0;
+          String date = setDateRange(i);
+          weeklyData.add({"date": date, "amount": amount});
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  String setDateRange(int weekIndex) {
+    final date = new DateTime.now();
+    final startOfYear = new DateTime(date.year, 1, 1, 0, 0);
+    DateTime start = startOfYear.add(Duration(days: 14 * weekIndex - 4));
+    return start.month.toString() + "-" + start.day.toString() + "-" + start.year.toString();
+  }
+
+  void initState() {
+    super.initState();
+    setChartData();
+  }
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
+    depositAccount = user.accountNum!.substring(6, 10);
     return Container(
       color: kDashboardColor,
       child: SingleChildScrollView(
@@ -22,38 +56,13 @@ class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            DepositContainer(
-              depositDate: '11/08/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '10/14/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '09/22/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '09/13/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '09/02/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '08/24/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '06/14/2021',
-              depositAccount: depositAccount,
-            ),
-            DepositContainer(
-              depositDate: '04/27/2021',
-              depositAccount: depositAccount,
-            ),
+            for (var item in weeklyData)
+              if (item['amount'] != 0)
+                DepositContainer(
+                  depositDate: item['date'],
+                  depositAccount: depositAccount,
+                  amount: item['amount'],
+                ),
           ],
         ),
       ),

@@ -90,12 +90,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             });
 
         double estimatedPrice =
-            double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2)) * 1.0;
+            double.parse((data[i]["estimatedTotalFare"] * 0.75 ?? 0.0).toStringAsFixed(2));
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609).toStringAsFixed(2)) * 1.0;
-        double estimatedDuration = data[i]["estimatedDistance"] / 60.0;
+        print(estimatedDistance);
+        double estimatedDuration = data[i]["estimatedDuration"] / 60.0;
+        print(estimatedDuration);
         Map<String, double> startPoint = {
           "latitude": data[i]["startLocation"]["_latitude"] * 1.0,
           "longitude": data[i]["startLocation"]["_longitude"] * 1.0,
@@ -133,6 +135,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         var bdate = b.ts; //var bdate = b.expiry;
         return adate.compareTo(bdate);
       });
+      for (var trip in tripList) {
+        print(trip);
+      }
       return tripList;
     } catch (e) {
       print(e.toString());

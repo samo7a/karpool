@@ -8,10 +8,12 @@ class DepositContainer extends StatelessWidget {
     Key? key,
     required this.depositDate,
     required this.depositAccount,
+    required this.amount,
   }) : super(key: key);
 
   final String depositDate;
   final String depositAccount;
+  final double amount;
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +25,14 @@ class DepositContainer extends StatelessWidget {
       ),
       child: Container(
         width: size.BLOCK_WIDTH * 78,
-        height: size.BLOCK_HEIGHT * 7.5,
+        height: size.BLOCK_HEIGHT * 20,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
           color: kTripContainerColor,
         ),
         child: Padding(
           padding: EdgeInsets.only(left: size.BLOCK_WIDTH * 2),
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -46,8 +48,8 @@ class DepositContainer extends StatelessWidget {
               SizedBox(
                 width: size.BLOCK_WIDTH * 1.5,
               ),
-              VerticalDivider(
-                width: size.BLOCK_WIDTH,
+              Divider(
+                // height: size.BLOCK_WIDTH,
                 color: kWhite,
                 thickness: 1,
               ),
@@ -65,6 +67,22 @@ class DepositContainer extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: size.FONT_SIZE * 20,
                   ),
+                ),
+              ),
+              Divider(
+                // height: size.BLOCK_WIDTH,
+                color: kWhite,
+                thickness: 1,
+              ),
+              SizedBox(
+                width: size.BLOCK_WIDTH * 1.5,
+              ),
+              Text(
+                "\$$amount",
+                style: TextStyle(
+                  color: Colors.green[700],
+                  fontSize: size.FONT_SIZE * 22,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
