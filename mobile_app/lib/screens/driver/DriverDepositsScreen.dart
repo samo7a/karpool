@@ -56,7 +56,7 @@ class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            for (var item in weeklyData)
+            for (var item in weeklyData.reversed)
               if (item['amount'] != 0)
                 DepositContainer(
                   depositDate: item['date'],
