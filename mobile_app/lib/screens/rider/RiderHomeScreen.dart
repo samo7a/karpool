@@ -49,6 +49,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
       if (length == 0) {
         return tripList;
       }
+      print(result.data);
       for (int i = 0; i < length; i++) {
         String tripId = data[i]["docID"];
         String driverId = data[i]["driverID"];
@@ -63,12 +64,13 @@ class _RiderHomeScreenState extends State<RiderHomeScreen> {
         dynamic rider = data[i]["riderStatus"];
         String status = rider[uid];
 
-        double estimatedPrice = double.parse((data[i]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
+        double estimatedPrice =
+            double.parse((data[i]["riderInfo"][0]["estimatedFare"] ?? 0.0).toStringAsFixed(2));
         String polyLine = data[i]["polyline"];
         bool isOpen = data[i]["isOpen"];
         double estimatedDistance =
             double.parse((data[i]["estimatedDistance"] / 1609.0).toStringAsFixed(2));
-        double estimatedDuration = data[i]["estimatedDistance"] / 60.0;
+        double estimatedDuration = data[i]["estimatedDuration"] / 60.0;
         Map<String, double> startPoint = {
           "latitude": data[i]["startLocation"]["_latitude"] * 1.0,
           "longitude": data[i]["startLocation"]["_longitude"] * 1.0,
