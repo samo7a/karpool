@@ -724,12 +724,9 @@ export class TripService {
 
     async addRiderTripRating(tripID: string, riderID: string, rating: number, amount: number): Promise<string> {
 
-        const payment = new PaymentService(this.userDAO, this.paymentDAO)
 
         if (rating === -1) {
-
-            //charge the rider in case of no rating
-            await payment.chargeRider(riderID, amount * 100)
+         
             return `Rider: ${riderID} did not rate the driver`
 
         }
@@ -739,8 +736,6 @@ export class TripService {
         const driver = await this.userDAO.getAccountData(trip.driverID)
 
 
-        //charge the rider
-        await payment.chargeRider(riderID, amount * 100)
 
         let ratingVal = driver.driverInfo?.rating
 
