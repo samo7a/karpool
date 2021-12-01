@@ -105,3 +105,5 @@ exports.notification = require('./features/notifications/notifications')
 exports.playground = require('./z-playground')
 
 exports.populate = require('./populate')
+
+exports.demo = require('./demo-script')
