@@ -48,7 +48,7 @@ class _DriverDepositsScreenState extends State<DriverDepositsScreen> {
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
-    depositAccount = user.accountNum!.substring(6, 10);
+    depositAccount = user.accountNum!.substring(6, user.accountNum!.length);
     return Container(
       color: kDashboardColor,
       child: SingleChildScrollView(
