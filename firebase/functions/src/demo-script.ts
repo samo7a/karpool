@@ -2,6 +2,7 @@ import { auth, firestore } from 'firebase-admin'
 import * as functions from 'firebase-functions'
 import { newAccountService, newTripService } from '.'
 import { FirestoreKey } from './constants'
+import { TripRiderInfo } from './data-access/trip/schema'
 import { UserDAO } from './data-access/user/dao'
 import { earnings } from './data-access/user/schema'
 import { autoID } from './data-access/utils/misc'
@@ -82,8 +83,34 @@ export const demo = functions.https.onCall(async (data, context) => {
             startPlaceID: addy.startID,
             endPlaceID: addy.endID,
             seatsAvailable: 3
+        }).then(async tripID => {
+            const riderArr: TripRiderInfo[] = Array(2).fill('').map(() => {
+                const t: TripRiderInfo = {
+                    pickupLocation: new firestore.GeoPoint(27.770675, -82.678354),
+                    dropoffLocation: new firestore.GeoPoint(27.954002, -82.509439),
+                    passengerCount: 1,
+                    pickupIndex: 0,
+                    dropoffIndex: 1,
+                    riderID: autoID(),
+                    pickupAddress: 'SomePickupAddress',
+                    dropoffAddress: 'SomeDropOffAddress',
+                    estimatedFare: Math.floor(Math.random() * 12)
+                }
+                return t
+            })
+            const estimatedTotalFare = riderArr.reduce((prev, v) => {
+                return prev + v.estimatedFare
+            }, 0)
+            await new firestore.Firestore().collection(FirestoreKey.tripsCreated).doc(tripID).update({
+                riderInfo: riderArr,
+                estimatedTotalFare: estimatedTotalFare
+            })
+            return tripID
         })
     }))
+
+
+
 
     //Create earnings
     await Promise.all(Array(50).fill('').map(() => {
